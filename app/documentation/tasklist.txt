@@ -1,0 +1,10 @@
+-Modelo de datos V
+-Creación de la base de datos 
+-Diagrama de Flujo de datos lógicos de la aplicación 
+-Creación de la lógica UI en Android Studio 
+-Desarrollo del código de la aplicación
+-Implementación del chat 
+-Creación del servidor público 
+-Implementación de publicidad 
+-Testing de la app 
+-Documentación del proyecto 
