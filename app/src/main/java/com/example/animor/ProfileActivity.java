@@ -1,4 +1,4 @@
 package com.example.animor;
 
-public class MainActivity {
+public class ProfileActivity {
 }
