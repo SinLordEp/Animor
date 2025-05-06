@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Animor</string>
+    <string name="olvid_mi_contrase_a">Olvidé mi contraseña</string>
+    <string name="adopci_n_de_mascotas">Adopción de mascotas</string>
+    <string name="animor">ANIMOR</string>
+    <string name="entrar_sin_registrarse">Entrar sin registrarse</string>
+    <string name="entrar">Entrar</string>
 </resources>
