@@ -18,15 +18,16 @@
             android:id="@+id/buttonUser"
             android:layout_width="100dp"
             android:layout_height="match_parent"
+            android:scaleType="fitCenter"
             android:contentDescription="@string/coraz_n_para_favoritos"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:backgroundTint="@color/primarytwo"
             android:src="@drawable/user" />
         <ImageButton
-            android:id="@+id/buttonUser"
+            android:id="@+id/buttonHeart"
             android:layout_width="100dp"
-            android:padding="100dp"
+            android:scaleType="fitCenter"
             android:layout_height="match_parent"
             android:contentDescription="@string/coraz_n_para_favoritos"
             android:layout_weight="1"
@@ -38,7 +39,6 @@
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_gravity="center"
             android:contentDescription="@string/boton_para_buscar"
             android:src="@android:drawable/ic_menu_search"
             android:backgroundTint="@color/primarytwo"/>
