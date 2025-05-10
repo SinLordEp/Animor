@@ -5,4 +5,9 @@
     <string name="animor">ANIMOR</string>
     <string name="entrar_sin_registrarse">Entrar sin registrarse</string>
     <string name="entrar">Entrar</string>
+    <string name="email">email</string>
+    <string name="password">password</string>
+    <string name="coraz_n_para_favoritos">corazón para favoritos</string>
+    <string name="lista_de_animales">Lista de animales</string>
+    <string name="boton_para_buscar">boton para buscar</string>
 </resources>
