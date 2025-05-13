@@ -10,4 +10,21 @@
     <string name="coraz_n_para_favoritos">corazón para favoritos</string>
     <string name="lista_de_animales">Lista de animales</string>
     <string name="boton_para_buscar">boton para buscar</string>
+    <string name="especie">Especie</string>
+    <string name="sexo">Sexo</string>
+    <string name="ciudad">Ciudad</string>
+    <string name="nombre_animal">Nombre animal</string>
+    <string name="editar_datos_de_usuario">Editar datos de usuario</string>
+    <string name="registrar_animal_en_adopci_n">Registrar animal en adopción</string>
+    <string name="ver_mis_animales_en_adopci_n">Ver mis animales en adopción</string>
+    <string name="nombre_de_usuario">Nombre de usuario</string>
+    <string name="e_mail">e-mail</string>
+    <string name="tel_fono">Teléfono</string>
+    <string name="imagen_del_animal_que_se_da_en_adopci_n">Imagen del animal que se da en adopción</string>
+    <string name="bot_n_para_ir_al_perfil">Botón para ir al perfil</string>
+    <string name="boton_para_registrar_un_animal_para_adoptar">boton para registrar un animal para adoptar</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="perfil">Perfil</string>
+    <string name="buscar">Buscar</string>
+    <string name="dar_en_adopci_n">Dar en adopción</string>
 </resources>

@@ -6,66 +6,186 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
         android:layout_height="100dp"
-        android:layout_constraintTop_toEndOf="parent"
-        android:layout_constraintStart_toStartOf="parent"
-        android:layout_constraintTop_toTopOf="parent"
         android:background="@color/primarytwo"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
     </LinearLayout>
 
     <TableLayout
+        android:id="@+id/table"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
 
         <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/textViewEditar"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:clickable="true"
+                android:gravity="start|center"
+                android:paddingStart="30dp"
+                android:text="@string/editar_datos_de_usuario"
+                android:textColor="@color/links"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textViewMisListas"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:clickable="true"
+                android:gravity="center"
+                android:paddingStart="30dp"
+                android:text="@string/ver_mis_animales_en_adopci_n"
+                android:textColor="@color/links"
+                android:textStyle="bold" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textViewName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
-                android:gravity="end"/>
+                android:gravity="left"
+                android:paddingStart="30dp"
+                android:paddingTop="30dp"
+                android:text="@string/nombre_de_usuario"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:text="María" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <TextView
-                android:id="@+id/textViewName"
+                android:id="@+id/textViewEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                android:layout_marginStart="184dp"
-                android:layout_marginTop="72dp"
-                android:gravity="center"
-                android:text="María" />
+                android:gravity="start"
+                android:paddingStart="30dp"
+                android:text="@string/e_mail"
+                android:textStyle="bold" />
+
             <TextView
-                android:id="@+id/textViewName"
+                android:id="@+id/textViewUserEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_constraintTop_toBottomOf="@+id/linearLayout"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="72dp"
-                android:text="María" />
+                android:gravity="start"
+                android:text="\@" />
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewTelf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingStart="30dp"
+                android:text="@string/tel_fono"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewUserTelf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:text="600000000" />
+        </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/textViewMisAnimales"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:paddingStart="30dp"
+                android:paddingTop="30dp"
+                android:text="Mis animales"
+                android:textStyle="bold" />
+        </TableRow>
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical" />
+            </HorizontalScrollView>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textViewCrearAnimal"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:clickable="true"
+                android:gravity="left|center"
+                android:paddingStart="30dp"
+                android:text="Añadir un animal"
+
+                android:textColor="@color/links"
+                android:textStyle="bold" />
+        </TableRow>
     </TableLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/primarytwo"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/table"
+        app:layout_constraintTop_toBottomOf="@+id/table"
+        app:menu="@menu/bottom_nav_menu"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@drawable/border"
     android:padding="16dp">
 
     <!-- Contenedor CardView para imagen redonda -->
@@ -19,11 +20,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@color/primarytwo" />  <!-- Color o imagen -->
+            android:src="@color/primarytwo" />  <!-- imagen -->
 
     </androidx.cardview.widget.CardView>
 
-    <!-- Layout de texto (igual que tu versión original) -->
     <LinearLayout
         android:layout_width="200dp"
         android:layout_height="match_parent"
@@ -34,7 +34,7 @@
             android:id="@+id/txtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nombre animal"
+            android:text="@string/nombre_animal"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -42,13 +42,13 @@
             android:id="@+id/txtCity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ciudad" />
+            android:text="@string/ciudad" />
 
         <TextView
             android:id="@+id/txtSex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sexo" />
+            android:text="@string/sexo" />
     </LinearLayout>
 
     <TextView
@@ -56,5 +56,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="10dp"
-        android:text="Especie" />
+        android:text="@string/especie" />
 </LinearLayout>

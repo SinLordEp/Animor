@@ -100,15 +100,15 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:clickable="true"
-        android:onClick="onClick"
         android:text="@string/olvid_mi_contrase_a"
         android:textAllCaps="false"
-        android:textColor="#ff6750a4"
         android:textSize="15sp"
         android:textStyle="bold"
         app:backgroundTint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/links"
+
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
 
     <TextView
@@ -116,10 +116,9 @@
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:clickable="true"
-        android:onClick="onClick"
         android:text="@string/entrar_sin_registrarse"
         android:textAllCaps="false"
-        android:textColor="#ff6750a4"
+        android:textColor="@color/links"
         android:textSize="15sp"
         android:textStyle="bold"
         app:backgroundTint="@color/white"

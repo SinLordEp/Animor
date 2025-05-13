@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/user"
+        android:contentDescription="@string/bot_n_para_ir_al_perfil"
+        android:title="@string/perfil" />
+    <item
+        android:id="@+id/registrar"
+        android:contentDescription="@string/boton_para_registrar_un_animal_para_adoptar"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="@string/dar_en_adopci_n" />
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/heart"
+        android:contentDescription="@string/coraz_n_para_favoritos"
+        android:title="@string/favoritos" />
+</menu>

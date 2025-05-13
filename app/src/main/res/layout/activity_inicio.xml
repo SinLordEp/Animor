@@ -6,43 +6,14 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
         android:layout_height="100dp"
         android:background="@color/primarytwo"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <ImageButton
-            android:id="@+id/buttonUser"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/coraz_n_para_favoritos"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/primarytwo"
-            android:src="@drawable/user" />
-        <ImageButton
-            android:id="@+id/buttonHeart"
-            android:layout_width="100dp"
-            android:scaleType="fitCenter"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/coraz_n_para_favoritos"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/primarytwo"
-            android:src="@drawable/heart" />
-        <ImageButton
-            android:id="@+id/buttonLupa"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:contentDescription="@string/boton_para_buscar"
-            android:src="@android:drawable/ic_menu_search"
-            android:backgroundTint="@color/primarytwo"/>
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAnimals"
@@ -50,8 +21,19 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/lista_de_animales"
         android:padding="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/primarytwo"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/recyclerViewAnimals"
+        app:menu="@menu/bottom_nav_menu"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
