@@ -66,14 +66,14 @@
             android:text="@string/sexo" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayoutBottom"
-        android:layout_width="409dp"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:background="@color/primarytwo"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
