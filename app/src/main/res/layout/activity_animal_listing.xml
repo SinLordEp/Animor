@@ -93,7 +93,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/especie" />
-            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <TableLayout
@@ -104,7 +104,7 @@
         android:layout_marginEnd="35dp"
         android:shrinkColumns="1"
         android:stretchColumns="1"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="60dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -240,71 +240,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/tableData"
-        app:layout_constraintBottom_toTopOf="@+id/linearButtons"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:paddingBottom="10dp">
-
-    <TextView
-        android:id="@+id/textViewCreationDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="@string/fecha_de_creaci_n" />
-
-    <TextView
-        android:id="@+id/textViewDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingStart="10dp"
-        android:paddingEnd="0dp"
-        android:text="@string/dd_mm_aa" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableData">
 
-        <Button
-            android:id="@+id/buttonDeleteAnimal"
+        <TextView
+            android:id="@+id/textViewCreationDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:text="@string/borrar_animal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableData" />
+            android:text="@string/fecha_de_creaci_n" />
 
-        <Button
-            android:id="@+id/buttonCreateListingAnimal"
+        <TextView
+            android:id="@+id/textViewDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:text="@string/dar_en_adopci_n"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableData" />
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:text="@string/dd_mm_aa" />
 
-        <Button
-            android:id="@+id/buttonEditAnimal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/black"
-            android:text="@string/editar_animal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tableData" />
+
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
