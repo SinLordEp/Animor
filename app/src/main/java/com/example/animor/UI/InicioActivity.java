@@ -2,7 +2,6 @@ package com.example.animor.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -96,7 +95,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
     @Override
     public void onAnimalClick(Animal animal) {
         // Aquí manejas el clic en un animal
-        startActivity(new Intent(InicioActivity.this, AnimalActivity.class));
+        startActivity(new Intent(InicioActivity.this, MyAnimalsActivity.class));
 
         Toast.makeText(this, "Seleccionado: " + animal.getAnimalName(), Toast.LENGTH_SHORT).show();
 

@@ -8,13 +8,22 @@
         android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
         android:layout_height="100dp"
-        android:background="@color/primarytwo"
+        android:elevation="10dp"
+        android:translationZ="8dp"
         android:orientation="horizontal"
+        android:background="android:attr/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/logoanimor" />
     </LinearLayout>
 
     <TextView
@@ -23,6 +32,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="INICIO"
+        android:textColor="@color/black"
         android:layout_margin="20dp"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -52,7 +62,7 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/recyclerViewAnimals"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

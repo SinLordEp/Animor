@@ -21,6 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".UI.InicioActivity"/>
+        <activity android:name=".UI.CreateAnimalActivity"/>
+        <activity android:name=".UI.MyAnimalsActivity"/>
+
+
+
     </application>
 
 </manifest>

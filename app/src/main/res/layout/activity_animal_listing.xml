@@ -9,7 +9,7 @@
         android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
         android:layout_height="100dp"
-        android:background="@color/primarytwo"
+        android:background="android:attr/colorBackground"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
