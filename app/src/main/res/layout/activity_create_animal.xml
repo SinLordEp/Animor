@@ -9,7 +9,7 @@
         android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
         android:layout_height="100dp"
-        android:background="android:attr/colorBackground"
+        android:background="@null"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +118,7 @@
             <EditText
                 android:id="@+id/editTextText2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:ems="10"
                 android:inputType="text"
                 android:hint="Nombre" />

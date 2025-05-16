@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Model.Animal;
-import Utils.AnimalAdapter;
+import com.example.animor.Utils.*;
 
 public class InicioActivity extends AppCompatActivity implements AnimalAdapter.OnAnimalClickListener {
 
@@ -107,7 +107,10 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         */
     }
 
-    // Método para actualizar la lista si es necesario
+    /**
+     * actualizar la lista
+     * @param nuevaLista
+     */
     public void actualizarListaAnimales(List<Animal> nuevaLista) {
         animals.clear();
         animals.addAll(nuevaLista);
