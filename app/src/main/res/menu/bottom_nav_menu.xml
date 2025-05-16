@@ -11,8 +11,23 @@
         android:icon="@android:drawable/ic_input_add"
         android:title="@string/dar_en_adopci_n" />
     <item
-        android:id="@+id/nav_search"
+        android:id="@+id/nav_favs"
         android:icon="@drawable/heart"
         android:contentDescription="@string/coraz_n_para_favoritos"
         android:title="@string/favoritos" />
+    <item
+        android:id="@+id/nav_list"
+        android:contentDescription="altas de adopción"
+        android:icon="?attr/actionModePasteDrawable"
+        android:title="mis altas de adopción" />
+    <item
+        android:id="@+id/nav_animals"
+        android:contentDescription="mis animales"
+        android:icon="@drawable/pawprint"
+        android:title="mis animales" />
+    <item
+        android:id="@+id/nav_inicio"
+        android:contentDescription="inicio"
+        android:icon="@drawable/pawprint"
+        android:title="inicio" />
 </menu>
