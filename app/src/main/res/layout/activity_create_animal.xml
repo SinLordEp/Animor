@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
-        android:layout_height="100dp"
+        android:layout_height="50dp"
         android:background="@null"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -137,6 +137,33 @@
                 android:paddingEnd="0dp"
                 android:text="Sexo"
                 android:textStyle="bold" />
+            <RadioGroup
+                android:id="@+id/radioGroupSex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <RadioButton
+                    android:id="@+id/radioMacho"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Macho" />
+
+                <RadioButton
+                    android:id="@+id/radioHembra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Hembra" />
+
+                <RadioButton
+                    android:id="@+id/radioDesconocido"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Desconocido" />
+            </RadioGroup>
 
         </TableRow>
 
@@ -182,14 +209,19 @@
                 android:text="@string/tama_o"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textViewAnimalSize"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/etAnimalSize"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
+                android:hint="Indica la unidad (cm, kg...)"
+                android:inputType="none"
+                android:focusable="false"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:gravity="start"
-                android:text="@string/cm" />
+                android:layout_marginStart="20dp"
+                android:maxLines="1"/>
+
         </TableRow>
 
         <TableRow
@@ -230,7 +262,7 @@
                 android:paddingStart="30dp"
                 android:paddingTop="30dp"
                 android:paddingEnd="0dp"
-                android:text="@string/esterilizado"
+                android:text="¿Está esterilizado?"
                 android:textStyle="bold" />
 
             <CheckBox
