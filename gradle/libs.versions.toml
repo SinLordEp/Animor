@@ -11,6 +11,7 @@ activity = "1.10.1"
 constraintlayout = "2.2.1"
 materialVersion = "1.9.0"
 playServicesAuth = "21.3.0"
+jackson = "2.15.3"
 
 [libraries]
 appcompat-v161 = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
@@ -24,6 +25,7 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v190 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

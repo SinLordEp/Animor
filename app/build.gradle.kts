@@ -43,6 +43,7 @@ dependencies {
     implementation(libs.play.services.auth)
     //switch
     implementation(libs.appcompat.v161)
+    implementation(libs.jackson.databind)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }

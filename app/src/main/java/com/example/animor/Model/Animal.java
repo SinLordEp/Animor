@@ -1,12 +1,18 @@
-package Model;
+package com.example.animor.Model;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Animal {
+    @JsonProperty("animal_id")
     private Integer animalId;
+    @JsonProperty("animal_name")
     private String animalName;
+    @JsonProperty("species_id")
     private Integer speciesId;
+    @JsonProperty("birth_date")
     private LocalDate birthDate;
     private Boolean isBirthDateEstimated;
     private Sex sex;

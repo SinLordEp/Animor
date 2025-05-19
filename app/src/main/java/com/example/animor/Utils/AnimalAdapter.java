@@ -9,12 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.animor.Model.Animal;
 import com.example.animor.R;
 
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-
-import Model.Animal;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
 
@@ -27,8 +26,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         void onAnimalClick(Animal animal);
     }
 
+    // En el constructor
     public AnimalAdapter(List<Animal> animals, Context context, OnAnimalClickListener listener) {
-        this.animals = animals;
+        this.animals = animals != null ? animals : new ArrayList<>();
         this.context = context;
         this.listener = listener;
     }
@@ -45,33 +45,31 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
         Animal animal = animals.get(position);
 
-        // Configurar los datos del animal en las vistas
+        // Configuración básica
         holder.txtName.setText(animal.getAnimalName());
+        holder.txtSex.setText(getSexText(animal.getSex()));
 
-        // Mostrar el sexo del animal (traducido si es necesario)
-        String sexText = "";
-        switch (animal.getSex()) {
-            case MALE:
-                sexText = "Macho";
-                break;
-            case FEMALE:
-                sexText = "Hembra";
-                break;
-            case UNKNOWN:
-                sexText = "Desconocido";
-                break;
-        }
-        holder.txtSex.setText(sexText);
-
-        // Aquí podrías cargar la imagen del animal si tuvieras una URL o recurso
-        // Glide.with(context).load(animal.getImageUrl()).into(holder.imgAnimal);
-
-        // Configurar el clic en el elemento
+        // Manejo de clics más seguro
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
+            if (listener != null && position != RecyclerView.NO_POSITION) {
                 listener.onAnimalClick(animal);
             }
         });
+
+        // Configuración adicional (ejemplo)
+        if (animal.getIsAdopted() != null && animal.getIsAdopted()) {
+            holder.itemView.setAlpha(0.6f);
+        }
+    }
+
+    // Método helper para el texto del sexo
+    private String getSexText(Animal.Sex sex) {
+        if (sex == null) return "Desconocido";
+        switch (sex) {
+            case MALE: return "Macho";
+            case FEMALE: return "Hembra";
+            default: return "Desconocido";
+        }
     }
 
     @Override
@@ -87,11 +85,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
 
     // ViewHolder class
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
+        // Considera usar ViewBinding para mayor seguridad y rendimiento
         ImageView imgAnimal;
-        TextView txtName;
-        TextView txtCity;
-        TextView txtSex;
-        TextView txtSpecies;
+        TextView txtName, txtCity, txtSex, txtSpecies;
 
         public AnimalViewHolder(@NonNull View itemView) {
             super(itemView);
