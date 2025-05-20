@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Logo superior -->
     <LinearLayout
         android:id="@+id/linearLayoutTop"
         android:layout_width="409dp"
@@ -24,76 +25,37 @@
             app:srcCompat="@drawable/logoanimor" />
     </LinearLayout>
 
-    <!-- NUEVO LinearLayout debajo del logo -->
-    <LinearLayout
-        android:id="@+id/searchBarLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <EditText
-            android:id="@+id/searchEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Buscar..."
-            android:inputType="text"
-            android:background="@drawable/border"
-            android:padding="8dp"
-            android:layout_marginEnd="8dp"/>
-
-        <Button
-            android:id="@+id/buttonLupa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:backgroundTint="@color/black"
-            android:text="Buscar"
-            app:icon="@android:drawable/ic_menu_search" />
-
-        <Button
-            android:id="@+id/buttonFiltros"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Filtros"
-            android:backgroundTint="@color/black"
-            app:icon="@android:drawable/ic_menu_sort_by_size" />
-    </LinearLayout>
-
+    <!-- Título -->
     <TextView
         android:id="@+id/textViewTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="INICIO"
+        android:text="FAVORITOS"
         android:textColor="@color/black"
         android:layout_margin="20dp"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop" />
 
+    <!-- Lista de favoritos -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewAnimals"
+        android:id="@+id/recyclerViewFavorites"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
-        android:contentDescription="@string/lista_de_animales"
+        android:contentDescription="@string/lista_de_favoritos"
         android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
 
+    <!-- Navegación inferior -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"

@@ -43,4 +43,7 @@
     <string name="editar_animal">Editar animal</string>
     <string name="a_adir_un_animal">Añadir un animal</string>
     <string name="o_contin_a_sin_iniciar_sesi_n">O <u>continúa sin iniciar sesión</u></string>
+    <string name="lista_de_favoritos">lista de favoritos</string>
+    <string name="lista_de_mis_animales">lista de mis animales</string>
+    <string name="logo_animor">logo de la aplicación</string>
 </resources>
