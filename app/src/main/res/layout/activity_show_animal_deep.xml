@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Cabecera con imagen circular (desde AnimalPhoto.photo_url) -->
+    <LinearLayout
+        android:id="@+id/linearLayoutCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            app:cardCornerRadius="50dp"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:id="@+id/imgAnimal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />  <!-- Se cargará dinámicamente desde AnimalPhoto.photo_url -->
+        </androidx.cardview.widget.CardView>
+
+        <!-- Datos básicos (Location.city + Animal.sex) -->
+        <LinearLayout
+            android:id="@+id/NameCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Madrid" />  <!-- Desde Location.city -->
+
+            <TextView
+                android:id="@+id/txtSex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Hembra" />  <!-- Desde Animal.sex -->
+        </LinearLayout>
+
+        <!-- Especie (Species.name) -->
+        <TextView
+            android:id="@+id/textViewSpecies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:layout_marginEnd="20dp"
+            tools:text="Gato" />  <!-- Desde Species.name -->
+    </LinearLayout>
+
+    <!-- Tabla con detalles completos (mapeo desde la BD) -->
+    <TableLayout
+        android:id="@+id/tableData"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutCard"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigation">
+
+        <!-- Nombre (Animal.animal_name) -->
+        <TableRow>
+            <TextView android:text="Nombre" android:textStyle="bold"/>
+            <EditText
+                android:id="@+id/editTextName"
+                tools:text="Luna" />  <!-- Desde Animal.animal_name -->
+        </TableRow>
+
+        <!-- Sexo (Animal.sex) - Pre-selección en RadioGroup -->
+        <TableRow>
+            <TextView android:text="Sexo" android:textStyle="bold"/>
+            <RadioGroup android:id="@+id/radioGroupSex">
+                <RadioButton
+                    android:id="@+id/radioMacho"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Macho"/>
+                <RadioButton
+                    android:id="@+id/radioHembra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hembra"/>
+            </RadioGroup>
+        </TableRow>
+
+        <!-- Fecha nacimiento (Animal.birth_date + is_birth_date_estimated) -->
+        <TableRow>
+            <TextView android:text="Fecha Nac." android:textStyle="bold"/>
+            <EditText
+                android:id="@+id/etFecha"
+                tools:text="15/03/2022 (aproximada)"/>  <!-- Formateado desde Animal.birth_date -->
+        </TableRow>
+
+        <!-- Tamaño (Animal.size) -->
+        <TableRow>
+            <TextView android:text="Tamaño" android:textStyle="bold"/>
+            <EditText
+                android:id="@+id/etAnimalSize"
+                tools:text="30 cm (altura)" />  <!-- Desde Animal.size -->
+        </TableRow>
+
+        <!-- Descripción (Animal.animal_description) -->
+        <TableRow>
+            <TextView android:text="Descripción" android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/textViewAnimalDescription"
+                tools:text="Juguetón y cariñoso. Convive con niños."/>  <!-- Desde Animal.animal_description -->
+        </TableRow>
+
+        <!-- Esterilizado (Animal.is_neutered) -->
+        <TableRow>
+            <TextView android:text="Esterilizado" android:textStyle="bold"/>
+            <CheckBox
+                android:id="@+id/checkBoxNeutered"
+                tools:checked="true" />  <!-- Desde Animal.is_neutered -->
+        </TableRow>
+    </TableLayout>
+
+    <!-- Fecha de creación (Animal.created_at) -->
+    <TextView
+        android:id="@+id/textViewCreationDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tableData"
+        tools:text="Publicado el: 20/05/2024" />  <!-- Formateado desde Animal.created_at -->
+
+    <!-- Menú inferior -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+</androidx.constraintlayout.widget.ConstraintLayout>

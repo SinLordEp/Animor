@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
-        android:id="@+id/registrar"
-        android:contentDescription="@string/boton_para_registrar_un_animal_para_adoptar"
-        android:icon="@android:drawable/ic_input_add"
+        android:id="@+id/nav_inicio"
+        android:contentDescription="inicio"
+        android:icon="@drawable/gatoinicio"
         android:scaleType="centerCrop"
-        android:title="@string/dar_en_adopci_n" />
+        android:title="inicio"
+        android:titleCondensed="inicio"/>
     <item
         android:id="@+id/nav_favs"
         android:icon="@drawable/heart"
@@ -13,6 +15,13 @@
         android:scaleType="centerCrop"
         android:title="@string/favoritos"
         android:titleCondensed="favoritos"/>
+
+    <item
+    android:id="@+id/registrar"
+    android:contentDescription="@string/boton_para_registrar_un_animal_para_adoptar"
+    android:icon="@android:drawable/ic_input_add"
+    android:scaleType="centerCrop"
+    android:title="@string/dar_en_adopci_n" />
     <item
         android:id="@+id/nav_list"
         android:contentDescription="botón para ir a tus registros de adopción"
@@ -27,11 +36,5 @@
         android:scaleType="centerCrop"
         android:titleCondensed="animales"
         android:title="mis animales"/>
-    <item
-        android:id="@+id/nav_inicio"
-        android:contentDescription="inicio"
-        android:icon="@drawable/gatoinicio"
-        android:scaleType="centerCrop"
-        android:title="inicio"
-        android:titleCondensed="inicio"/>
+
 </menu>
