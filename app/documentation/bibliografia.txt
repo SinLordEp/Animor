@@ -1,3 +1,41 @@
 https://adictosaltrabajo.com/2019/03/19/bases-de-datos-de-firebase-con-android/
 
 https://coolors.co/palette/ccd5ae-e9edc9-fefae0-faedcd-d4a373 paleta de colores
+
+
+
+https://developer.android.com/identity/sign-in/credential-manager?hl=es-419
+
+Para implementar el inicio de sesión con Google en una aplicación de Android Studio, sigue estos pasos: primero, crea un proyecto en la Google Cloud Console y crea un ID de cliente de Android. Luego, añade la dependencia de la biblioteca de Credential Manager en tu archivo build.gradle. Después, implementa el flujo de inicio de sesión utilizando Credential Manager para solicitar las credenciales del usuario. Finalmente, valida el token de identidad de Google y, si es válido, autentica al usuario en tu aplicación. 
+Pasos detallados:
+Configurar el proyecto en la Google Cloud Console:
+Crea un nuevo proyecto en la Google Cloud Console. 
+En la sección "Credenciales", crea un ID de cliente de Android. 
+Asegúrate de tener especificado el nombre del paquete y la huella digital del certificado SHA-1 de tu aplicación. 
+Añadir la dependencia en build.gradle:
+Añade la siguiente dependencia a tu archivo build.gradle (module level): 
+Code
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-identity:17.0.0' // o la versión más reciente
+}
+1. Implementar el flujo de inicio de sesión:
+Utiliza el Credential Manager para solicitar las credenciales del usuario. 
+Crea un objeto GetCredentialRequest y añade la opción GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL. 
+Utiliza el método getCredential() o getCredentialAsync() para obtener las credenciales. 
+Extrae el CustomCredential del resultado. 
+Si el tipo de credencial es GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL, crea un GoogleIdTokenCredential utilizando el método createFrom(). 
+2. Validar el token de identidad:
+Extrae el ID del token de identidad del objeto GoogleIdTokenCredential. 
+Valida el token de identidad en tu servidor usando el ID de cliente de "aplicación web". 
+Si el token es válido, autentica al usuario en tu aplicación. 
+3. Autenticar al usuario:
+Utiliza los datos de la cuenta de Google (nombre, correo electrónico, etc.) para autenticar al usuario en tu aplicación. 
+Guarda los datos del usuario de forma segura. 
+Consideraciones:
+La API de Inicio de sesión de Google para Android está obsoleta y ya no es compatible. Se recomienda migrar a Credential Manager. 
+Recuerda implementar la validación del token de identidad en tu servidor para asegurar la seguridad. 
+Consulta la documentación oficial de Credential Manager y de la consola de Google Cloud para obtener información más detallada. 
+
+
+google sign in authentication for android studio
