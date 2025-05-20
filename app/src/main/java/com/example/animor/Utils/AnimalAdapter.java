@@ -27,9 +27,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     }
 
     // En el constructor
-    public AnimalAdapter(List<Animal> animals, Context context, OnAnimalClickListener listener) {
-        this.animals = animals != null ? animals : new ArrayList<>();
-        this.context = context;
+    public AnimalAdapter(List<Animal> animals, OnAnimalClickListener listener) {
+        this.animals = animals;
         this.listener = listener;
     }
 

@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.cardview)
     testImplementation(libs.junit)
     //correo de Google
+    implementation(libs.play.services.auth.v2070) //Google Sign-In
     implementation(libs.play.services.auth)
     //switch
     implementation(libs.appcompat.v161)

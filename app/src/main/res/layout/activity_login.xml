@@ -11,8 +11,10 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp"
-        tools:layout_editor_absoluteX="44dp"
-        tools:layout_editor_absoluteY="41dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="157dp"
@@ -37,11 +39,12 @@
             android:textColor="?android:attr/textColorSecondary" />
 
         <!-- Botón de Google Sign-In -->
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/sign_in_button"
+        <Button
+            android:id="@+id/btn_google_sign_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:backgroundTint="@color/black"
+            android:text="Iniciar con Google" />
 
         <!-- Texto de términos -->
         <TextView

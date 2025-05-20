@@ -1,11 +1,15 @@
 package com.example.animor.Model;
 
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Animal {
+public class Animal implements Serializable {
+
     @JsonProperty("animal_id")
     private Integer animalId;
     @JsonProperty("animal_name")
