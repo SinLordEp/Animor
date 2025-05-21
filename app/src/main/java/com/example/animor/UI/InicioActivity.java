@@ -2,9 +2,11 @@ package com.example.animor.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,22 +36,47 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         recyclerView = findViewById(R.id.recyclerViewAnimals);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Inicializar la lista de animales
+        // Inicializar lista de ejemplo
         animals = crearListaAnimalesEjemplo();
-
-        // Crear el adaptador con el listener
         adapter = new AnimalAdapter(animals, this);
         recyclerView.setAdapter(adapter);
+
+        // Configurar navegación inferior
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_inicio); // marcar como activo
+
+        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_inicio) {
+                    return true; // Ya estamos en esta actividad
+                } else if (id == R.id.nav_favs) {
+                    startActivity(new Intent(InicioActivity.this, FavActivity.class));
+                    return true;
+                } else if (id == R.id.registrar) {
+                    startActivity(new Intent(InicioActivity.this, RegistryActivity.class));
+                    return true;
+                } else if (id == R.id.nav_list) {
+                    startActivity(new Intent(InicioActivity.this, MyregistriesActivity.class));
+                    return true;
+                } else if (id == R.id.nav_animals) {
+                    startActivity(new Intent(InicioActivity.this, MyAnimalsActivity.class));
+                    return true;
+                }
+
+                return false;
+            }
+        });
     }
 
-    // Método mejorado para crear datos de ejemplo
     private List<Animal> crearListaAnimalesEjemplo() {
-        List<Animal> listaEjemplo = new ArrayList<>();
+        List<Animal> lista = new ArrayList<>();
 
-        // Animal 1
         Animal perro = new Animal();
         perro.setAnimalName("Max");
-        perro.setSpeciesId(1); // Perro
+        perro.setSpeciesId(1);
         perro.setBirthDate(LocalDate.of(2020, 5, 15));
         perro.setIsBirthDateEstimated(false);
         perro.setSex(Animal.Sex.MALE);
@@ -57,12 +85,11 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         perro.setIsNeutered(true);
         perro.setMicrochipNumber("123456789");
         perro.setIsAdopted(false);
-        listaEjemplo.add(perro);
+        lista.add(perro);
 
-        // Animal 2
         Animal gato = new Animal(
                 "Luna",
-                2, // Gato
+                2,
                 LocalDate.of(2021, 3, 10),
                 true,
                 Animal.Sex.FEMALE,
@@ -72,12 +99,11 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                 "987654321",
                 true
         );
-        listaEjemplo.add(gato);
+        lista.add(gato);
 
-        // Animal 3
-        listaEjemplo.add(new Animal(
+        lista.add(new Animal(
                 "Rocky",
-                1, // Perro
+                1,
                 LocalDate.of(2019, 8, 22),
                 false,
                 Animal.Sex.MALE,
@@ -88,12 +114,11 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                 false
         ));
 
-        return listaEjemplo;
+        return lista;
     }
 
     @Override
     public void onAnimalClick(Animal animal) {
-        // Mostrar información básica del animal seleccionado
         String mensaje = String.format("%s - %s\nEdad: %s años\nTamaño: %s\n%s",
                 animal.getAnimalName(),
                 animal.getSex() == Animal.Sex.MALE ? "Macho" :
@@ -104,13 +129,11 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
 
-        // Opcional: Abrir actividad de detalle
         Intent intent = new Intent(this, AnimalActivity.class);
-        intent.putExtra("ANIMAL_OBJECT", animal); // Requiere que Animal implemente Parcelable
+        intent.putExtra("ANIMAL_OBJECT", animal);
         startActivity(intent);
     }
 
-    // Método para calcular la edad aproximada
     private int calcularEdad(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) return 0;
         return LocalDate.now().getYear() - fechaNacimiento.getYear();

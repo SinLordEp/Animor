@@ -28,6 +28,11 @@
         <activity android:name=".UI.InicioActivity"/>
         <activity android:name=".UI.CreateAnimalActivity"/>
         <activity android:name=".UI.MyAnimalsActivity"/>
+        <activity android:name=".UI.FavActivity"/>
+        <activity android:name=".UI.MyregistriesActivity"/>
+        <activity android:name=".UI.RegistryActivity"/>
+
+
 
 
 

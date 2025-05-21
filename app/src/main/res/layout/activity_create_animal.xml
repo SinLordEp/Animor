@@ -239,7 +239,7 @@
                 android:text="@string/descripci_n"
                 android:textStyle="bold" />
 
-            <TextView
+            <EditText
                 android:id="@+id/textViewAnimalDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -247,7 +247,7 @@
                 android:layout_marginTop="0dp"
                 android:layout_weight="1"
                 android:gravity="start"
-                android:text="@string/es_un_animal_muy_bueno" />
+                android:hint="@string/es_un_animal_muy_bueno" />
         </TableRow>
 
         <TableRow
@@ -281,26 +281,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableData">
-
-        <TextView
-            android:id="@+id/textViewCreationDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/fecha_de_creaci_n" />
-
-        <TextView
-            android:id="@+id/textViewDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:text="@string/dd_mm_aa" />
-
-
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/tableData"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

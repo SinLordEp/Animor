@@ -46,4 +46,5 @@
     <string name="lista_de_favoritos">lista de favoritos</string>
     <string name="lista_de_mis_animales">lista de mis animales</string>
     <string name="logo_animor">logo de la aplicación</string>
+    <string name="marcar_como_favorito">marcar como favorito</string>
 </resources>
