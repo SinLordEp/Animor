@@ -42,6 +42,9 @@ dependencies {
     //correo de Google
     implementation(libs.play.services.auth.v2070) //Google Sign-In
     implementation(libs.play.services.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
     //switch
     implementation(libs.appcompat.v161)
     implementation(libs.jackson.databind)

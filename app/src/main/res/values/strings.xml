@@ -47,4 +47,12 @@
     <string name="lista_de_mis_animales">lista de mis animales</string>
     <string name="logo_animor">logo de la aplicación</string>
     <string name="marcar_como_favorito">marcar como favorito</string>
+    <string name="sign_in_in_progress">autenticación en proceso</string>
+    <string name="sign_in_error">error a autenticar cuenta</string>
+    <string name="sign_in_cancelled">autenticación cancelada</string>
+    <string name="sign_in_failed">fallo en la autenticación</string>
+    <string name="network_error">error de conexión red</string>
+    <string name="unknown_error">error desconocido</string>
+    <string name="no_internet_connection">no hay conexión de red</string>
+    <string name="web_client_id">804843988448-3u7337ptfpn4221ahnrvlp371tmhac04.apps.googleusercontent.com</string>
 </resources>
