@@ -2,7 +2,6 @@ package com.example.animor.UI;
 
 import android.content.Context;
 import android.content.Intent;
-import android.credentials.GetCredentialRequest;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -17,10 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.R;
 
+import androidx.credentials.Credential;
 import androidx.credentials.CredentialOption;
 import androidx.credentials.CustomCredential;
 import androidx.credentials.CredentialManager;
 import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.PublicKeyCredential;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -60,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutLogin());
     }
 
-    // Genera un nonce seguro (ejemplo simplificado)
+    // Genera un nonce
     private String generateNonce() {
         SecureRandom random = new SecureRandom();
         byte[] nonceBytes = new byte[16];
