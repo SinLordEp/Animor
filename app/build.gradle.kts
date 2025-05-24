@@ -43,7 +43,6 @@ dependencies {
     //correo de Google
     implementation(libs.play.services.auth.v2070) //Google Sign-In
     // When using the BoM, don't specify versions in Firebase dependencies
-    // TODO: Add the dependencies for Firebase products you want to use
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth.ktx)
@@ -52,6 +51,10 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.firebase.appcheck) // Para App Check
+    implementation(libs.firebase.appcheck.playintegrity) // Para el proveedor Play Integrity (Android)
+    implementation(libs.firebase.installations) // Para Firebase Installations (FID)
+    // .
     //switch
     implementation(libs.appcompat.v161)
     implementation(libs.jackson.databind)

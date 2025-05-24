@@ -3,7 +3,10 @@ agp = "8.9.1"
 appcompatVersion = "1.6.1"
 cardview = "1.0.0"
 credentials = "1.5.0"
+firebaseAppcheck = "X.Y.Z"
+firebaseAppcheckPlayintegrity = "X.Y.Z"
 firebaseBom = "33.14.0"
+firebaseInstallations = "X.Y.Z"
 googleid = "1.1.1"
 googlePlayServicesAuth = "21.1.0"
 junit = "4.13.2"
@@ -24,8 +27,11 @@ cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-appcheck = { module = "com.google.firebase:firebase-appcheck", version.ref = "firebaseAppcheck" }
+firebase-appcheck-playintegrity = { module = "com.google.firebase:firebase-appcheck-playintegrity", version.ref = "firebaseAppcheckPlayintegrity" }
 firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-installations = { module = "com.google.firebase:firebase-installations", version.ref = "firebaseInstallations" }
 gms-play-services-auth = { module = "com.google.android.gms:play-services-auth" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
