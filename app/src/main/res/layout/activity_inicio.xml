@@ -9,7 +9,6 @@
         android:layout_width="409dp"
         android:layout_height="100dp"
         android:elevation="10dp"
-        android:translationZ="8dp"
         android:orientation="horizontal"
         android:background="@null"
         app:layout_constraintEnd_toEndOf="parent"
@@ -55,7 +54,7 @@
             android:layout_marginEnd="4dp"
             android:textSize="12sp"
             android:backgroundTint="@color/black"
-            android:text="Buscar"
+            android:text="@string/buscar"
             app:icon="@android:drawable/ic_menu_search" />
 
         <Button

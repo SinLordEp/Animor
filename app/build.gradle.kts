@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -41,6 +42,12 @@ dependencies {
     testImplementation(libs.junit)
     //correo de Google
     implementation(libs.play.services.auth.v2070) //Google Sign-In
+    // When using the BoM, don't specify versions in Firebase dependencies
+    // TODO: Add the dependencies for Firebase products you want to use
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.gms.play.services.auth)
     implementation(libs.play.services.auth)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
