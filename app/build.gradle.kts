@@ -51,10 +51,9 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
-    implementation(libs.firebase.appcheck) // Para App Check
+    implementation(libs.firebase.appcheck.debug)
+    implementation(libs.okhttp) // Última versión estable (Mayo 2024)
     implementation(libs.firebase.appcheck.playintegrity) // Para el proveedor Play Integrity (Android)
-    implementation(libs.firebase.installations) // Para Firebase Installations (FID)
-    // .
     //switch
     implementation(libs.appcompat.v161)
     implementation(libs.jackson.databind)

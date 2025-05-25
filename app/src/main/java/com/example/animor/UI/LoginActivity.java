@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.R;
 
+import com.example.animor.Utils.ApiRequests;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -17,7 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory;
+import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,8 +62,10 @@ public class LoginActivity extends AppCompatActivity {
 
         // Activa Firebase App Check con Play Integrity como proveedor
         // Esto le dice a Firebase que use Play Integrity para verificar la autenticidad de tu app.
-        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(
-                PlayIntegrityAppCheckProviderFactory.getInstance()
+        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+
+        firebaseAppCheck.installAppCheckProviderFactory(
+                DebugAppCheckProviderFactory.getInstance() // <-- Usa el Proveedor de Depuración
         );
 
         // Obtiene el App Check Token de forma asíncrona
@@ -81,8 +84,12 @@ public class LoginActivity extends AppCompatActivity {
                                 // Puedes enviar ambos al servidor para solicitar un device_token
                                 // Esto es útil si tienes un backend propio que necesita verificar
                                 // que las peticiones provienen de tu app genuina.
-                                Log.d(TAG, "Firebase Installation ID (FID): " + fid); // Para depuración
-                                sendDeviceInitRequest(fid, appCheckToken); // Se requiere implementar este método
+                                Log.d(TAG, "Firebase Installation ID (FID): " + fid);
+                                new Thread(() -> {
+                                    ApiRequests apiRequests = new ApiRequests();
+                                    String respuesta = apiRequests.sendJsonDeviceToServer(appCheckToken, fid);
+                                    apiRequests.sendUserToServer(respuesta);
+                                }).start();// Para depuración
                             });
                 })
                 .addOnFailureListener(e -> {
@@ -136,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                             assert user != null;
                             //uid de firebase
                             String userId = user.getUid();
+
                             //todo:añadir datos a bbdd
                             updateUI(user); // <-- Actualiza tu interfaz
                             startActivity(new Intent(LoginActivity.this, InicioActivity.class));
@@ -169,10 +177,8 @@ public class LoginActivity extends AppCompatActivity {
         if (user != null) {
             // Usuario logeado
             Log.d("UI", "Usuario logeado: " + user.getDisplayName());
-            // Por ejemplo:
-            // findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            // findViewById(R.id.signed_in_layout).setVisibility(View.VISIBLE);
-            // ((TextView) findViewById(R.id.user_name_text)).setText(user.getDisplayName());
+            startActivity(new Intent(LoginActivity.this, InicioActivity.class));
+
         } else {
             // Usuario no logeado
             Log.d("UI", "Usuario no logeado");
