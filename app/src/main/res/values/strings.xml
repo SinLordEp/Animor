@@ -54,5 +54,5 @@
     <string name="network_error">error de conexión red</string>
     <string name="unknown_error">error desconocido</string>
     <string name="no_internet_connection">no hay conexión de red</string>
-    <string name="web_client_id">804843988448-3u7337ptfpn4221ahnrvlp371tmhac04.apps.googleusercontent.com</string>
+    <string name="oauth_client_id">804843988448-3u7337ptfpn4221ahnrvlp371tmhac04.apps.googleusercontent.com</string>
 </resources>

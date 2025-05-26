@@ -40,23 +40,25 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.cardview)
     testImplementation(libs.junit)
-    //correo de Google
-    implementation(libs.play.services.auth.v2070) //Google Sign-In
-    // When using the BoM, don't specify versions in Firebase dependencies
+
+// Firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth.ktx)
-    implementation(libs.gms.play.services.auth)
-    implementation(libs.play.services.auth)
+    implementation(libs.firebase.appcheck.debug)
+    implementation(libs.firebase.appcheck.playintegrity)
+
+// Google Auth
+    implementation(libs.play.services.auth.v2070) // o libs.play.services.auth.v2070 (elige una)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
-    implementation(libs.firebase.appcheck.debug)
-    implementation(libs.okhttp) // Última versión estable (Mayo 2024)
-    implementation(libs.firebase.appcheck.playintegrity) // Para el proveedor Play Integrity (Android)
-    //switch
-    implementation(libs.appcompat.v161)
+
+// Otras
+    implementation(libs.okhttp)
     implementation(libs.jackson.databind)
+
+// Testing
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
