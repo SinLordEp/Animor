@@ -49,10 +49,7 @@ dependencies {
     implementation(libs.firebase.appcheck.playintegrity)
 
 // Google Auth
-    implementation(libs.play.services.auth.v2070) // o libs.play.services.auth.v2070 (elige una)
-    implementation(libs.credentials)
-    implementation(libs.credentials.play.services.auth)
-    implementation(libs.googleid)
+    implementation(libs.play.services.auth.v2070)
 
 // Otras
     implementation(libs.okhttp)

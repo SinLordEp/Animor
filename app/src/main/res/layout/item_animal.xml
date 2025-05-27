@@ -50,11 +50,24 @@
             android:layout_height="wrap_content"
             android:text="@string/sexo" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/txtSpecies"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:text="@string/especie" />
+        android:orientation="vertical"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/txtSpecies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/especie" />
+        <!-- Icono de favorito -->
+        <ImageView
+            android:id="@+id/btnFavorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/heartvacio"
+            android:clickable="true"
+            android:contentDescription="@string/marcar_como_favorito" />
+    </LinearLayout>
 </LinearLayout>

@@ -12,7 +12,7 @@ import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.*;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.*;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
@@ -31,64 +31,63 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Inicializa Firebase Auth
+        // Inicializa Firebase
+        FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
 
-        // Configura los listeners de botones
-        findViewById(R.id.btn_google_sign_in).setOnClickListener(v -> signIn());
-        findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutLogin());
-
-        // Configura Google Sign-In (solicitando permisos de Gmail)
+        // Configura Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Para Firebase
-                .requestEmail() // Email del usuario
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Inicializa Firebase App Check para proteger tu backend
-        FirebaseApp.initializeApp(this);
-        FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
-        firebaseAppCheck.installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance()); // Debug para desarrollo
+        // App Check con Debug (para desarrollo)
+        FirebaseAppCheck.getInstance().installAppCheckProviderFactory(DebugAppCheckProviderFactory.getInstance());
 
         // Obtiene App Check Token y FID para tu servidor
         FirebaseAppCheck.getInstance().getToken(false)
                 .addOnSuccessListener(tokenResult -> {
                     String appCheckToken = tokenResult.getToken();
                     Log.d(TAG, "App Check Token: " + appCheckToken);
-                    FirebaseInstallations.getInstance().getId().addOnSuccessListener(fid -> {
-                        Log.d(TAG, "Firebase Installation ID (FID): " + fid);
-                        new Thread(() -> {
-                            ApiRequests api = new ApiRequests();
-                            String respuesta = api.sendFidDeviceToServer(appCheckToken, fid);
-                            if (respuesta == null) {
-                                runOnUiThread(() -> Toast.makeText(this, "No se recibió respuesta del servidor de autenticación", Toast.LENGTH_LONG).show());
-                                System.exit(0);
-                            }
-                        }).start();
-                    });
+                    FirebaseInstallations.getInstance().getId()
+                            .addOnSuccessListener(fid -> {
+                                Log.d(TAG, "Firebase Installation ID (FID): " + fid);
+                                new Thread(() -> {
+                                    ApiRequests api = new ApiRequests();
+                                    String respuesta = api.sendFidDeviceToServer(appCheckToken, fid);
+                                    if (respuesta == null) {
+                                        runOnUiThread(() -> Toast.makeText(this, "No se recibió respuesta del servidor de autenticación", Toast.LENGTH_LONG).show());
+                                        System.exit(0);
+                                    }
+                                }).start();
+                            });
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error al obtener App Check Token", e));
+
+        // Botones
+        findViewById(R.id.btn_google_sign_in).setOnClickListener(v -> signIn());
+        findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutLogin());
     }
 
     private void signIn() {
-        // Lanza la pantalla de inicio de sesión de Google
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-
-                // Autenticación con Firebase usando el ID Token
-                firebaseAuthWithGoogle(account.getIdToken());
+                if (account != null) {
+                    firebaseAuthWithGoogle(account.getIdToken());
+                }
             } catch (ApiException e) {
-                Log.w("GoogleSignIn", "Google sign in failed", e);
+                Log.e(TAG, "Error al obtener GoogleSignInAccount", e);
                 Toast.makeText(this, "Error al iniciar sesión con Google.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -99,52 +98,45 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("FirebaseAuth", "signInWithCredential:success");
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            // 🔑 Obtener el Firebase ID Token (JWT)
                             user.getIdToken(true).addOnCompleteListener(tokenTask -> {
                                 if (tokenTask.isSuccessful()) {
                                     String firebaseIdToken = tokenTask.getResult().getToken();
-                                    Log.d("FirebaseAuth", "Firebase ID Token: " + firebaseIdToken);
+                                    Log.d(TAG, "Firebase ID Token: " + firebaseIdToken);
 
-                                    // ✅ Enviar el token a tu backend
                                     new Thread(() -> {
                                         ApiRequests api = new ApiRequests();
                                         api.sendUserToServer(firebaseIdToken);
                                     }).start();
 
-                                    // Continua tu flujo normal
                                     updateUI(user);
                                     startActivity(new Intent(LoginActivity.this, InicioActivity.class));
                                 } else {
-                                    Log.e("FirebaseAuth", "Error al obtener Firebase ID Token", tokenTask.getException());
+                                    Log.e(TAG, "Error al obtener Firebase ID Token", tokenTask.getException());
                                     Toast.makeText(LoginActivity.this, "Error al obtener el token de usuario.", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
                     } else {
-                        Log.w("FirebaseAuth", "signInWithCredential:failure", task.getException());
-                        Toast.makeText(LoginActivity.this, "Error de autenticación.", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Error de autenticación", task.getException());
+                        Toast.makeText(this, "Error de autenticación.", Toast.LENGTH_SHORT).show();
                         updateUI(null);
                     }
                 });
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        updateUI(mAuth.getCurrentUser());
     }
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            Log.d("UI", "Usuario logeado: " + user.getDisplayName());
-            startActivity(new Intent(LoginActivity.this, InicioActivity.class));
+            Log.d(TAG, "Usuario logeado: " + user.getDisplayName());
         } else {
-            Log.d("UI", "Usuario no logeado");
+            Log.d(TAG, "Usuario no logeado");
         }
     }
 

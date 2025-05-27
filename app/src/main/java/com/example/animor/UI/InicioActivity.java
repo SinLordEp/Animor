@@ -24,7 +24,8 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
     private RecyclerView recyclerView;
     private AnimalAdapter adapter;
-    private List<Animal> animals;
+    private List<Animal> lista;
+    AnimalAdapter.OnAnimalClickListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,8 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Inicializar lista de ejemplo
-        animals = crearListaAnimalesEjemplo();
-        adapter = new AnimalAdapter(animals, this);
+        lista = obtenerAnimales();
+        adapter = new AnimalAdapter(this, lista, listener);
         recyclerView.setAdapter(adapter);
 
         // Configurar navegación inferior
@@ -71,56 +72,15 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         });
     }
 
-    private List<Animal> crearListaAnimalesEjemplo() {
-        List<Animal> lista = new ArrayList<>();
-
-        Animal perro = new Animal();
-        perro.setAnimalName("Max");
-        perro.setSpeciesId(1);
-        perro.setBirthDate(LocalDate.of(2020, 5, 15));
-        perro.setIsBirthDateEstimated(false);
-        perro.setSex(Animal.Sex.MALE);
-        perro.setSize("Mediano");
-        perro.setAnimalDescription("Perro juguetón y cariñoso");
-        perro.setIsNeutered(true);
-        perro.setMicrochipNumber("123456789");
-        perro.setIsAdopted(false);
-        lista.add(perro);
-
-        Animal gato = new Animal(
-                "Luna",
-                2,
-                LocalDate.of(2021, 3, 10),
-                true,
-                Animal.Sex.FEMALE,
-                "Pequeño",
-                "Gata tranquila y mimosa",
-                true,
-                "987654321",
-                true
-        );
-        lista.add(gato);
-
-        lista.add(new Animal(
-                "Rocky",
-                1,
-                LocalDate.of(2019, 8, 22),
-                false,
-                Animal.Sex.MALE,
-                "Grande",
-                "Perro protector y leal",
-                false,
-                "456123789",
-                false
-        ));
-
+    private List<Animal> obtenerAnimales() {
+        ArrayList<Animal>lista= new ArrayList<>();
         return lista;
     }
 
     @Override
     public void onAnimalClick(Animal animal) {
         String mensaje = String.format("%s - %s\nEdad: %s años\nTamaño: %s\n%s",
-                animal.getAnimalName(),
+                animal.getName(),
                 animal.getSex() == Animal.Sex.MALE ? "Macho" :
                         animal.getSex() == Animal.Sex.FEMALE ? "Hembra" : "Desconocido",
                 calcularEdad(animal.getBirthDate()),

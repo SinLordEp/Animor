@@ -59,6 +59,7 @@
             android:text="@string/especie" />
     </LinearLayout>
 
+
     <!-- Icono de favorito -->
     <ImageView
         android:id="@+id/btnFavorite"

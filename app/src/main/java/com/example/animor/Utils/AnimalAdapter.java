@@ -1,100 +1,71 @@
-package com.example.animor.Utils;
-import android.content.Context;
+package com.example.animor.UI;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
 
-    private List<Animal> animals;
-    private Context context;
+    private List<Animal> animalList;
     private OnAnimalClickListener listener;
 
-    // Interfaz para manejar clics
-    public interface OnAnimalClickListener {
-        void onAnimalClick(Animal animal);
-    }
-
-    // En el constructor
-    public AnimalAdapter(List<Animal> animals, OnAnimalClickListener listener) {
-        this.animals = animals;
+    public AnimalAdapter(List<Animal> animalList, OnAnimalClickListener listener) {
+        this.animalList = animalList;
         this.listener = listener;
     }
 
-    @NonNull
     @Override
-    public AnimalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AnimalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_animal, parent, false);
         return new AnimalViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
-        Animal animal = animals.get(position);
+    public void onBindViewHolder(AnimalViewHolder holder, int position) {
+        Animal animal = animalList.get(position);
+        holder.txtName.setText(animal.getName());
+        holder.txtCity.setText(animal.getTown());
+        holder.txtSpecies.setText(animal.getSpeciesId());
+        holder.txtSex.setText(animal.getSex().toString());  // getSex() es enum, lo convierto a string
+       // holder.imgAnimal.setImageResource(animal.getImage());
 
-        // Configuración básica
-        holder.txtName.setText(animal.getAnimalName());
-        holder.txtSex.setText(getSexText(animal.getSex()));
+        // Clicks en el animal completo
+        holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
 
-        // Manejo de clics más seguro
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null && position != RecyclerView.NO_POSITION) {
-                listener.onAnimalClick(animal);
-            }
-        });
-
-        // Configuración adicional (ejemplo)
-        if (animal.getIsAdopted() != null && animal.getIsAdopted()) {
-            holder.itemView.setAlpha(0.6f);
-        }
-    }
-
-    // Método helper para el texto del sexo
-    private String getSexText(Animal.Sex sex) {
-        if (sex == null) return "Desconocido";
-        switch (sex) {
-            case MALE: return "Macho";
-            case FEMALE: return "Hembra";
-            default: return "Desconocido";
-        }
+        // Clicks en el icono de favorito
+        holder.btnFavorite.setOnClickListener(v -> listener.onFavoriteClick(animal));
     }
 
     @Override
     public int getItemCount() {
-        return animals != null ? animals.size() : 0;
+        return animalList.size();
     }
 
-    // Método para actualizar la lista de animales
-    public void updateAnimals(List<Animal> newAnimals) {
-        this.animals = newAnimals;
-        notifyDataSetChanged();
-    }
-
-    // ViewHolder class
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
-        // Considera usar ViewBinding para mayor seguridad y rendimiento
-        ImageView imgAnimal;
-        TextView txtName, txtCity, txtSex, txtSpecies;
+        TextView txtName, txtCity, txtSpecies, txtSex;
+        ImageView imgAnimal, btnFavorite;
 
-        public AnimalViewHolder(@NonNull View itemView) {
+        public AnimalViewHolder(View itemView) {
             super(itemView);
-            imgAnimal = itemView.findViewById(R.id.imgAnimal);
             txtName = itemView.findViewById(R.id.txtName);
             txtCity = itemView.findViewById(R.id.txtCity);
-            txtSex = itemView.findViewById(R.id.txtSex);
             txtSpecies = itemView.findViewById(R.id.txtSpecies);
+            txtSex = itemView.findViewById(R.id.txtSex);
+            imgAnimal = itemView.findViewById(R.id.imgAnimal);
+            btnFavorite = itemView.findViewById(R.id.btnFavorite);
         }
+    }
+
+    public interface OnAnimalClickListener {
+        void onAnimalClick(Animal animal);
+        void onFavoriteClick(Animal animal);
     }
 }
