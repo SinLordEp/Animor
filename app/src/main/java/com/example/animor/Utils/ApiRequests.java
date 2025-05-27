@@ -104,4 +104,39 @@ public class ApiRequests {
         }
 
     }
+    public void deleteAccount() {
+        String url = "https://www.animor.es/user/delete-account";
+
+        // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
+        Log.d(TAG, "Token que se enviará al servidor: " + idToken);
+
+        // Construye el cuerpo con el parámetro 'firebaseToken' que espera el backend
+        RequestBody formBody = new FormBody.Builder()
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-User-Token", idToken)
+                .addHeader("X-Device-Token", idToken)
+                .post(formBody)  // POST con el token como parámetro
+                .build();
+
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                String respuesta = response.body().string();
+                User user = new User();
+                Log.d(TAG, "Respuesta del servidor: " + respuesta);
+            } else {
+                assert response.body() != null;
+                Log.e(TAG, "Error en la solicitud de borrar cuenta: " + response.code()
+                        + " | Respuesta: " + response.body().string());
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error al borrar cuenta: ", e);
+        }
+
+    }
 }

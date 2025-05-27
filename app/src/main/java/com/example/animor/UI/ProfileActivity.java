@@ -29,23 +29,27 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.navigation_view);
-        Toolbar toolbar = findViewById(R.id.toolbar);  // Añádelo en el layout también si no existe
 
-        setSupportActionBar(toolbar);
+        Button delete = findViewById(R.id.btn_delete);
+        ApiRequests api = new ApiRequests();
+        delete.setOnClickListener(v -> api.deleteAccount());
+       // Toolbar toolbar = findViewById(R.id.toolbar);  // Añádelo en el layout también si no existe
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+      //  setSupportActionBar(toolbar);
 
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_logout) {
-                signOutFromGoogle();  // Tu método de logout
-                return true;
-            }
-            return false;
-        });
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawerLayout.addDrawerListener(toggle);
+//        toggle.syncState();
+
+//        navigationView.setNavigationItemSelectedListener(item -> {
+//            int id = item.getItemId();
+//            if (id == R.id.nav_logout) {
+//                signOutFromGoogle();  // Tu método de logout
+//                return true;
+//            }
+//            return false;
+//        });
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
@@ -57,8 +61,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        Button btn_logout = findViewById(R.id.btn_logout);
-        btn_logout.setOnClickListener(v -> signOutFromGoogle());
+       // Button btn_logout = findViewById(R.id.btn_logout);
+       // btn_logout.setOnClickListener(v -> signOutFromGoogle());
         bottomNavigationView.setSelectedItemId(R.id.nav_favs);
 
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
