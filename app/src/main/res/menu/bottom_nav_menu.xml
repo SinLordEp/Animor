@@ -23,18 +23,18 @@
     android:scaleType="centerCrop"
     android:title="@string/dar_en_adopci_n" />
     <item
-        android:id="@+id/nav_list"
-        android:contentDescription="botón para ir a tus registros de adopción"
-        android:icon="?attr/actionModePasteDrawable"
-        android:scaleType="centerCrop"
-        android:title="registros"
-        android:titleCondensed="mis registros" />
-    <item
         android:id="@+id/nav_animals"
         android:contentDescription="mis animales"
         android:icon="@drawable/pawprint"
         android:scaleType="centerCrop"
         android:titleCondensed="animales"
         android:title="mis animales"/>
+    <item
+        android:id="@+id/nav_user"
+        android:contentDescription="botón para ir a tu cuenta de usuario"
+        android:icon="@drawable/user"
+        android:scaleType="centerCrop"
+        android:title="registros"
+        android:titleCondensed="mis registros" />
 
 </menu>

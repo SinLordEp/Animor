@@ -32,7 +32,7 @@ public class MyregistriesActivity extends AppCompatActivity {
                 } else if (id == R.id.registrar) {
                     startActivity(new Intent(MyregistriesActivity.this, RegistryActivity.class));
                     return true;
-                } else if (id == R.id.nav_list) {
+                } else if (id == R.id.nav_user) {
                     startActivity(new Intent(MyregistriesActivity.this, MyregistriesActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {

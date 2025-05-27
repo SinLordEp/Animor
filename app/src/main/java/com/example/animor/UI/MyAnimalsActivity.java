@@ -32,8 +32,8 @@ public class MyAnimalsActivity extends AppCompatActivity {
                 } else if (id == R.id.registrar) {
                     startActivity(new Intent(MyAnimalsActivity.this, RegistryActivity.class));
                     return true;
-                } else if (id == R.id.nav_list) {
-                    startActivity(new Intent(MyAnimalsActivity.this, MyregistriesActivity.class));
+                } else if (id == R.id.nav_user) {
+                    startActivity(new Intent(MyAnimalsActivity.this, ProfileActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
                     startActivity(new Intent(MyAnimalsActivity.this, MyAnimalsActivity.class));

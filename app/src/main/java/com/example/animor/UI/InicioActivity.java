@@ -13,19 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
-import com.example.animor.Utils.AnimalAdapter;
+import com.example.animor.Utils.*;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InicioActivity extends AppCompatActivity implements AnimalAdapter.OnAnimalClickListener {
+public class InicioActivity extends AppCompatActivity implements com.example.animor.UI.AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView recyclerView;
-    private AnimalAdapter adapter;
+    private com.example.animor.UI.AnimalAdapter adapter;
     private List<Animal> lista;
-    AnimalAdapter.OnAnimalClickListener listener;
+    com.example.animor.UI.AnimalAdapter.OnAnimalClickListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
         // Inicializar lista de ejemplo
         lista = obtenerAnimales();
-        adapter = new AnimalAdapter(this, lista, listener);
+       // adapter = new AnimalAdapter(this, lista, listener);
         recyclerView.setAdapter(adapter);
 
         // Configurar navegación inferior
@@ -59,8 +59,8 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                 } else if (id == R.id.registrar) {
                     startActivity(new Intent(InicioActivity.this, RegistryActivity.class));
                     return true;
-                } else if (id == R.id.nav_list) {
-                    startActivity(new Intent(InicioActivity.this, MyregistriesActivity.class));
+                } else if (id == R.id.nav_user) {
+                    startActivity(new Intent(InicioActivity.this, ProfileActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
                     startActivity(new Intent(InicioActivity.this, MyAnimalsActivity.class));
@@ -94,16 +94,26 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
         startActivity(intent);
     }
 
+    @Override
+    public void onFavoriteClick(Animal animal) {
+
+    }
+
     private int calcularEdad(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) return 0;
         return LocalDate.now().getYear() - fechaNacimiento.getYear();
     }
 
-    public void actualizarListaAnimales(List<Animal> nuevaLista) {
-        if (nuevaLista != null) {
-            animals.clear();
-            animals.addAll(nuevaLista);
-            adapter.notifyDataSetChanged();
-        }
+//    public void actualizarListaAnimales(List<Animal> nuevaLista) {
+//        if (nuevaLista != null) {
+//            animals.clear();
+//            animals.addAll(nuevaLista);
+//            adapter.notifyDataSetChanged();
+//        }
+//    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
     }
 }
