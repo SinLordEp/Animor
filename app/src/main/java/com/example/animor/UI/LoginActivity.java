@@ -2,12 +2,14 @@
 package com.example.animor.UI;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.animor.Model.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.google.android.gms.auth.api.signin.*;
@@ -25,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    static User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,25 +101,54 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        if (user != null) {
-                            user.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                        FirebaseUser userFirebase = mAuth.getCurrentUser();
+                        if (userFirebase != null) {
+                            userFirebase.getIdToken(true).addOnCompleteListener(tokenTask -> {
                                 if (tokenTask.isSuccessful()) {
-                                    String firebaseIdToken = tokenTask.getResult().getToken();
-                                    Log.d(TAG, "Firebase ID Token: " + firebaseIdToken);
+                                    GetTokenResult result = tokenTask.getResult();
+                                    if (result != null && result.getToken() != null) {
+                                        String firebaseIdToken = result.getToken();
+                                        Log.d("FirebaseAuth", "Firebase ID Token: " + firebaseIdToken);
 
-                                    new Thread(() -> {
-                                        ApiRequests api = new ApiRequests();
-                                        api.sendUserToServer(firebaseIdToken);
-                                    }).start();
+                                        new Thread(() -> {
+                                            try {
+                                                ApiRequests api = new ApiRequests();
+                                                user = api.sendUserToServer(firebaseIdToken);
+                                                SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+                                                SharedPreferences.Editor editor = prefs.edit();
+                                                editor.putString("nombreUsuario", user.getUserName());
+                                                editor.putString("email", user.getEmail());
+                                                editor.putString("firebaseToken", user.getUserToken());
+                                                editor.apply();
 
-                                    updateUI(user);
-                                    startActivity(new Intent(LoginActivity.this, InicioActivity.class));
+                                                // Mostrar por log en el hilo principal
+                                                runOnUiThread(() -> {
+                                                    Log.d("Nombre Usuario", user.getUserName());
+                                                    Log.d("Email Usuario", user.getEmail());
+                                                    Log.d("Firebase Token", user.getUserToken());
+                                                });
+
+                                            } catch (Exception e) {
+                                                Log.e("API_ERROR", "Error al enviar usuario: ", e);
+                                            }
+                                        }).start();
+
+
+                                        // Continua tu flujo normal
+                                        updateUI(userFirebase);
+                                        Intent intent = new Intent(LoginActivity.this, InicioActivity.class);
+
+                                        startActivity(intent);
+                                    } else {
+                                        Log.e("FirebaseAuth", "Error: El token de usuario es nulo");
+                                        Toast.makeText(this, "Error al obtener el token de usuario.", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
-                                    Log.e(TAG, "Error al obtener Firebase ID Token", tokenTask.getException());
-                                    Toast.makeText(LoginActivity.this, "Error al obtener el token de usuario.", Toast.LENGTH_SHORT).show();
+                                    Log.e("FirebaseAuth", "Error al obtener Firebase ID Token", tokenTask.getException());
+                                    Toast.makeText(this, "Error al obtener el token de usuario.", Toast.LENGTH_SHORT).show();
                                 }
                             });
+
                         }
                     } else {
                         Log.w(TAG, "Error de autenticación", task.getException());

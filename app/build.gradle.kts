@@ -58,4 +58,8 @@ dependencies {
 // Testing
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    //picasso imgs
+    implementation(libs.picasso)
+
 }

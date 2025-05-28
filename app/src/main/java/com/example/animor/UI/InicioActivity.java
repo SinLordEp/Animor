@@ -20,12 +20,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InicioActivity extends AppCompatActivity implements com.example.animor.UI.AnimalAdapter.OnAnimalClickListener {
+public class InicioActivity extends AppCompatActivity implements AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView recyclerView;
-    private com.example.animor.UI.AnimalAdapter adapter;
+    private AnimalAdapter adapter;
     private List<Animal> lista;
-    com.example.animor.UI.AnimalAdapter.OnAnimalClickListener listener;
+    AnimalAdapter.OnAnimalClickListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

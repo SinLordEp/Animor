@@ -1,4 +1,4 @@
-package com.example.animor.UI;
+package com.example.animor.Utils;
 
 import android.view.LayoutInflater;
 import android.view.View;

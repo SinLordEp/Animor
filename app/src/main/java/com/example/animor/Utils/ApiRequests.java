@@ -1,9 +1,14 @@
 package com.example.animor.Utils;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.animor.Model.User;
+import com.example.animor.UI.ProfileActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -18,6 +23,7 @@ public class ApiRequests {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client;
     static String idToken;
+
 
     public ApiRequests() {
         client = new OkHttpClient.Builder()
@@ -70,7 +76,7 @@ public class ApiRequests {
     /**
      * Envía el token de Firebase al backend para autenticar al usuario.
      */
-    public void sendUserToServer(String firebaseIdToken) {
+    public User sendUserToServer(String firebaseIdToken) {
         String url = "https://www.animor.es/auth/firebase-login";
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
@@ -91,8 +97,10 @@ public class ApiRequests {
             if (response.isSuccessful()) {
                 assert response.body() != null;
                 String respuesta = response.body().string();
-                User user = new User();
                 Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                JSONObject jsonObject = new JSONObject(respuesta);
+                JSONObject data = jsonObject.getJSONObject("data");
+                return new User(data.getString("token"),data.getString("userName"),data.getString("email"));
             } else {
                 assert response.body() != null;
                 Log.e(TAG, "Error en la solicitud de datos de usuario: " + response.code()
@@ -103,40 +111,54 @@ public class ApiRequests {
             Log.e(TAG, "Error al enviar usuario: ", e);
         }
 
+        return null;
     }
-    public void deleteAccount() {
+    public void deleteAccount(Activity activity) {
         String url = "https://www.animor.es/user/delete-account";
 
-        // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
         Log.d(TAG, "Token que se enviará al servidor: " + idToken);
 
-        // Construye el cuerpo con el parámetro 'firebaseToken' que espera el backend
-        RequestBody formBody = new FormBody.Builder()
-                .build();
+        RequestBody formBody = new FormBody.Builder().build();
 
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-User-Token", idToken)
                 .addHeader("X-Device-Token", idToken)
-                .post(formBody)  // POST con el token como parámetro
+                .post(formBody)
                 .build();
 
+        new Thread(() -> {
+            try (Response response = client.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    String respuesta = response.body().string();
+                    Log.d(TAG, "Respuesta del servidor: " + respuesta);
 
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                String respuesta = response.body().string();
-                User user = new User();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
-            } else {
-                assert response.body() != null;
-                Log.e(TAG, "Error en la solicitud de borrar cuenta: " + response.code()
-                        + " | Respuesta: " + response.body().string());
-                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+                    // Limpiar datos locales
+                    SharedPreferences prefs = activity.getSharedPreferences("userPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.clear();
+                    editor.apply();
+
+                    // Cerrar sesión al borrar cuenta
+                    activity.runOnUiThread(() -> {
+                        if (activity instanceof ProfileActivity) {
+                            ((ProfileActivity) activity).signOutFromGoogle(activity);
+                        } else {
+                            Log.e(TAG, "No es una ProfileActivity. No se puede cerrar sesión.");
+                        }
+                    });
+
+                } else {
+                    assert response.body() != null;
+                    Log.e(TAG, "Error en la solicitud de borrar cuenta: " + response.code()
+                            + " | Respuesta: " + response.body().string());
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error al borrar cuenta: ", e);
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Error al borrar cuenta: ", e);
-        }
-
+        }).start();
     }
+
+
 }
