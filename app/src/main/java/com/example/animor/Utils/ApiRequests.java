@@ -2,16 +2,18 @@ package com.example.animor.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.app.Activity;
-import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.animor.Model.User;
+import com.example.animor.UI.LoginActivity;
+import com.example.animor.UI.MyAnimalsActivity;
 import com.example.animor.UI.ProfileActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import org.json.JSONObject;
 
@@ -22,8 +24,9 @@ public class ApiRequests {
     private static final String TAG = "ApiRequests";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client;
-    static String idToken;
-
+    static String deviceToken;
+    static String fidToken;
+    static String userToken;
 
     public ApiRequests() {
         client = new OkHttpClient.Builder()
@@ -39,6 +42,7 @@ public class ApiRequests {
      */
     public String sendFidDeviceToServer(String appCheckToken, String fid) {
         String url = "https://www.animor.es/auth/device-token";
+        fidToken = fid;
         RequestBody formBody = new FormBody.Builder()
                 .add("deviceFid", fid)
                 .build();
@@ -56,9 +60,10 @@ public class ApiRequests {
                 Log.d(TAG, "Respuesta del servidor: " + cuerpoRespuesta);
                 // Parsear JSON y extraer el campo "data"
                 JSONObject json = new JSONObject(cuerpoRespuesta);
+                Log.d("USER-TOKEN DEL SERVIDOR BUENO", cuerpoRespuesta.toString());
                 if (json.has("data")) {
-                    idToken = json.getString("data");
-                    return idToken;
+                    deviceToken = json.getString("data");
+                    return deviceToken;
                 } else {
                     Log.e(TAG, "No se encontró el campo 'data' en la respuesta");
                 }
@@ -80,7 +85,7 @@ public class ApiRequests {
         String url = "https://www.animor.es/auth/firebase-login";
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
-        Log.d(TAG, "Token que se enviará al servidor: " + firebaseIdToken);
+        Log.d(TAG, "Token que se enviará al servidor (userToken): " + firebaseIdToken);
 
         // Construye el cuerpo con el parámetro 'firebaseToken' que espera el backend
         RequestBody formBody = new FormBody.Builder()
@@ -89,7 +94,7 @@ public class ApiRequests {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("X-Device-Token", idToken)
+                .addHeader("X-Device-Token", deviceToken)
                 .post(formBody)  // POST con el token como parámetro
                 .build();
 
@@ -100,7 +105,8 @@ public class ApiRequests {
                 Log.d(TAG, "Respuesta del servidor: " + respuesta);
                 JSONObject jsonObject = new JSONObject(respuesta);
                 JSONObject data = jsonObject.getJSONObject("data");
-                return new User(data.getString("token"),data.getString("userName"),data.getString("email"));
+                userToken = data.getString("token");
+                return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
             } else {
                 assert response.body() != null;
                 Log.e(TAG, "Error en la solicitud de datos de usuario: " + response.code()
@@ -116,16 +122,20 @@ public class ApiRequests {
     public void deleteAccount(Activity activity) {
         String url = "https://www.animor.es/user/delete-account";
 
-        Log.d(TAG, "Token que se enviará al servidor: " + idToken);
+        Log.d(TAG, "Tokens que se enviarán al servidor: \n Device-token:" + deviceToken + "\n User token: "+ userToken);
 
-        RequestBody formBody = new FormBody.Builder().build();
+        if (userToken == null || userToken.trim().isEmpty()){
+            Log.e(TAG, "tokenId es nulo o vacío");
+            return;
+        }
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("X-User-Token", idToken)
-                .addHeader("X-Device-Token", idToken)
-                .post(formBody)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .delete()
                 .build();
+        Log.d("PETICIÓN ENVIADA", request.toString());
 
         new Thread(() -> {
             try (Response response = client.newCall(request).execute()) {
@@ -134,19 +144,18 @@ public class ApiRequests {
                     String respuesta = response.body().string();
                     Log.d(TAG, "Respuesta del servidor: " + respuesta);
 
-                    // Limpiar datos locales
-                    SharedPreferences prefs = activity.getSharedPreferences("userPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.clear();
-                    editor.apply();
-
-                    // Cerrar sesión al borrar cuenta
                     activity.runOnUiThread(() -> {
-                        if (activity instanceof ProfileActivity) {
-                            ((ProfileActivity) activity).signOutFromGoogle(activity);
-                        } else {
-                            Log.e(TAG, "No es una ProfileActivity. No se puede cerrar sesión.");
-                        }
+                        // Limpiar datos locales
+                        SharedPreferences prefs = activity.getSharedPreferences("userPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.clear();
+                        editor.apply();
+
+                        // Redirigir a LoginActivity
+                        Toast.makeText(activity, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(activity, LoginActivity.class);
+                        activity.startActivity(intent);
+                        activity.finish();
                     });
 
                 } else {
@@ -159,6 +168,5 @@ public class ApiRequests {
             }
         }).start();
     }
-
 
 }

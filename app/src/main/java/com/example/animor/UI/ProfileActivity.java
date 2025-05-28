@@ -43,9 +43,9 @@ public class ProfileActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
         String nombre = prefs.getString("nombreUsuario", "No logueado");
         String email = prefs.getString("email", "No logueado");
+        String deviceToken = prefs.getString("device-token", "No logueado");
         Log.d("nombre:", nombre);
         Log.d("email:", email);
-
 
         navigationView = findViewById(R.id.navigation_view);
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -79,12 +79,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
         btnMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_logout) {
@@ -92,23 +86,18 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.clear(); // Borra todas las claves y valores de este archivo
                 editor.apply();
+                layoutNoLogin.setVisibility(View.VISIBLE);
+
                 Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(this, LoginActivity.class));
                 finish();
             } else if (id == R.id.nav_delete) {
-                new Thread(() -> {
-                    ApiRequests api = new ApiRequests();
-                    api.deleteAccount(this);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.clear(); // Borra todas las claves y valores de este archivo
-                    editor.apply();
-                }).start();
-                Toast.makeText(this, "Cuenta eliminada", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+                ApiRequests api = new ApiRequests();
+                api.deleteAccount(this); // Este método maneja todo (eliminar, cerrar sesión, redirigir, etc.)
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
+
         });
 
 
