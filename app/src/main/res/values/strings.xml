@@ -57,4 +57,6 @@
     <string name="oauth_client_id">804843988448-3u7337ptfpn4221ahnrvlp371tmhac04.apps.googleusercontent.com</string>
     <string name="menu">menu desplegable</string>
     <string name="imagen_del_animal">añade la imagen de tu animal</string>
+    <string name="app_logo">logo de la aplicación: un gato tumbado sobre la palabra \"Animor\"</string>
+    <string name="tabs_navigation">Navegación por pestañas</string>
 </resources>

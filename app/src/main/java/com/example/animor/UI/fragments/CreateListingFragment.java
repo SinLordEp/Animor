@@ -1,4 +1,4 @@
-package com.example.animor.UI;
+package com.example.animor.UI.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,12 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CreateListingFragment extends Fragment {
 

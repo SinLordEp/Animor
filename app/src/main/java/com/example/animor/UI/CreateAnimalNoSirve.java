@@ -25,7 +25,6 @@ import java.util.Locale;
             setContentView(R.layout.activity_create_animal);
 
             // Inicializar componentes
-            etFecha = findViewById(R.id.etFecha);
             calendar = Calendar.getInstance();
             dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 

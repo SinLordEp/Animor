@@ -56,8 +56,8 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                 } else if (id == R.id.nav_favs) {
                     startActivity(new Intent(InicioActivity.this, FavActivity.class));
                     return true;
-                } else if (id == R.id.registrar) {
-                    startActivity(new Intent(InicioActivity.this, RegistryActivity.class));
+                } else if (id == R.id.nav_listing) {
+                    startActivity(new Intent(InicioActivity.this, CreateActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {
                     startActivity(new Intent(InicioActivity.this, ProfileActivity.class));

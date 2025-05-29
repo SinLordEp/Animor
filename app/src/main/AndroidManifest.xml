@@ -35,6 +35,8 @@
         <activity android:name=".UI.MyregistriesActivity"/>
         <activity android:name=".UI.RegistryActivity"/>
         <activity android:name=".UI.ProfileActivity"/>
+        <activity android:name=".UI.CreateActivity"/>
+
 
 
 

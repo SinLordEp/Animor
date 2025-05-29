@@ -55,8 +55,8 @@ public class FavActivity extends AppCompatActivity {
                     return true;
                 } else if (id == R.id.nav_favs) {
                     return true;
-                } else if (id == R.id.registrar) {
-                    startActivity(new Intent(FavActivity.this, RegistryActivity.class));
+                } else if (id == R.id.nav_listing) {
+                    startActivity(new Intent(FavActivity.this, CreateActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {
                     startActivity(new Intent(FavActivity.this, ProfileActivity.class));

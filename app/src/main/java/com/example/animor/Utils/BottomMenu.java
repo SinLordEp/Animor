@@ -2,13 +2,9 @@ package com.example.animor.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.view.MenuItem;
-
-import androidx.annotation.NonNull;
 
 import com.example.animor.R;
 import com.example.animor.UI.FavActivity;
-import com.example.animor.UI.InicioActivity;
 import com.example.animor.UI.MyAnimalsActivity;
 import com.example.animor.UI.ProfileActivity;
 import com.example.animor.UI.RegistryActivity;
@@ -25,7 +21,7 @@ public class BottomMenu {
                 } else if (id == R.id.nav_favs) {
                     activity.startActivity(new Intent(activity, FavActivity.class));
                     return true;
-                } else if (id == R.id.registrar) {
+                } else if (id == R.id.nav_listing) {
                     activity.startActivity(new Intent(activity, RegistryActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {

@@ -20,9 +20,7 @@ import androidx.core.view.GravityCompat;
 
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
         TableRow dataRow = findViewById(R.id.dataRow);
         Button btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
 // Lógica: ¿hay datos de usuario?
-        if (nombre == null || email == null) {
+        if (nombre.equals("No logueado")|| email.equals("No logueado")) {
             // NO hay datos: mostrar el botón
             layoutNoLogin.setVisibility(View.VISIBLE);
             dataRow.setVisibility(View.GONE);
@@ -102,7 +100,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_favs);
+        bottomNavigationView.setSelectedItemId(R.id.nav_user);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
@@ -112,8 +110,8 @@ public class ProfileActivity extends AppCompatActivity {
             } else if (id == R.id.nav_favs) {
                 startActivity(new Intent(ProfileActivity.this, FavActivity.class));
                 return true;
-            } else if (id == R.id.registrar) {
-                startActivity(new Intent(ProfileActivity.this, RegistryActivity.class));
+            } else if (id == R.id.nav_listing) {
+                startActivity(new Intent(ProfileActivity.this, CreateActivity.class));
                 return true;
             } else if (id == R.id.nav_user) {
                 return true;

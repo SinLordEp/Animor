@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.animor.UI.CreateAnimalFragment;
-import com.example.animor.UI.CreateListingFragment;
+import com.example.animor.UI.fragments.CreateAnimalFragment;
+import com.example.animor.UI.fragments.CreateListingFragment;
 
 public class TabsAdapter extends FragmentStateAdapter {
     public TabsAdapter(@NonNull FragmentActivity fragmentActivity) {

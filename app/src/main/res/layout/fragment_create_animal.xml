@@ -17,6 +17,7 @@
 
         <!-- Imagen del animal -->
         <LinearLayout
+            android:id="@+id/layoutcard"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -77,7 +78,7 @@
             android:inputType="textPersonName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="card"
+            app:layout_constraintTop_toBottomOf="@+id/layoutcard"
             tools:layout_editor_absoluteY="168dp" />
 
         <!-- Especie -->

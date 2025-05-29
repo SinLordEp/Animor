@@ -17,7 +17,7 @@ public class MyAnimalsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_animals);
         // Configurar navegación inferior
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_inicio); // marcar como activo
+        bottomNavigationView.setSelectedItemId(R.id.nav_animals); // marcar como activo
 
         bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
@@ -30,8 +30,8 @@ public class MyAnimalsActivity extends AppCompatActivity {
                 } else if (id == R.id.nav_favs) {
                     startActivity(new Intent(MyAnimalsActivity.this, FavActivity.class));
                     return true;
-                } else if (id == R.id.registrar) {
-                    startActivity(new Intent(MyAnimalsActivity.this, RegistryActivity.class));
+                } else if (id == R.id.nav_listing) {
+                    startActivity(new Intent(MyAnimalsActivity.this, CreateActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {
                     startActivity(new Intent(MyAnimalsActivity.this, ProfileActivity.class));
