@@ -6,6 +6,7 @@ credentials = "1.5.0"
 firebaseBom = "33.14.0"
 googleid = "1.1.1"
 googleMaterial = "1.11.0"
+googleMaterialVersion = "1.6.0"
 googlePlayServicesAuth = "21.1.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -40,6 +41,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 material-v1110 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
+material-v160 = { module = "com.google.android.material:material", version.ref = "googleMaterialVersion" }
 picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
 play-services-auth-v2070 = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuthVersion" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }

@@ -3,6 +3,7 @@ package com.example.animor.UI;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -59,10 +60,10 @@ public class FavActivity extends AppCompatActivity {
                     startActivity(new Intent(FavActivity.this, CreateActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {
-                    startActivity(new Intent(FavActivity.this, ProfileActivity.class));
+                    startActivity(new Intent(FavActivity.this, UserActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
-                    startActivity(new Intent(FavActivity.this, MyAnimalsActivity.class));
+                    startActivity(new Intent(FavActivity.this, ShowActivity.class));
                     return true;
                 }
                 return false;

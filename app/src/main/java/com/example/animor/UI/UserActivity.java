@@ -25,7 +25,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class ProfileActivity extends AppCompatActivity {
+public class UserActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ImageButton btnMenu;
@@ -63,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             btnIniciarSesion.setOnClickListener(v -> {
                 // Redirige a LoginActivity
-                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                Intent intent = new Intent(UserActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
             });
@@ -105,18 +105,18 @@ public class ProfileActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_inicio) {
-                startActivity(new Intent(ProfileActivity.this, InicioActivity.class));
+                startActivity(new Intent(UserActivity.this, InicioActivity.class));
                 return true;
             } else if (id == R.id.nav_favs) {
-                startActivity(new Intent(ProfileActivity.this, FavActivity.class));
+                startActivity(new Intent(UserActivity.this, FavActivity.class));
                 return true;
             } else if (id == R.id.nav_listing) {
-                startActivity(new Intent(ProfileActivity.this, CreateActivity.class));
+                startActivity(new Intent(UserActivity.this, CreateActivity.class));
                 return true;
             } else if (id == R.id.nav_user) {
                 return true;
             } else if (id == R.id.nav_animals) {
-                startActivity(new Intent(ProfileActivity.this, MyAnimalsActivity.class));
+                startActivity(new Intent(UserActivity.this, ShowActivity.class));
                 return true;
             }
             return false;

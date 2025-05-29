@@ -177,7 +177,7 @@
 
         <!-- Tamaño -->
         <EditText
-            android:id="@+id/etTamaño"
+            android:id="@+id/etTamano"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:hint="Tamaño (ej. 25kg, grande)"
@@ -196,7 +196,7 @@
             android:inputType="textMultiLine"
             android:minLines="3"
             android:gravity="top|start"
-            app:layout_constraintTop_toBottomOf="@id/etTamaño"
+            app:layout_constraintTop_toBottomOf="@id/etTamano"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
@@ -223,6 +223,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Guardar animal"
+            android:layout_marginTop="10dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/etMicrochip"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

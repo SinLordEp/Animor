@@ -2,8 +2,6 @@ package com.example.animor.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import static androidx.core.content.ContextCompat.startActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,8 +10,6 @@ import android.widget.Toast;
 
 import com.example.animor.Model.User;
 import com.example.animor.UI.LoginActivity;
-import com.example.animor.UI.MyAnimalsActivity;
-import com.example.animor.UI.ProfileActivity;
 
 import org.json.JSONObject;
 

@@ -60,10 +60,10 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                     startActivity(new Intent(InicioActivity.this, CreateActivity.class));
                     return true;
                 } else if (id == R.id.nav_user) {
-                    startActivity(new Intent(InicioActivity.this, ProfileActivity.class));
+                    startActivity(new Intent(InicioActivity.this, UserActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
-                    startActivity(new Intent(InicioActivity.this, MyAnimalsActivity.class));
+                    startActivity(new Intent(InicioActivity.this, CreateActivity.class));
                     return true;
                 }
 
@@ -89,7 +89,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
 
-        Intent intent = new Intent(this, AnimalActivity.class);
+        Intent intent = new Intent(this, CreateActivity.class);
         intent.putExtra("ANIMAL_OBJECT", animal);
         startActivity(intent);
     }

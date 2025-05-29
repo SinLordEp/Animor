@@ -14,13 +14,12 @@ import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.Utils.AnimalAdapter;
 
-public class CreateListingFragment extends Fragment {
+public class ShowListingFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private Button crearAnimalButton;
     private AnimalAdapter adapter;
 
-    public CreateListingFragment() {
+    public ShowListingFragment() {
         // Constructor vacío requerido
     }
 
@@ -30,17 +29,11 @@ public class CreateListingFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_listing, container, false);
 
         recyclerView = view.findViewById(R.id.rvAnimalesUsuario);
-        crearAnimalButton = view.findViewById(R.id.btnCrearNuevoAnimal);
-        crearAnimalButton.setOnClickListener(v -> {
-            if (getActivity() instanceof CreateActivity) {
-                ((CreateActivity) getActivity()).goToTab(0); // pestaña 2 = índice 1
-            }
-        });
 
         // Configurar RecyclerView en horizontal
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
-       // adapter = new AnimalAdapter(getAnimalesDelUsuario());
+        // adapter = new AnimalAdapter(getAnimalesDelUsuario());
         recyclerView.setAdapter(adapter);
 
 //        crearAnimalButton.setOnClickListener(v -> {

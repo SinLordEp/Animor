@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigation">
+        android:layout_marginBottom="20dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:layout_marginTop="10dp">
+            android:padding="16dp">
 
             <!-- Imagen del animal -->
             <LinearLayout
-                android:id="@+id/linearCard"
+                android:id="@+id/layoutcard"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -50,8 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintTop_toBottomOf="parent">
+                    android:layout_marginStart="8dp">
 
                     <TextView
                         android:id="@+id/textView4"
@@ -82,7 +78,8 @@
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/linearCard" />
+                app:layout_constraintTop_toBottomOf="@+id/layoutcard"
+                tools:layout_editor_absoluteY="168dp" />
 
             <!-- Especie -->
             <EditText
@@ -180,7 +177,7 @@
 
             <!-- Tamaño -->
             <EditText
-                android:id="@+id/etTamaño"
+                android:id="@+id/etTamano"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:hint="Tamaño (ej. 25kg, grande)"
@@ -199,7 +196,7 @@
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:gravity="top|start"
-                app:layout_constraintTop_toBottomOf="@id/etTamaño"
+                app:layout_constraintTop_toBottomOf="@id/etTamano"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="8dp" />
@@ -230,16 +227,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:background="@color/primarytwo"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

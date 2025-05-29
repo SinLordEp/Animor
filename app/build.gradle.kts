@@ -63,4 +63,5 @@ dependencies {
 //tabLayout
     implementation(libs.viewpager2)
     implementation(libs.material.v1110) // o la última versión
+
 }

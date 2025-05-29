@@ -13,8 +13,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-public class CreateActivity extends AppCompatActivity {
-    private static final String TAG = "CreateActivity";
+public class ShowActivity extends AppCompatActivity {
+    private static final String TAG = "ShowActivity";
+    private TabLayout tabLayout;
     private ViewPager2 viewPager;
 
     @Override
@@ -25,7 +26,7 @@ public class CreateActivity extends AppCompatActivity {
 
         // Usar las variables de instancia, no crear variables locales
         viewPager = findViewById(R.id.viewPager);
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        tabLayout = findViewById(R.id.tabLayout);
 
         if (viewPager == null || tabLayout == null) {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");
@@ -37,9 +38,9 @@ public class CreateActivity extends AppCompatActivity {
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             if (position == 0) {
-                tab.setText("Crear Animal");
+                tab.setText("Ver mis animales");
             } else {
-                tab.setText("Registrar para Adopción");
+                tab.setText("Ver mis registros");
             }
         }).attach();
 
@@ -49,31 +50,26 @@ public class CreateActivity extends AppCompatActivity {
             return;
         }
 
-        bottomNavigationView.setSelectedItemId(R.id.nav_listing);
+        bottomNavigationView.setSelectedItemId(R.id.nav_animals);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_inicio) {
-                startActivity(new Intent(CreateActivity.this, InicioActivity.class));
+                startActivity(new Intent(ShowActivity.this, InicioActivity.class));
                 return true;
             } else if (id == R.id.nav_favs) {
-                startActivity(new Intent(CreateActivity.this, FavActivity.class));
+                startActivity(new Intent(ShowActivity.this, FavActivity.class));
                 return true;
             } else if (id == R.id.nav_listing) {
+                startActivity(new Intent(ShowActivity.this, CreateActivity.class));
                 return true;
             } else if (id == R.id.nav_user) {
-                startActivity(new Intent(CreateActivity.this, UserActivity.class));
+                startActivity(new Intent(ShowActivity.this, UserActivity.class));
                 return true;
-            } else if (id == R.id.nav_animals) {
-                startActivity(new Intent(CreateActivity.this, ShowActivity.class));
-                return true;
-            }
-            return false;
+            } else return id == R.id.nav_animals;
         });
 
         Log.d(TAG, "onCreate completed successfully");
     }
-    public void goToTab(int index) {
-        viewPager.setCurrentItem(index, true);
-    }
+
 }

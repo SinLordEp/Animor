@@ -29,19 +29,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".UI.InicioActivity"/>
-        <activity android:name=".UI.CreateAnimalNoSirve"/>
-        <activity android:name=".UI.MyAnimalsActivity"/>
+        <activity android:name=".UI.ShowActivity"/>
         <activity android:name=".UI.FavActivity"/>
         <activity android:name=".UI.MyregistriesActivity"/>
         <activity android:name=".UI.RegistryActivity"/>
-        <activity android:name=".UI.ProfileActivity"/>
+        <activity android:name=".UI.UserActivity"/>
         <activity android:name=".UI.CreateActivity"/>
-
-
-
-
-
-
 
     </application>
 
