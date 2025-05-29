@@ -23,42 +23,17 @@
             app:srcCompat="@drawable/logoanimor" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/centerLayout"
+
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:elevation="10dp"
-        android:orientation="vertical"
+        android:layout_margin="16dp"
+        android:background="@drawable/border"
+        app:layout_constraintTop_toBottomOf="@id/linearLayoutTop"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
-        app:layout_constraintTop_toBottomOf="@id/linearLayoutTop">
-
-        <TextView
-            android:id="@+id/textViewTitulo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp"
-            android:text="INICIO"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewAnimals"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/border"
-            android:contentDescription="@string/lista_de_animales"
-            android:padding="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
-    </LinearLayout>
+        />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

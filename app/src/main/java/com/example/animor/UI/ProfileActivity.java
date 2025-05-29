@@ -110,12 +110,12 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, InicioActivity.class));
                 return true;
             } else if (id == R.id.nav_favs) {
+                startActivity(new Intent(ProfileActivity.this, FavActivity.class));
                 return true;
             } else if (id == R.id.registrar) {
                 startActivity(new Intent(ProfileActivity.this, RegistryActivity.class));
                 return true;
             } else if (id == R.id.nav_user) {
-                startActivity(new Intent(ProfileActivity.this, ProfileActivity.class));
                 return true;
             } else if (id == R.id.nav_animals) {
                 startActivity(new Intent(ProfileActivity.this, MyAnimalsActivity.class));

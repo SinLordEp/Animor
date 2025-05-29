@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-    public class CreateAnimalActivity extends AppCompatActivity {
+    public class CreateAnimalNoSirve extends AppCompatActivity {
 
         private EditText etFecha;
         private Calendar calendar;

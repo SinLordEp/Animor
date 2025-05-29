@@ -58,8 +58,9 @@ dependencies {
 // Testing
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    //picasso imgs
+//picasso imgs
     implementation(libs.picasso)
-
+//tabLayout
+    implementation(libs.viewpager2)
+    implementation(libs.material.v1110) // o la última versión
 }

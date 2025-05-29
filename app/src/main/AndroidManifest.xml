@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
 
     <application
         android:name=".App.MyApplication"
@@ -27,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".UI.InicioActivity"/>
-        <activity android:name=".UI.CreateAnimalActivity"/>
+        <activity android:name=".UI.CreateAnimalNoSirve"/>
         <activity android:name=".UI.MyAnimalsActivity"/>
         <activity android:name=".UI.FavActivity"/>
         <activity android:name=".UI.MyregistriesActivity"/>

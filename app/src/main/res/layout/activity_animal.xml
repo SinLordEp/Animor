@@ -235,53 +235,6 @@
                 android:textStyle="bold" />
 
         </TableRow>
-        <!-- Historial Médico -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/textViewMedicalHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:paddingStart="30dp"
-                android:paddingTop="30dp"
-                android:paddingEnd="0dp"
-                android:text="Historial Médico"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonMedicalHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Ver historial" />
-        </TableRow>
-
-        <!-- Historial de Adopciones -->
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/textViewAdoptionHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="end"
-                android:paddingStart="30dp"
-                android:paddingTop="30dp"
-                android:paddingEnd="0dp"
-                android:text="Historial de Adopciones"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/buttonAdoptionHistory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Ver historial" />
-        </TableRow>
 
     </TableLayout>
     <LinearLayout
@@ -361,12 +314,12 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="130dp"
         android:background="@color/primarytwo"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

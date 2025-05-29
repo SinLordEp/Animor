@@ -25,7 +25,8 @@ public class MyAnimalsActivity extends AppCompatActivity {
                 int id = item.getItemId();
 
                 if (id == R.id.nav_inicio) {
-                    return true; // Ya estamos en esta actividad
+                    startActivity(new Intent(MyAnimalsActivity.this, InicioActivity.class));
+                    return true;
                 } else if (id == R.id.nav_favs) {
                     startActivity(new Intent(MyAnimalsActivity.this, FavActivity.class));
                     return true;
@@ -36,7 +37,6 @@ public class MyAnimalsActivity extends AppCompatActivity {
                     startActivity(new Intent(MyAnimalsActivity.this, ProfileActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
-                    startActivity(new Intent(MyAnimalsActivity.this, MyAnimalsActivity.class));
                     return true;
                 }
 
