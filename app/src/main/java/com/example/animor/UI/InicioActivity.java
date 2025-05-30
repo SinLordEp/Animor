@@ -81,8 +81,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
     public void onAnimalClick(Animal animal) {
         String mensaje = String.format("%s - %s\nEdad: %s años\nTamaño: %s\n%s",
                 animal.getName(),
-                animal.getSex() == Animal.Sex.MALE ? "Macho" :
-                        animal.getSex() == Animal.Sex.FEMALE ? "Hembra" : "Desconocido",
+                animal.getSex(),
                 calcularEdad(animal.getBirthDate()),
                 animal.getSize(),
                 Boolean.TRUE.equals(animal.getIsAdopted()) ? "Adoptado" : "Disponible");

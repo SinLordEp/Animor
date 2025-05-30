@@ -1,8 +1,10 @@
 package com.example.animor.UI;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -16,6 +18,11 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class CreateActivity extends AppCompatActivity {
     private static final String TAG = "CreateActivity";
     private ViewPager2 viewPager;
+    private static final int IMAGE_PICK_REQUEST = 100;
+    private Uri imageUri;
+
+    // Eliminar esta línea problemática:
+    // Button subirImagenBtn = findViewById(R.id.btnSeleccionarImagen);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +80,7 @@ public class CreateActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate completed successfully");
     }
+
     public void goToTab(int index) {
         viewPager.setCurrentItem(index, true);
     }

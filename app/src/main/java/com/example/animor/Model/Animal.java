@@ -11,46 +11,54 @@ public class Animal implements Serializable {
     @JsonProperty("animal_id")
     private Integer animalId;
     @JsonProperty("animal_name")
-    private String name;
+    private String Name;
     @JsonProperty("species_id")
     private Integer speciesId;
     @JsonProperty("birth_date")
     private LocalDate birthDate;
+    @JsonProperty("is_birth_date_estimated")
     private Boolean isBirthDateEstimated;
-    private String town;
 
-    private Sex sex;
+    private String town;
+    @JsonProperty("sex")
+    private String sex;
+    @JsonProperty("size")
     private String size;
+    @JsonProperty("animal_description")
     private String animalDescription;
     String image;
+    @JsonProperty("is_neutered")
     private Boolean isNeutered;
+    @JsonProperty("microchip_number")
     private String microchipNumber;
+    @JsonProperty("created_at")
     private LocalDateTime createdAt;
+    @JsonProperty("is_adopted")
     private Boolean isAdopted;
-
-    // Enumeración para el campo sex
-    public enum Sex {
-        MALE, FEMALE, UNKNOWN
-    }
 
     // Constructor vacío
     public Animal() {
     }
 
-    public Animal(String name, Sex sex, String town, Integer speciesId, String image) {
-        this.name = name;
-        this.town = town;
-        this.sex = sex;
+    public Animal(String Name, Integer speciesId, LocalDate birthDate, Boolean isBirthDateEstimated, String sex, String size, String animalDescription, Boolean isNeutered, String microchipNumber, Boolean isAdopted) {
+        this.Name = Name;
         this.speciesId = speciesId;
-        this.image = image;
+        this.birthDate = birthDate;
+        this.isBirthDateEstimated = isBirthDateEstimated;
+        this.sex = sex;
+        this.size = size;
+        this.animalDescription = animalDescription;
+        this.isNeutered = isNeutered;
+        this.microchipNumber = microchipNumber;
+        this.isAdopted = isAdopted;
     }
 
     // Constructor con todos los campos excepto ID (para inserciones)
-    public Animal(String name, Integer speciesId, LocalDate birthDate,
-                  Boolean isBirthDateEstimated, Sex sex, String town, String size,
+    public Animal(String Name, Integer speciesId, LocalDate birthDate,
+                  Boolean isBirthDateEstimated, String sex, String town, String size,
                   String animalDescription, Boolean isNeutered,
                   String microchipNumber, Boolean isAdopted) {
-        this.name = name;
+        this.Name = Name;
         this.speciesId = speciesId;
         this.birthDate = birthDate;
         this.isBirthDateEstimated = isBirthDateEstimated;
@@ -89,11 +97,11 @@ public class Animal implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.Name = name;
     }
 
     public Integer getSpeciesId() {
@@ -120,11 +128,20 @@ public class Animal implements Serializable {
         this.isBirthDateEstimated = isBirthDateEstimated;
     }
 
-    public Sex getSex() {
+    public String getSex() {
+        if (sex.equals("Male")) {
+            sex = "macho";
+        }
+        if (sex.equals("Female")){
+            sex = "hembra";
+        }
+        if(sex.equals("Unkown")){
+            sex = "desconocido";
+        }
         return sex;
     }
 
-    public void setSex(Sex sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
@@ -181,7 +198,7 @@ public class Animal implements Serializable {
     public String toString() {
         return "Animal{" +
                 "animalId=" + animalId +
-                ", animalName='" + name + '\'' +
+                ", animalName='" + Name + '\'' +
                 ", speciesId=" + speciesId +
                 ", birthDate=" + birthDate +
                 ", isBirthDateEstimated=" + isBirthDateEstimated +

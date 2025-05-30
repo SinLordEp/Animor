@@ -8,11 +8,15 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.animor.Model.Animal;
 import com.example.animor.Model.User;
 import com.example.animor.UI.LoginActivity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import okhttp3.*;
 
@@ -69,7 +73,7 @@ public class ApiRequests {
                         + " | Respuesta: " + response.body().string());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error en la solicitud: ", e);
+            Log.e(TAG, "Error en la solicitud: es posible que el servidor no esté conectado", e);
         }
         return null;
     }
@@ -164,5 +168,70 @@ public class ApiRequests {
             }
         }).start();
     }
+    public void addAnimalIntoDatabase(Animal animal) {
 
+        String url = "https://www.animor.es/animal/add-animal";
+        // 1. Crear el objeto JSON anidado
+        JSONObject animalJson = new JSONObject();
+        try {
+            animalJson.put("animal_name", animal.getName());
+            animalJson.put("species_id", animal.getSpeciesId());
+            animalJson.put("birth_date", animal.getBirthDate());
+            animalJson.put("is_birth_date_estimated", animal.getIsBirthDateEstimated());
+            animalJson.put("sex", animal.getSex());
+            animalJson.put("size", animal.getSize());
+            animalJson.put("animal_description", animal.getAnimalDescription());
+            animalJson.put("is_neutered", animal.getIsNeutered());
+            animalJson.put("microchip_number", animal.getMicrochipNumber());
+            animalJson.put("is_adopted", animal.getIsAdopted());
+        } catch (JSONException e) {
+            System.out.println("Error de tipo json: "+e.getMessage());
+        }
+
+
+        // 2. Envolver en un JSON superior con clave "animal"
+        JSONObject requestBodyJson = new JSONObject();
+        try {
+            requestBodyJson.put("animal", animalJson);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 3. Crear el RequestBody en formato JSON
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(requestBodyJson.toString(), JSON);
+
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .post(body)
+                .build();
+
+        Log.d(TAG, "PETICIÓN ENVIADA: " + request.toString());
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                String respuesta = response.body().string();
+                Log.d(TAG, "Respuesta del servidor al enviar animal: " + respuesta);
+                JSONObject jsonObject = new JSONObject(respuesta);
+                //JSONObject data = jsonObject.getJSONObject("data");
+            } else {
+                assert response.body() != null;
+                Log.e(TAG, "Error guardando animal en el servidor: " + response.code()
+                        + " | Respuesta: " + response.body().string());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error al guardar animal: ", e);
+        }
+
+    }
+    public List askForSpeciesToDatabase() {
+
+        String url = "https://www.animor.es/animal/species/all";
+
+        return java.util.Collections.emptyList();
+    }
 }

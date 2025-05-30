@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.cardview)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
 
 // Firebase
@@ -47,6 +48,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.appcheck.playintegrity)
+    implementation (libs.firebase.storage.v2030)
 
 // Google Auth
     implementation(libs.play.services.auth.v2070)
