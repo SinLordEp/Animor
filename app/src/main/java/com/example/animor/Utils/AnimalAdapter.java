@@ -31,7 +31,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     @Override
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
-        holder.txtName.setText(animal.getName());
+        holder.txtName.setText(animal.getAnimalName());
         holder.txtCity.setText(animal.getTown());
         holder.txtSpecies.setText(animal.getSpeciesId());
         holder.txtSex.setText(animal.getSex().toString());  // getSex() es enum, lo convierto a string

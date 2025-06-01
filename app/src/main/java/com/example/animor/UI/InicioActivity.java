@@ -80,7 +80,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
     @Override
     public void onAnimalClick(Animal animal) {
         String mensaje = String.format("%s - %s\nEdad: %s años\nTamaño: %s\n%s",
-                animal.getName(),
+                animal.getAnimalName(),
                 animal.getSex(),
                 calcularEdad(animal.getBirthDate()),
                 animal.getSize(),

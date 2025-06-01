@@ -7,13 +7,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -24,6 +28,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.animor.Model.Animal;
+import com.example.animor.Model.AnimalPhoto;
+import com.example.animor.Model.Tag;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.google.firebase.storage.FirebaseStorage;
@@ -31,8 +37,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class CreateAnimalFragment extends Fragment {
 
@@ -48,7 +55,7 @@ public class CreateAnimalFragment extends Fragment {
     private Uri imagenSeleccionadaUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private String imageDownloadUrl; // Para guardar la URL de descarga
+    private static String imageDownloadUrl; // Para guardar la URL de descarga
     private boolean imagenPendienteSubir = false; // Flag para saber si hay imagen por subir
 
     // Componentes de la UI
@@ -59,7 +66,13 @@ public class CreateAnimalFragment extends Fragment {
     private ImageView imgAnimal;
     private Button btnSeleccionarImagen;
     private Button btnGuardar;
-    LocalDate birthDate;
+    private ListView listTags;
+    static LocalDate birthDate;
+
+    static String sex = "";
+    ApiRequests api = new ApiRequests();
+    ArrayList<Tag> selectedTags = new ArrayList<>();
+
 
     @Nullable
     @Override
@@ -75,7 +88,6 @@ public class CreateAnimalFragment extends Fragment {
 
         // Inicializar formateador de fecha
         calendar = Calendar.getInstance();
-        dateFormatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
         // Inicializar Firebase Storage
         storage = FirebaseStorage.getInstance();
@@ -94,7 +106,7 @@ public class CreateAnimalFragment extends Fragment {
     private void initViews(View view) {
         // EditTexts
         etNombre = view.findViewById(R.id.etNombre);
-        etEspecie = view.findViewById(R.id.etEspecie);
+      //  etEspecie = view.findViewById(R.id.etEspecie);
         etFechaNacimiento = view.findViewById(R.id.etFechaNacimiento);
         etTamano = view.findViewById(R.id.etTamano);
         etDescripcion = view.findViewById(R.id.etDescripcion);
@@ -115,6 +127,16 @@ public class CreateAnimalFragment extends Fragment {
         btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
         btnGuardar = view.findViewById(R.id.buttonSave);
         btnGuardar.setVisibility(View.VISIBLE);
+        listTags = view.findViewById(R.id.listTags);
+        listTags.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            ArrayList<Tag> receivedTags = api.askForTagsToDatabase();
+            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
+            requireActivity().runOnUiThread(() -> {
+                listTags.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                listTags.setAdapter(adapter);
+            });
+        }).start();
     }
 
     private void setupListeners() {
@@ -127,6 +149,14 @@ public class CreateAnimalFragment extends Fragment {
         // Listener para guardar
         btnGuardar.setOnClickListener(v -> {
             saveAnimal();
+        });
+        listTags.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
+                String items= String.valueOf(adapterView.getItemAtPosition(i));
+                Tag tag = new Tag(items);
+                selectedTags.add(tag);
+            }
         });
     }
 
@@ -165,7 +195,6 @@ public class CreateAnimalFragment extends Fragment {
                         // Android <13: Solo necesitamos READ_EXTERNAL_STORAGE
                         permisoEsencialConcedido = Boolean.TRUE.equals(result.get(Manifest.permission.READ_EXTERNAL_STORAGE));
                     }
-
                     if (permisoEsencialConcedido) {
                         abrirGaleria();
                     } else {
@@ -194,7 +223,8 @@ public class CreateAnimalFragment extends Fragment {
                     etFechaNacimiento.setText(fechaNacimiento.toString());
 
                     // Si quieres guardar el LocalDate para usarlo luego:
-                    LocalDate birthDate = fechaNacimiento;
+                    birthDate = fechaNacimiento;
+
                 },
                 year, month, day
         );
@@ -279,10 +309,10 @@ public class CreateAnimalFragment extends Fragment {
             isValid = false;
         }
 
-        if (etEspecie.getText().toString().trim().isEmpty()) {
-            etEspecie.setError("Especie requerida");
-            isValid = false;
-        }
+//        if (etEspecie.getText().toString().trim().isEmpty()) {
+//            etEspecie.setError("Especie requerida");
+//            isValid = false;
+//        }
 
         if (etFechaNacimiento.getText().toString().trim().isEmpty()) {
             etFechaNacimiento.setError("Fecha de nacimiento requerida");
@@ -312,14 +342,11 @@ public class CreateAnimalFragment extends Fragment {
         // Mostrar mensaje de que se está guardando
         btnGuardar.setEnabled(false);
         btnGuardar.setText("Guardando...");
+        guardarDatosAnimal();
 
         // Si hay una imagen seleccionada, subirla primero
         if (imagenPendienteSubir && imagenSeleccionadaUri != null) {
             subirImagenAFirebase(imagenSeleccionadaUri, this::guardarDatosAnimal);
-        } else {
-            // Si no hay imagen, guardar directamente con imagen nula
-            imageDownloadUrl = null; // Asegurarse que es null cuando no hay imagen
-            guardarDatosAnimal();
         }
     }
 
@@ -328,10 +355,9 @@ public class CreateAnimalFragment extends Fragment {
         // Obtener datos del formulario
         String name = etNombre.getText().toString().trim();
         //String speciesId = etEspecie.getText().toString().trim();
-        //LocalDate birthDate = etFechaNacimiento.getText().toString().trim();
+        //LocalDate birthDate = LocalDate.parse(etFechaNacimiento.getText().toString().trim());
         boolean isBirthDateEstimated = cbNacimientoAproximado.isChecked();
 
-        String sex = "";
         int selectedId = rgSexo.getCheckedRadioButtonId();
         if (selectedId == R.id.rbMacho) {
             sex = "Male";
@@ -340,6 +366,7 @@ public class CreateAnimalFragment extends Fragment {
         } else if (selectedId == R.id.rbDesconocido) {
             sex = "Unknown";
         }
+        Log.d("sexo del animal", sex);
 
         String size = etTamano.getText().toString().trim();
         String animalDescription = etDescripcion.getText().toString().trim();
@@ -355,23 +382,60 @@ public class CreateAnimalFragment extends Fragment {
         //
         // Luego guardar en tu base de datos (Firebase Realtime Database o Firestore)
         // databaseReference.child("animales").push().setValue(animal);
-
         // Restablecer el botón
         btnGuardar.setEnabled(true);
         btnGuardar.setText("Guardar");
-        Animal animal = new Animal(name, speciesId, birthDate, isBirthDateEstimated, sex, size, animalDescription, isNeutered, microchip, isAdopted);
-        new Thread(() -> {
-            ApiRequests api = new ApiRequests();
-            api.addAnimalIntoDatabase(animal);
-        }).start();
+        Animal animal = new Animal();
+        animal.setAnimalId(0);
+        animal.setAnimalName(name);
+        animal.setSpeciesId(1);
+        animal.setBirthDate(birthDate);
+        animal.setIsBirthDateEstimated(isBirthDateEstimated);
+        animal.setSex(sex);
+        animal.setSize(size);
+        animal.setAnimalDescription(animalDescription);
+        animal.setIsNeutered(isNeutered);
+        animal.setMicrochipNumber(microchip);
+        animal.setCreatedAt(LocalDateTime.now());
+        animal.setIsAdopted(isAdopted);
+        animal.setTagList(selectedTags);
+        Thread thread = getThread(animal);
+        try {
+            thread.join();
+            // Código que se ejecutará después que el hilo haya terminado
+        } catch (InterruptedException e) {
+            System.out.println("Problema de ejecución del hilo:"+e.getMessage());
+        }
         Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
         clearForm();
+    }
+
+    @NonNull
+    private Thread getThread(Animal animal) {
+        AnimalPhoto animalPhoto = new AnimalPhoto();
+        animalPhoto.setPhotoId(0);
+        animalPhoto.setPhotoUrl(imageDownloadUrl);
+        animalPhoto.setIsCoverPhoto(true);
+        animalPhoto.setDisplayOrder(0);
+        animalPhoto.setFilePath(imageDownloadUrl);
+        ArrayList<AnimalPhoto> animalPhotos = new ArrayList<>();
+        animal.setAnimalPhotoList(animalPhotos);
+        Thread thread = new Thread(() -> {
+            Long receivedAnimalId = api.addAnimalIntoDatabase(animal);
+            if (receivedAnimalId != null) {
+                api.addPhotoIntoDatabase(receivedAnimalId, animalPhoto);
+            }else{
+                System.out.println("No se ha podido recibir el animal id del servidor");
+            }
+        });
+        thread.start();
+        return thread;
     }
 
     // Método para limpiar el formulario
     public void clearForm() {
         etNombre.setText("");
-        etEspecie.setText("");
+       // etEspecie.setText("");
         etFechaNacimiento.setText("");
         cbNacimientoAproximado.setChecked(false);
         rgSexo.clearCheck();

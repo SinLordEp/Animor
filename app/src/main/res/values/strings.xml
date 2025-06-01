@@ -59,4 +59,5 @@
     <string name="imagen_del_animal">añade la imagen de tu animal</string>
     <string name="app_logo">logo de la aplicación: un gato tumbado sobre la palabra \"Animor\"</string>
     <string name="tabs_navigation">Navegación por pestañas</string>
+    <string name="selecciona_opcion">elige la especie</string>
 </resources>
