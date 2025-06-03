@@ -3,7 +3,9 @@ package com.example.animor.UI.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -304,7 +306,9 @@ public class CreateAnimalFragment extends Fragment {
         }
 
 // Crear referencia única para la imagen
-        String fid= MyApplication.getFirebaseInstallationId();
+        SharedPreferences prefs = MyApplication.getAppContext()
+                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE);
+        String fid= prefs.getString(MyApplication.KEY_DEVICE_TOKEN, null);
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
         StorageReference imageRef = storageReference.child("foto/"+fid +"/"+fileName);
         imagePath = imageRef.getPath();

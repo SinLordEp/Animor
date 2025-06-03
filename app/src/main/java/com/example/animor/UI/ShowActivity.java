@@ -70,6 +70,27 @@ public class ShowActivity extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 currentTab = position;
+
+                // Configurar el listener cuando se cargue el fragment de animales
+                if (position == 0) {
+                    // Esperar un poco para que el fragment se cargue completamente
+                    viewPager.post(() -> {
+                        Fragment currentFragment = getSupportFragmentManager()
+                                .findFragmentByTag("f" + position);
+                        if (currentFragment instanceof ShowMyAnimalsFragment) {
+                            ((ShowMyAnimalsFragment) currentFragment).setAnimalSelectedListener(ShowActivity.this);
+                        }
+                    });
+                }
+            }
+        });
+
+        // También configurar el listener para el fragment inicial (posición 0)
+        viewPager.post(() -> {
+            Fragment initialFragment = getSupportFragmentManager()
+                    .findFragmentByTag("f0");
+            if (initialFragment instanceof ShowMyAnimalsFragment) {
+                ((ShowMyAnimalsFragment) initialFragment).setAnimalSelectedListener(this);
             }
         });
     }

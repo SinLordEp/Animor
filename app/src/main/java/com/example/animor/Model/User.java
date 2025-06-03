@@ -1,15 +1,18 @@
 package com.example.animor.Model;
-public class User {
+
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String deviceToken;
     private String userFid;
     private String userName;
     private String email;
-    private String phone;
-
+    private String userPhoto;
     // Constructors, getters and setters
     public User() {}
 
-    public User(String deviceToken, String userFid, String userName, String email) {
+    public User(String deviceToken, String userPhoto, String userFid, String userName, String email) {
+        this.userPhoto = userPhoto;
         this.deviceToken = deviceToken;
         this.userFid = userFid;
         this.userName = userName;
@@ -31,6 +34,12 @@ public class User {
     public void setUserName(String userName) { this.userName = userName; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getUserPhoto() {
+        return userPhoto;
+    }
+
+    public void setUserPhoto(String userPhoto) {
+        this.userPhoto = userPhoto;
+    }
 }

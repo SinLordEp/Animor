@@ -1,6 +1,8 @@
 package com.example.animor.Model;
 
-public enum Sex {
+import java.io.Serializable;
+
+public enum Sex implements Serializable {
     Male("Male"),
     Female("Female"),
     Unknown("Unknown");

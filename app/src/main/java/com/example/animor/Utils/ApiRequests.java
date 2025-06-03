@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Sex;
@@ -16,7 +17,6 @@ import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
 import com.example.animor.Model.User;
 import com.example.animor.UI.LoginActivity;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -42,7 +42,6 @@ public class ApiRequests {
     static String deviceToken;
     static String fidToken;
     static String userToken;
-    Context context;
 
     public ApiRequests() {
         client = new OkHttpClient.Builder()
@@ -56,13 +55,24 @@ public class ApiRequests {
      * Envía el AppCheck Token y el Firebase Installation ID (FID) a tu backend
      * para validar la autenticidad del dispositivo.
      */
-    public String sendFidDeviceToServer(String appCheckToken, String fid) {
+    public void getSharedDeviceId(){
+        deviceToken = MyApplication.getAppContext()
+                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(MyApplication.KEY_DEVICE_TOKEN, null);
+        deviceToken = MyApplication.getAppContext()
+                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE)
+                .getString(MyApplication.KEY_DEVICE_TOKEN, null);
+        System.out.println("DEVICE TOKEN DE SHAREDPREFERENCES:"+ deviceToken);
+    }
+    public ApiResponse sendFidDeviceToServer(String appCheckToken, String fid) {
+        getSharedDeviceId();
         String url = "https://www.animor.es/auth/device-token";
         fidToken = fid;
         RequestBody formBody = new FormBody.Builder()
                 .add("deviceFid", fid)
                 .build();
 
+        Log.d("Appchecktoken para postman", appCheckToken);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Firebase-AppCheck", appCheckToken)
@@ -74,31 +84,50 @@ public class ApiRequests {
                 assert response.body() != null;
                 String cuerpoRespuesta = response.body().string();
                 Log.d(TAG, "Respuesta del servidor: " + cuerpoRespuesta);
-                // Parsear JSON y extraer el campo "data"
-                JSONObject json = new JSONObject(cuerpoRespuesta);
-                Log.d("DEVICE-TOKEN DEL SERVIDOR BUENO", cuerpoRespuesta.toString());
-                if (json.has("data")) {
-                    deviceToken = json.getString("data");
-                    Log.d("DEVICE.TOKEN BUENO", deviceToken);
-                    return deviceToken;
-                } else {
-                    Log.e(TAG, "No se encontró el campo 'data' en la respuesta");
+
+                JSONObject jsonResponse = new JSONObject(cuerpoRespuesta);
+                JSONObject dataObject = jsonResponse.getJSONObject("data");
+
+                // Procesar tags
+                JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
+                ArrayList<Tag> tags = new ArrayList<>();
+                for (int i = 0; i < tagsArray.length(); i++) {
+                    JSONObject tagObject = tagsArray.getJSONObject(i);
+                    Tag tag = new Tag();
+                    tag.setTagId(tagObject.getInt("tagId"));
+                    tag.setTagName(tagObject.getString("tagName"));
+                    tags.add(tag);
                 }
+
+                // Procesar species
+                JSONArray speciesArray = dataObject.getJSONArray("speciesDTOList");
+                ArrayList<Species> speciesList = new ArrayList<>();
+                for (int i = 0; i < speciesArray.length(); i++) {
+                    JSONObject speciesObject = speciesArray.getJSONObject(i);
+                    Species species = new Species();
+                    species.setSpeciesId(speciesObject.getInt("speciesId"));
+                    species.setSpeciesName(speciesObject.getString("name"));
+                    speciesList.add(species);
+                }
+
+                // Preparar respuesta
+                ApiResponse apiResponse = new ApiResponse(speciesList, tags, deviceToken);
+                return apiResponse;
             } else {
                 assert response.body() != null;
-                Log.e(TAG, "Error en la solicitud de token para peticiones: " + response.code()
+                Log.e(TAG, "Error en la solicitud: " + response.code()
                         + " | Respuesta: " + response.body().string());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error en la solicitud: es posible que el servidor no esté conectado", e);
+            Log.e(TAG, "Error en la solicitud: ", e);
         }
         return null;
     }
-
     /**
      * Envía el token de Firebase al backend para autenticar al usuario.
      */
     public User sendUserToServer(String firebaseIdToken) {
+        getSharedDeviceId();
         String url = "https://www.animor.es/auth/firebase-login";
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
@@ -124,7 +153,16 @@ public class ApiRequests {
                 JSONObject data = jsonObject.getJSONObject("data");
                 userToken = data.getString("token");
                 Log.d("USER TOKEN ES ESTO", userToken);
-                return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
+                User user = new User();
+                String userName = data.getString("userName");
+                String email = data.getString("email");
+                String userPhoto = data.getString("photoUrl");
+                user.setUserFid(fidToken);
+                user.setDeviceToken(deviceToken);
+                user.setUserPhoto(userPhoto);
+                user.setEmail(email);
+                user.setUserName(userName);
+                return user;
             } else {
                 assert response.body() != null;
                 Log.e(TAG, "Error en la solicitud de datos de usuario: " + response.code()
@@ -138,12 +176,13 @@ public class ApiRequests {
         return null;
     }
     public void deleteAccount(Activity activity) {
+        getSharedDeviceId();
         String url = "https://www.animor.es/user/delete-account";
 
         Log.d(TAG, "Tokens que se enviarán al servidor: \n Device-token:" + deviceToken + "\n User token: "+ userToken);
 
         if (userToken == null || userToken.trim().isEmpty()){
-            Log.e(TAG, "tokenId es nulo o vacío");
+            Log.e(TAG, "tokenId y/o userToken es nulo o vacío");
             return;
         }
 
@@ -187,7 +226,7 @@ public class ApiRequests {
         }).start();
     }
     public Long addAnimalIntoDatabase(Animal animal) {
-
+        getSharedDeviceId();
         String url = "https://www.animor.es/animal/add-animal";
         RequestBody body = null;
 
@@ -240,6 +279,7 @@ public class ApiRequests {
     }
 
     public void addPhotoIntoDatabase(Long receivedAnimalId, AnimalPhoto animalPhoto) {
+        getSharedDeviceId();
         String url = "https://www.animor.es/animalPhoto/add-photo?animalId=" + receivedAnimalId;
         RequestBody body = null;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -277,47 +317,11 @@ public class ApiRequests {
 
         //return null;
    }
-    public ArrayList<Tag> askForTagsToDatabase() {
-        String url = "https://www.animor.es/tag/all";
-        RequestBody formBody = new FormBody.Builder()
-                .build();
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("X-Device-Token", deviceToken)
-                .get()
-                .build();
-        ArrayList<Tag> tags = null;
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                String respuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
-                JSONObject jsonResponse = new JSONObject(respuesta);
-                JSONArray jsonArray = jsonResponse.getJSONArray("data");
-                tags = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonobject = jsonArray.getJSONObject(i);
-                    Tag tag = new Tag();
-                    tag.setTagName(jsonobject.getString("tagName"));
-                    tag.setTagId(jsonobject.getInt("tagId"));
-                    tags.add(tag);
-                }
-                //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
-            } else {
-                assert response.body() != null;
-                Log.e(TAG, "Error assert recibiendo tags: " + response.code()
-                        + " | Respuesta: " + response.body().string());
-                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error recibiendo tags: ", e);
-        }
-
-        return tags;
-    }
 
     public ArrayList<Animal> askForMyAnimalsToDatabase() {
+        getSharedDeviceId();
         String url = "https://www.animor.es/animal/my-animals";
+        System.out.println("DEVICE TOKEN NULO: "+ deviceToken);
         RequestBody formBody = new FormBody.Builder()
                 .build();
         Request request = new Request.Builder()
@@ -384,7 +388,7 @@ public class ApiRequests {
 
             } else {
                 assert response.body() != null;
-                Log.e(TAG, "Error assert recibiendo tags: " + response.code()
+                Log.e(TAG, "Error assert recibiendo animales: " + response.code()
                         + " | Respuesta: " + response.body().string());
                 //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
             }
@@ -395,6 +399,7 @@ public class ApiRequests {
         return animals;
     }
     public void deleteAnimal(long animalId) {
+        getSharedDeviceId();
         String url = "https://www.animor.es/animal/delete-animal";
         RequestBody formBody = new FormBody.Builder()
                 .build();
@@ -413,7 +418,6 @@ public class ApiRequests {
                 if(jsonResponse.getString("Status").equals("ANIMAL_DELETE_SUCCESS")){
                     Log.d("ApiRequest - Delete animal", "Borrado exitoso");
                 }
-
             } else {
                 assert response.body() != null;
                 Log.e(TAG, "Error assert recibiendo tags: " + response.code()
@@ -426,44 +430,92 @@ public class ApiRequests {
             System.out.println("Error de json: "+ e.getMessage());        }
     }
 
-    public ArrayList<Species> askForSpeciesToDatabase() {
-        String url = "https://www.animor.es/species/all";
-        RequestBody formBody = new FormBody.Builder()
-                .build();
+    public Long addPhotoIntoDatabase(AnimalPhoto animalphoto) {
+        getSharedDeviceId();
+        String url = "https://www.animor.es/animalPhoto/add-photo";
+        RequestBody body = null;
+
+        // 1. Crear el objeto JSON anidado
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // Opcional: no incluir campos null
+
+            Log.d("apirequest", "animal que se va a enviar:"+ animalphoto.toString());
+            String json = objectMapper.writeValueAsString(animalphoto);
+            Log.d("REQUEST_JSON", json);
+            // 3. Crear el RequestBody en formato JSON
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            body = RequestBody.create(json, JSON);
+        } catch (JsonProcessingException e) {
+            System.out.println("Error procesando json: "+e.getMessage());
+            return null;
+        }
+        Log.d("api add animal", body.toString());
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .get()
+                .addHeader("X-User-Token", userToken)
+                .post(body)
                 .build();
-        ArrayList<Species> species = null;
+
+        Log.d(TAG, "PETICIÓN ENVIADA: " + request);
+
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 assert response.body() != null;
                 String respuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                Log.d(TAG, "Respuesta del servidor al enviar animal: " + respuesta);
                 JSONObject jsonResponse = new JSONObject(respuesta);
-                JSONArray jsonArray = jsonResponse.getJSONArray("data");
-                species = new ArrayList<>();
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonobject = jsonArray.getJSONObject(i);
-                    Species species1 = new Species();
-                    species1.setSpeciesName(jsonobject.getString("name"));
-                    species1.setSpeciesId(Integer.parseInt(jsonobject.getString("speciesId")));
-                    species.add(species1);
-                }
-                //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
+                long idAnimal = jsonResponse.getLong("data");
+                Log.d(TAG, "ID del animal creado: " + idAnimal);
+                return idAnimal;
+
             } else {
                 assert response.body() != null;
-                Log.e(TAG, "Error assert recibiendo especies: " + response.code()
+                Log.e(TAG, "Error guardando animal en el servidor: " + response.code()
                         + " | Respuesta: " + response.body().string());
-                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error recibiendo especies: ", e);
+            Log.e(TAG, "Error al guardar animal: ", e);
+        }
+        return null;
+
+    }
+    public class ApiResponse {
+        private ArrayList<Species> species;
+        private ArrayList<Tag> tags;
+        private String deviceToken;
+
+        public ApiResponse(ArrayList<Species> species, ArrayList<Tag> tags, String deviceToken) {
+            this.species = species;
+            this.tags = tags;
+            this.deviceToken = deviceToken;
         }
 
-        return species;
-    }
+        public ArrayList<Species> getSpecies() {
+            return species;
+        }
 
+        public void setSpecies(ArrayList<Species> species) {
+            this.species = species;
+        }
+
+        public ArrayList<Tag> getTags() {
+            return tags;
+        }
+
+        public void setTags(ArrayList<Tag> tags) {
+            this.tags = tags;
+        }
+
+        public String getDeviceToken() {
+            return deviceToken;
+        }
+
+        public void setDeviceToken(String deviceToken) {
+            this.deviceToken = deviceToken;
+        }
+    }
 
 }

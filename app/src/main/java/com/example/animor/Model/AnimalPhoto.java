@@ -1,6 +1,8 @@
 package com.example.animor.Model;
 
-public class AnimalPhoto {
+import java.io.Serializable;
+
+public class AnimalPhoto implements Serializable {
     private long photoId;
     private String photoUrl;
     private boolean isCoverPhoto;

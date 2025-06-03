@@ -1,9 +1,10 @@
 package com.example.animor.Model;
 
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class AnimalListingRequest {
+public class AnimalListingRequest implements Serializable {
     private int listingId;
     private Animal animal;
     private int userId;

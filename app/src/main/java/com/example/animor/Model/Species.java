@@ -2,7 +2,9 @@ package com.example.animor.Model;
 
 import androidx.annotation.NonNull;
 
-public class Species {
+import java.io.Serializable;
+
+public class Species implements Serializable {
     private int speciesId;
     private String speciesName;
 

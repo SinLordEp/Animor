@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
@@ -28,7 +29,12 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        if (!shouldShowLoginScreen()) {
+            startActivity(new Intent(this, InicioActivity.class));
+            finish();
+            return;
+        }
+        setContentView(R.layout.activity_login);
         // Inicializa solo FirebaseAuth y GoogleSignInClient (FirebaseApp y AppCheck están en MyApplication)
         mAuth = FirebaseAuth.getInstance();
 
@@ -84,9 +90,11 @@ public class LoginActivity extends AppCompatActivity {
                                             user = api.sendUserToServer(firebaseIdToken);
                                             SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
                                             SharedPreferences.Editor editor = prefs.edit();
-                                            editor.putString("nombreUsuario", user.getUserName());
+                                            editor.putString("token", user.getDeviceToken());
+                                            editor.putString("fid", user.getUserFid());
+                                            editor.putString("userName", user.getUserName());
                                             editor.putString("email", user.getEmail());
-                                            editor.putString("device-token", user.getDeviceToken());
+                                            editor.putString("photoUrl", user.getUserPhoto());
                                             editor.apply();
 
                                             runOnUiThread(() -> {
@@ -129,6 +137,35 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "Usuario no logeado");
         }
+    }
+    private void onGoogleSignInSuccess(FirebaseUser user) {
+        // Tu lógica existente de login...
+
+        // Guardar el estado de Google Sign In
+        MyApplication app = (MyApplication) getApplication();
+        app.saveGoogleSignInState(
+                user.getEmail(),
+                user.getDisplayName(),
+                true
+        );
+
+        Log.d("Login", "Google Sign In guardado para: " + user.getEmail());
+
+        // Navegar a la siguiente actividad
+        // startActivity(new Intent(this, MainActivity.class));
+    }
+    // Método para verificar si necesitas mostrar la pantalla de login
+    private boolean shouldShowLoginScreen() {
+        MyApplication app = (MyApplication) getApplication();
+
+        // Verificar si tanto el dispositivo como Google están autenticados
+        boolean deviceAuth = MyApplication.isDeviceAuthenticated();
+        boolean googleAuth = MyApplication.isGoogleSignedIn();
+
+        Log.d("Login", "Device Auth: " + deviceAuth + ", Google Auth: " + googleAuth);
+
+        // Solo mostrar login si falta alguna autenticación
+        return !deviceAuth || !googleAuth;
     }
 
     private void continueWithoutLogin() {

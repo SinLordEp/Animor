@@ -1,10 +1,13 @@
 package com.example.animor.UI.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,11 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
+import com.example.animor.UI.LoginActivity;
+import com.example.animor.UI.ShowActivity;
+import com.example.animor.UI.UserActivity;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
@@ -34,6 +41,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     // Interface para comunicación con la Activity
     public interface OnAnimalSelectedListener {
         void onAnimalSelected(Animal animal);
+
     }
 
     private OnAnimalSelectedListener animalSelectedListener;
@@ -77,6 +85,17 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
             List<Animal> newAnimalList = api.askForMyAnimalsToDatabase();
+            if (newAnimalList == null){
+                requireActivity().runOnUiThread(() -> {rvAnimals.setVisibility(View.GONE);});
+                LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
+                requireActivity().runOnUiThread(() -> { layoutNoLogin.setVisibility(View.VISIBLE);});
+                Button btnIniciarSesion = getView().findViewById(R.id.btnIniciarSesion);
+                btnIniciarSesion.setOnClickListener(v -> {
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    startActivity(intent);
+                    requireActivity().finish();
+                });
+            }
 
             if (getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {
@@ -92,32 +111,29 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             }
         }).start();
     }
+    // Método fallback por si no hay listener (opcional, para casos extremos)
+    private void navigateToDetailFallback(Animal animal) {
+        if (getActivity() instanceof ShowActivity) {
+            ((ShowActivity) getActivity()).onAnimalSelected(animal);
+        }
+    }
 
+    // Método para establecer el listener desde ShowActivity
+    public void setAnimalSelectedListener(OnAnimalSelectedListener listener) {
+        this.animalSelectedListener = listener;
+    }
     @Override
     public void onAnimalClick(Animal animal) {
-        // Opción 1: Usar interface para comunicarse con la Activity
+        // Usar únicamente el interface para comunicarse con ShowActivity
         if (animalSelectedListener != null) {
             animalSelectedListener.onAnimalSelected(animal);
-            navigateToDetail(animal);
-            return;
+        } else {
+            // Fallback: Si no hay listener, intentar navegar directamente
+            // (esto no debería pasar si ShowActivity está configurado correctamente)
+            Log.w("ShowMyAnimalsFragment", "No listener found, attempting direct navigation");
+            navigateToDetailFallback(animal);
         }
-
     }
-    private void navigateToDetail(Animal animal) {
-        Fragment detailFragment = ShowMyAnimalFragment.newInstance(animal);
-
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
-                        android.R.anim.fade_in, android.R.anim.fade_out)
-                .add(R.id.detail_container, detailFragment)
-                .addToBackStack(null)
-                .commit();
-
-        // Mostrar el contenedor
-        requireActivity().findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
-    }
-
 
     @Override
     public void onFavoriteClick(Animal animal) {

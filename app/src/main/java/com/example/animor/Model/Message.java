@@ -1,8 +1,9 @@
 package com.example.animor.Model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Message {
+public class Message implements Serializable {
     private long messageId;         // PRIMARY KEY
     private long fromUserId;       // ID del usuario remitente
     private long toUserId;         // ID del usuario destinatario

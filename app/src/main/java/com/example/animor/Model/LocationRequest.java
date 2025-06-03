@@ -1,6 +1,8 @@
 package com.example.animor.Model;
 
-public class LocationRequest {
+import java.io.Serializable;
+
+public class LocationRequest implements Serializable {
     String country;
     String province;
     String city;

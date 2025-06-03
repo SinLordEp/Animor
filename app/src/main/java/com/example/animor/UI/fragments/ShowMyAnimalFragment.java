@@ -83,11 +83,7 @@ public class ShowMyAnimalFragment extends Fragment {
                 photoUrl=a.getPhotoUrl();
             }
         }
-        Picasso.get()
-                .load(photoUrl)
-                .placeholder(R.drawable.gatoinicio)
-                .error(R.drawable.gatoinicio)
-                .into(imgAnimal);
+
         DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String fechaFormateada = animal.getBirthDate().format(formatoSalida);
         // Inicializar vistas
@@ -97,6 +93,11 @@ public class ShowMyAnimalFragment extends Fragment {
         navigationView.inflateMenu(R.menu.drawer_menu_myanimal);
 
         imgAnimal = view.findViewById(R.id.imgUser);
+        Picasso.get()
+                .load(photoUrl)
+                .placeholder(R.drawable.gatoinicio)
+                .error(R.drawable.gatoinicio)
+                .into(imgAnimal);
         txtName = view.findViewById(R.id.txtName);
         txtName.setText(animal.getAnimalName());
         txtSex = view.findViewById(R.id.txtSex);

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -74,7 +75,7 @@ public class UserActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_edit) {
-                signOutFromGoogle();
+                performGoogleLogout();
             } else if (id == R.id.nav_delete) {
                 ApiRequests api = new ApiRequests();
                 api.deleteAccount(this);
@@ -162,36 +163,93 @@ public class UserActivity extends AppCompatActivity {
 //
     }
 
-    public void signOutFromGoogle() {
-        // Primero limpiar SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
+    public void performGoogleLogout() {
+        MyApplication app = (MyApplication) getApplication();
 
         // Actualizar UI inmediatamente
         showLoginLayout();
 
-        // Cerrar sesión de Google en segundo plano
+        // Limpiar solo Google Sign In (mantener autenticación de dispositivo)
+        app.saveGoogleSignInState("", "", false);
+
+        // Cerrar sesión de Google y Firebase en segundo plano
         new Thread(() -> {
             try {
+                // Cerrar sesión de Firebase
+                FirebaseAuth.getInstance().signOut();
+
+                // Cerrar sesión de Google
                 mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Log.d("UserActivity", "Sesión de Google cerrada correctamente.");
                     } else {
                         Log.e("UserActivity", "Error al cerrar sesión de Google: " + task.getException());
                     }
-                });
 
-                // Cerrar sesión de Firebase
-                FirebaseAuth.getInstance().signOut();
+                    // Navegar a LoginActivity DESPUÉS de limpiar todo
+                    runOnUiThread(() -> {
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
+                });
 
             } catch (Exception e) {
                 Log.e("UserActivity", "Error durante el signOut: " + e.getMessage());
+
+                // En caso de error, navegar de todos modos
+                runOnUiThread(() -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
             }
         }).start();
 
         Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+    }
+
+    // Si necesitas logout COMPLETO (incluyendo dispositivo):
+    public void performCompleteLogout() {
+        MyApplication app = (MyApplication) getApplication();
+
+        // Actualizar UI inmediatamente
+        showLoginLayout();
+
+        // Limpiar TODO - usar el método de MyApplication
+        app.performCompleteLogout();
+
+        // También limpiar tus SharedPreferences personales si es necesario
+        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+
+        // Cerrar sesión de Google en segundo plano
+        new Thread(() -> {
+            try {
+                mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                    runOnUiThread(() -> {
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    });
+                });
+            } catch (Exception e) {
+                Log.e("UserActivity", "Error durante el signOut: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+        }).start();
+
+        Toast.makeText(this, "Sesión cerrada completamente", Toast.LENGTH_SHORT).show();
     }
 
     @Override
