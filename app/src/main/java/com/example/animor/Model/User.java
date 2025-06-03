@@ -8,10 +8,12 @@ public class User implements Serializable {
     private String userName;
     private String email;
     private String userPhoto;
+    private String userToken;
     // Constructors, getters and setters
     public User() {}
 
-    public User(String deviceToken, String userPhoto, String userFid, String userName, String email) {
+    public User(String userToken, String deviceToken, String userPhoto, String userFid, String userName, String email) {
+        this.userToken = userToken;
         this.userPhoto = userPhoto;
         this.deviceToken = deviceToken;
         this.userFid = userFid;
@@ -41,5 +43,13 @@ public class User implements Serializable {
 
     public void setUserPhoto(String userPhoto) {
         this.userPhoto = userPhoto;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 }

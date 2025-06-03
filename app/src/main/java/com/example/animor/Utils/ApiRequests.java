@@ -41,7 +41,7 @@ public class ApiRequests {
     OkHttpClient client;
     static String deviceToken;
     static String fidToken;
-    static String userToken;
+    static String userToken="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwiaWF0IjoxNzQ4ODgyNDI5LCJleHAiOjE3NDg5Njg4Mjl9.qV0Ow-dnHc3Nn249qQMAaYRyTThu7v8AlV_9db7CsGs";
 
     public ApiRequests() {
         client = new OkHttpClient.Builder()
@@ -154,6 +154,7 @@ public class ApiRequests {
                 userToken = data.getString("token");
                 Log.d("USER TOKEN ES ESTO", userToken);
                 User user = new User();
+                user.setUserToken(userToken);
                 String userName = data.getString("userName");
                 String email = data.getString("email");
                 String userPhoto = data.getString("photoUrl");

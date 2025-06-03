@@ -62,9 +62,10 @@ public class LoginActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                if (account != null) {
+                firebaseAuthWithGoogle(account.getIdToken());
+                /*if (account != null) {
                     firebaseAuthWithGoogle(account.getIdToken());
-                }
+                }*/
             } catch (ApiException e) {
                 Log.e(TAG, "Error al obtener GoogleSignInAccount", e);
                 Toast.makeText(this, "Error al iniciar sesión con Google.", Toast.LENGTH_SHORT).show();
