@@ -49,13 +49,6 @@ public class ApiRequests {
                 .readTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .build();
-    }
-
-    /**
-     * Envía el AppCheck Token y el Firebase Installation ID (FID) a tu backend
-     * para validar la autenticidad del dispositivo.
-     */
-    public void getSharedDeviceId(){
         deviceToken = MyApplication.getAppContext()
                 .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE)
                 .getString(MyApplication.KEY_DEVICE_TOKEN, null);
@@ -64,8 +57,8 @@ public class ApiRequests {
                 .getString(MyApplication.KEY_DEVICE_TOKEN, null);
         System.out.println("DEVICE TOKEN DE SHAREDPREFERENCES:"+ deviceToken);
     }
+
     public ApiResponse sendFidDeviceToServer(String appCheckToken, String fid) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/auth/device-token";
         fidToken = fid;
         RequestBody formBody = new FormBody.Builder()
@@ -127,7 +120,6 @@ public class ApiRequests {
      * Envía el token de Firebase al backend para autenticar al usuario.
      */
     public User sendUserToServer(String firebaseIdToken) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/auth/firebase-login";
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
@@ -177,7 +169,6 @@ public class ApiRequests {
         return null;
     }
     public void deleteAccount(Activity activity) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/user/delete-account";
 
         Log.d(TAG, "Tokens que se enviarán al servidor: \n Device-token:" + deviceToken + "\n User token: "+ userToken);
@@ -227,7 +218,6 @@ public class ApiRequests {
         }).start();
     }
     public Long addAnimalIntoDatabase(Animal animal) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/animal/add-animal";
         RequestBody body = null;
 
@@ -280,7 +270,6 @@ public class ApiRequests {
     }
 
     public void addPhotoIntoDatabase(Long receivedAnimalId, AnimalPhoto animalPhoto) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/animalPhoto/add-photo?animalId=" + receivedAnimalId;
         RequestBody body = null;
         ObjectMapper objectMapper = new ObjectMapper();
@@ -320,7 +309,6 @@ public class ApiRequests {
    }
 
     public ArrayList<Animal> askForMyAnimalsToDatabase() {
-        getSharedDeviceId();
         String url = "https://www.animor.es/animal/my-animals";
         System.out.println("DEVICE TOKEN NULO: "+ deviceToken);
         RequestBody formBody = new FormBody.Builder()
@@ -400,7 +388,6 @@ public class ApiRequests {
         return animals;
     }
     public void deleteAnimal(long animalId) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/animal/delete-animal";
         RequestBody formBody = new FormBody.Builder()
                 .build();
@@ -432,7 +419,6 @@ public class ApiRequests {
     }
 
     public Long addPhotoIntoDatabase(AnimalPhoto animalphoto) {
-        getSharedDeviceId();
         String url = "https://www.animor.es/animalPhoto/add-photo";
         RequestBody body = null;
 
