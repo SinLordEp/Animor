@@ -4,12 +4,12 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,9 +24,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
+import com.example.animor.Model.AnimalListing;
 import com.example.animor.Model.AnimalPhoto;
+import com.example.animor.Model.Location;
+import com.example.animor.Model.Species;
+import com.example.animor.Model.Tag;
 import com.example.animor.R;
+import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
 import com.example.animor.Utils.NonScrollListView;
 import com.google.android.material.navigation.NavigationView;
@@ -38,31 +44,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateOneListingFragment extends Fragment implements Geolocalization.LocationCallback{
+public class CreateOneListingFragment extends Fragment implements Geolocalization.LocationCallback {
     // Vistas de información del animal
-    private ImageView imgUser;
-    private TextView txtName;
-    private TextView txtCity;
-    private TextView txtSex;
+    private ImageView imgAnimal;
+    private TextView tvName;
+    private TextView tvCity;
+    private TextView tvSex;
     private TextView tvSpecies;
-    private TextView textViewAnimalBirthdate;
-    private TextView textViewEstimatedBirthdate;
-    private TextView textViewAnimalSize;
-    private TextView textViewAnimalDescription;
-    private TextView textViewAnimalMicroNumber;
-    private TextView textViewAnimalNeutered;
+    private TextView tvAnimalBirthdate;
+    private TextView tvEstimatedBirthdate;
+    private TextView tvAnimalSize;
+    private TextView tvAnimalDescription;
+    private TextView tvAnimalMicroNumber;
+    private TextView tvAnimalNeutered;
 
     // Campos de contacto/dirección (EditText)
     private EditText editTextPhone;
     private EditText editTextTextEmailAddress;
     private EditText etAddress;
-    private EditText etCiudad;
-    private EditText etProvincia;
+    private EditText etCity;
+    private EditText etProvince;
     private EditText etPostalCode;
     private EditText etCountry;
 
     // Botones y otros controles
     private Button buttonSave;
+    private Button btnGetLocation;
     private ImageButton btnMenu;
     private NonScrollListView listTags;
     private NavigationView navigationView;
@@ -88,6 +95,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         fragment.setArguments(args);
         return fragment;
     }
+
     private Animal animal;
 
     @Override
@@ -97,7 +105,6 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
             animal = (Animal) getArguments().getSerializable("animal");
         }
     }
-
 
     @Nullable
     @Override
@@ -115,39 +122,46 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     }
 
     private void initViews(View view) {
-        // Inicialización de todas las vistas de información del animal
-        imgUser = view.findViewById(R.id.imgUser);
-        txtName = view.findViewById(R.id.txtName);
-        txtCity = view.findViewById(R.id.txtCity);
-        txtSex = view.findViewById(R.id.txtSex);
+        // Inicialización de vistas de información del animal
+        imgAnimal = view.findViewById(R.id.imgUser);
+        tvName = view.findViewById(R.id.txtName);
+        tvCity = view.findViewById(R.id.txtCity);
+        tvSex = view.findViewById(R.id.txtSex);
         tvSpecies = view.findViewById(R.id.tvSpecies);
-        textViewAnimalBirthdate = view.findViewById(R.id.textViewAnimalBirthdate);
-        textViewEstimatedBirthdate = view.findViewById(R.id.textViewEstimatedBirthdate);
-        textViewAnimalSize = view.findViewById(R.id.textViewAnimalSize);
-        textViewAnimalDescription = view.findViewById(R.id.textViewAnimalDescription);
-        textViewAnimalMicroNumber = view.findViewById(R.id.textViewAnimalMicroNumber);
-        textViewAnimalNeutered = view.findViewById(R.id.textViewAnimalNeutered);
+        tvAnimalBirthdate = view.findViewById(R.id.textViewAnimalBirthdate);
+        tvEstimatedBirthdate = view.findViewById(R.id.textViewEstimatedBirthdate);
+        tvAnimalSize = view.findViewById(R.id.textViewAnimalSize);
+        tvAnimalDescription = view.findViewById(R.id.textViewAnimalDescription);
+        tvAnimalMicroNumber = view.findViewById(R.id.textViewAnimalMicroNumber);
+        tvAnimalNeutered = view.findViewById(R.id.textViewAnimalNeutered);
+        listTags = view.findViewById(R.id.listTags);
 
-        // Campos de formulario (EditText)
+        // Campos del formulario de contacto/dirección
         editTextPhone = view.findViewById(R.id.editTextPhone);
         editTextTextEmailAddress = view.findViewById(R.id.editTextTextEmailAddress);
         etAddress = view.findViewById(R.id.etAddress);
-        etCiudad = view.findViewById(R.id.etCiudad);
-        etProvincia = view.findViewById(R.id.etProvincia);
+        etCity = view.findViewById(R.id.etCiudad);
+        etProvince = view.findViewById(R.id.etProvincia);
         etPostalCode = view.findViewById(R.id.etPostalCode);
         etCountry = view.findViewById(R.id.etCountry);
 
-        // Controles interactivos
+        // Botones
         buttonSave = view.findViewById(R.id.buttonSave);
         btnMenu = view.findViewById(R.id.btn_menu);
-        listTags = view.findViewById(R.id.listTags);
+        btnGetLocation = view.findViewById(R.id.btnGetLocation);
 
         // Componentes del drawer
         navigationView = view.findViewById(R.id.navigation_view);
         drawerLayout = view.findViewById(R.id.drawer_layout);
+
+        // Cargar datos del animal si existe
+        if (animal != null) {
+            loadAnimalData(animal);
+        }
     }
 
     private void setupListeners() {
+        btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
         buttonSave.setOnClickListener(v -> saveListing());
         btnMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
@@ -158,8 +172,8 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     public boolean validateForm() {
         boolean isValid = true;
 
-        if (etCiudad.getText().toString().trim().isEmpty()) {
-            etCiudad.setError("Ciudad requerida");
+        if (etCity.getText().toString().trim().isEmpty()) {
+            etCity.setError("Ciudad requerida");
             isValid = false;
         }
 
@@ -178,10 +192,25 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
             Toast.makeText(getContext(), "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
             return;
         }
+        Location location = new Location();
 
         // Aquí iría la lógica para guardar los datos
-        String ciudad = etCiudad.getText().toString().trim();
-        String telefono = editTextPhone.getText().toString().trim();
+        location.setAddress(etAddress.getText().toString().trim());
+        location.setProvince(etProvince.getText().toString().trim());
+        location.setPostalCode(etPostalCode.getText().toString().trim());
+        location.setCountry(etCountry.getText().toString().trim());
+        location.setCity(etCity.getText().toString().trim());
+        location.setLongitude(longitude);
+        location.setLatitude(latitude);
+        AnimalListing animalListing = new AnimalListing();
+        animalListing.setLocationRequest(location);
+        animalListing.setAnimal(animal);
+        //animalListing.setUserId();
+        animalListing.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
+        animalListing.setContactPhone(editTextPhone.getText().toString().trim());
+        ApiRequests api = new ApiRequests();
+        //api.createListing(animalListing);
+
         // ... obtener otros valores
 
         Toast.makeText(getContext(), "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
@@ -191,6 +220,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         geolocalization = new Geolocalization(getContext(), this);
         geocoder = new Geocoder(getContext(), Locale.getDefault());
     }
+
     private void requestCurrentLocation() {
         if (checkLocationPermissions()) {
             Log.d(TAG, "Solicitando ubicación actual...");
@@ -200,6 +230,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
             requestLocationPermissions();
         }
     }
+
     private void requestLocationPermissions() {
         ActivityCompat.requestPermissions(getActivity(),
                 new String[]{
@@ -216,6 +247,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED;
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -233,7 +265,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
 
     // Implementación de LocationCallback
     @Override
-    public void onLocationReady(Location location) {
+    public void onLocationReady(android.location.Location location) {
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
 
@@ -292,13 +324,13 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         // Ciudad
         String city = address.getLocality();
         if (city != null) {
-            etCiudad.setText(city);
+            etCity.setText(city);
         }
 
         // Provincia/Estado
         String province = address.getAdminArea();
         if (province != null) {
-            etProvincia.setText(province);
+            etProvince.setText(province);
         }
 
         // Código postal
@@ -318,65 +350,148 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
 
     private void geocodeFromAddress() {
         String address = etAddress.getText().toString().trim();
-        String city = etCiudad.getText().toString().trim();
-        String province = etProvincia.getText().toString().trim();
+        String city = etCity.getText().toString().trim();
+        String province = etProvince.getText().toString().trim();
         String country = etCountry.getText().toString().trim();
 
         if (address.isEmpty() && city.isEmpty()) {
             Toast.makeText(getContext(), "Ingresa al menos una dirección o ciudad", Toast.LENGTH_SHORT).show();
             return;
         }
-    }
 
+        // Construir dirección completa
+        StringBuilder fullAddress = new StringBuilder();
+        if (!address.isEmpty()) fullAddress.append(address).append(", ");
+        if (!city.isEmpty()) fullAddress.append(city).append(", ");
+        if (!province.isEmpty()) fullAddress.append(province).append(", ");
+        if (!country.isEmpty()) fullAddress.append(country);
+        String addressToGeocode = fullAddress.toString();
+        Log.d(TAG, "Geocodificando dirección: " + addressToGeocode);
+
+        new Thread(() -> {
+            try {
+                List<Address> addresses = geocoder.getFromLocationName(addressToGeocode, 1);
+
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address foundAddress = addresses.get(0);
+                    currentLatitude = foundAddress.getLatitude();
+                    currentLongitude = foundAddress.getLongitude();
+
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            latitude = currentLatitude;
+                            longitude =currentLongitude;
+                            Toast.makeText(getContext(), "Coordenadas obtenidas de la dirección", Toast.LENGTH_SHORT).show();
+
+                            Log.d(TAG, "Coordenadas obtenidas - Lat: " + currentLatitude + ", Lng: " + currentLongitude);
+                        });
+                    }
+                } else {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getContext(), "No se encontraron coordenadas para esta dirección", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                Log.e(TAG, "Error en geocodificación", e);
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        Toast.makeText(getContext(), "Error al buscar coordenadas", Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+        }).start();
+    }
 
     // Método para limpiar el formulario
     public void clearForm() {
         // Limpiar campos de información del animal
-        txtName.setText("");
-        txtCity.setText("");
-        txtSex.setText("");
+        tvName.setText("");
+        tvCity.setText("");
+        tvSex.setText("");
         tvSpecies.setText("");
-        textViewAnimalBirthdate.setText("");
-        textViewAnimalSize.setText("");
-        textViewAnimalDescription.setText("");
-        textViewAnimalMicroNumber.setText("");
-        textViewAnimalNeutered.setText("");
-        imgUser.setImageResource(R.drawable.gatoinicio); // Imagen por defecto
+        tvAnimalBirthdate.setText("");
+        tvAnimalSize.setText("");
+        tvAnimalDescription.setText("");
+        tvAnimalMicroNumber.setText("");
+        tvAnimalNeutered.setText("");
+        imgAnimal.setImageResource(R.drawable.gatoinicio); // Imagen por defecto
 
         // Limpiar campos de formulario
         editTextPhone.setText("");
         editTextTextEmailAddress.setText("");
         etAddress.setText("");
-        etCiudad.setText("");
-        etProvincia.setText("");
+        etCity.setText("");
+        etProvince.setText("");
         etPostalCode.setText("");
         etCountry.setText("");
     }
 
     // Método para cargar datos del animal
     public void loadAnimalData(Animal animal) {
-        if (animal != null) {
-            txtName.setText(animal.getAnimalName());
-            txtSex.setText(animal.getSex().toString());
-            tvSpecies.setText(animal.getSpeciesId());
-            DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String fechaFormateada = animal.getBirthDate().format(formatoSalida);
-            textViewAnimalBirthdate.setText(fechaFormateada);
-            textViewAnimalSize.setText(animal.getSize());
-            textViewAnimalDescription.setText(animal.getAnimalDescription());
-            textViewAnimalNeutered.setText(animal.getIsNeutered() ? "Sí" : "No");
-            String photoUrl = "";
-            ArrayList<AnimalPhoto> photoList = animal.getAnimalPhotoList();
-            for (AnimalPhoto a : photoList){
-                if(a.getIsCoverPhoto()){
-                    photoUrl=a.getPhotoUrl();
-                }
+        // Nombre especie
+        ArrayList<Species> species = MyApplication.getSpecies();
+        String speciesName = "";
+        for (Species s : species) {
+            if (s.getSpeciesId() == animal.getAnimalId()) {
+                speciesName = s.getSpeciesName();
+                break;
             }
-            Picasso.get()
-                    .load(photoUrl)
-                    .placeholder(R.drawable.gatoinicio)
-                    .error(R.drawable.gatoinicio)
-                    .into(imgUser);
         }
+
+        // Foto de portada
+        String photoUrl = "";
+        for (AnimalPhoto photo : animal.getAnimalPhotoList()) {
+            if (photo.getIsCoverPhoto()) {
+                photoUrl = photo.getPhotoUrl();
+                break;
+            }
+        }
+
+        Picasso.get()
+                .load(photoUrl)
+                .placeholder(R.drawable.gatoinicio)
+                .error(R.drawable.gatoinicio)
+                .into(imgAnimal);
+
+        // Datos del animal
+        tvName.setText(animal.getAnimalName());
+        tvSex.setText(animal.getSex().toString());
+        tvSpecies.setText(speciesName);
+
+        DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        tvAnimalBirthdate.setText(animal.getBirthDate().format(formatoSalida));
+
+        if (animal.getIsBirthDateEstimated()) {
+            tvEstimatedBirthdate.setVisibility(View.VISIBLE);
+        } else {
+            tvEstimatedBirthdate.setVisibility(View.GONE);
+        }
+
+        tvAnimalSize.setText(animal.getSize());
+        tvAnimalDescription.setText(animal.getAnimalDescription());
+
+        if (animal.getMicrochipNumber() != null) {
+            tvAnimalMicroNumber.setText(animal.getMicrochipNumber());
+        }
+
+        if (animal.getAnimalId() == 1 || animal.getAnimalId() == 2) {
+            tvAnimalNeutered.setText(animal.getIsNeutered() ? "sí" : "no");
+        }
+
+        // Cargar etiquetas en segundo plano
+        new Thread(() -> {
+            ArrayList<Tag> animalTags = animal.getTags();
+            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
+                    requireContext(),
+                    android.R.layout.simple_list_item_1,
+                    animalTags
+            );
+            requireActivity().runOnUiThread(() -> listTags.setAdapter(adapter));
+        }).start();
     }
 }
+
+
+

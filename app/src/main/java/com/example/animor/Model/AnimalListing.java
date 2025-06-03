@@ -8,18 +8,18 @@ public class AnimalListing implements Serializable {
     private int listingId;
     private Animal animal;
     private int userId;
-    LocationRequest locationRequest;
+    Location location;
     private String contactPhone;
     private String contactEmail;
 
     public AnimalListing() {}
 
-    public AnimalListing(int listingId, Animal animal, LocationRequest locationRequest, int userId,
+    public AnimalListing(int listingId, Animal animal, Location location, int userId,
                          String contactPhone, String contactEmail, LocalDateTime createdAt) {
         this.listingId = listingId;
         this.animal = animal;
         this.userId = userId;
-        this.locationRequest = locationRequest;
+        this.location = location;
         this.contactPhone = contactPhone;
         this.contactEmail = contactEmail;
     }
@@ -36,11 +36,11 @@ public class AnimalListing implements Serializable {
     public String getContactEmail() { return contactEmail; }
     public void setContactEmail(String contactEmail) { this.contactEmail = contactEmail; }
 
-    public LocationRequest getLocationRequest() {
-        return locationRequest;
+    public Location getLocationRequest() {
+        return location;
     }
 
-    public void setLocationRequest(LocationRequest locationRequest) {
-        this.locationRequest = locationRequest;
+    public void setLocationRequest(Location location) {
+        this.location = location;
     }
 }
