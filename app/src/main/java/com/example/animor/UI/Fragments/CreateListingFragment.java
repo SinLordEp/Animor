@@ -1,4 +1,4 @@
-package com.example.animor.UI.fragments;
+package com.example.animor.UI.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

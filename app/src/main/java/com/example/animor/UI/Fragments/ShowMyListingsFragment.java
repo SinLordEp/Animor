@@ -1,7 +1,6 @@
-package com.example.animor.UI.fragments;
+package com.example.animor.UI.Fragments;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

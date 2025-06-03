@@ -7,10 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.ShowActivity;
-import com.example.animor.UI.fragments.CreateAnimalFragment;
-import com.example.animor.UI.fragments.CreateListingFragment;
-import com.example.animor.UI.fragments.ShowMyAnimalsFragment;
-import com.example.animor.UI.fragments.ShowMyListingsFragment;
+import com.example.animor.UI.Fragments.CreateAnimalFragment;
+import com.example.animor.UI.Fragments.CreateListingFragment;
+import com.example.animor.UI.Fragments.ShowMyAnimalsFragment;
+import com.example.animor.UI.Fragments.ShowMyListingsFragment;
 import android.util.SparseArray;
 
 

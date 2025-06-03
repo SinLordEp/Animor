@@ -92,5 +92,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     public interface OnAnimalClickListener {
         void onAnimalClick(Animal animal);
         void onFavoriteClick(Animal animal);
+
+        void onAttach(@NonNull Context context);
     }
 }

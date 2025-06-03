@@ -11,14 +11,16 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
-import com.example.animor.UI.fragments.ShowMyAnimalFragment;
-import com.example.animor.UI.fragments.ShowMyAnimalsFragment;
-import com.example.animor.UI.fragments.ShowMyListingFragment;
-import com.example.animor.UI.fragments.ShowMyListingsFragment;
+import com.example.animor.UI.Fragments.ShowMyAnimalFragment;
+import com.example.animor.UI.Fragments.ShowMyAnimalsFragment;
+import com.example.animor.UI.Fragments.ShowMyListingFragment;
+import com.example.animor.UI.Fragments.ShowMyListingsFragment;
 import com.example.animor.Utils.TabsAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+
+import java.io.Serializable;
 
 public class ShowActivity extends AppCompatActivity
         implements ShowMyAnimalsFragment.OnAnimalSelectedListener,
@@ -121,12 +123,31 @@ public class ShowActivity extends AppCompatActivity
             } else return true;
         });
     }
+    private void showDetailFragment(Fragment fragment, String backStackTag, String key, Serializable data) {
+        isShowingDetails = true;
+        tabLayout.setVisibility(View.GONE);
+        viewPager.setVisibility(View.GONE);
 
-    // Implementación del interface para animales
+        Bundle args = new Bundle();
+        args.putSerializable(key, data);
+        fragment.setArguments(args);
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.detail_container, fragment)
+                .addToBackStack(backStackTag)
+                .commit();
+
+        findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
+    }
+
+
     @Override
     public void onAnimalSelected(Animal animal) {
         showAnimalDetail(animal);
+
     }
+
 
     // Implementación del interface para listings (asumiendo que tienes un modelo Listing)
     @Override
@@ -135,51 +156,13 @@ public class ShowActivity extends AppCompatActivity
     }
 
     private void showAnimalDetail(Animal animal) {
-        isShowingDetails = true;
+        showDetailFragment(new ShowMyAnimalFragment(), "animal_detail", "animal", animal);
 
-        // Ocultar tabs mientras mostramos detalles
-        tabLayout.setVisibility(View.GONE);
-
-        // Crear fragment de detalle
-        ShowMyAnimalFragment detailFragment = new ShowMyAnimalFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("animal", animal);
-        detailFragment.setArguments(args);
-
-        // Reemplazar el contenido del ViewPager
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.detail_container, detailFragment)
-                .addToBackStack("animal_detail")
-                .commit();
-
-        // Hacer visible el contenedor de detalles
-        findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
-        viewPager.setVisibility(View.GONE);
     }
 
     private void showListingDetail(Object listing) {
-        isShowingDetails = true;
+        showDetailFragment(new ShowMyListingFragment(), "listing_detail", "listing", (Serializable) listing);
 
-        // Ocultar tabs mientras mostramos detalles
-        tabLayout.setVisibility(View.GONE);
-
-        // Crear fragment de detalle
-        ShowMyListingFragment detailFragment = new ShowMyListingFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("listing", (java.io.Serializable) listing);
-        detailFragment.setArguments(args);
-
-        // Reemplazar el contenido del ViewPager
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.detail_container, detailFragment)
-                .addToBackStack("listing_detail")
-                .commit();
-
-        // Hacer visible el contenedor de detalles
-        findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
-        viewPager.setVisibility(View.GONE);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.animor.UI.fragments;
+package com.example.animor.UI.Fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -6,12 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
 

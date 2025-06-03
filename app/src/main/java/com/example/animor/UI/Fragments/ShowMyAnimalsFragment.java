@@ -1,5 +1,6 @@
-package com.example.animor.UI.fragments;
+package com.example.animor.UI.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,9 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,19 +22,18 @@ import com.example.animor.Model.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
-import com.example.animor.UI.UserActivity;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView rvAnimals;
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
+
 
     // Interface para comunicación con la Activity
     public interface OnAnimalSelectedListener {
@@ -135,6 +132,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         }
     }
 
+
     @Override
     public void onFavoriteClick(Animal animal) {
         // Implementa tu lógica para favoritos
@@ -153,6 +151,17 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             }
         }).start();
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnAnimalSelectedListener ) {
+            animalSelectedListener  = (OnAnimalSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnAnimalClickListener");
+        }
+    }
+
 
     public void updateAnimalList(ArrayList<Animal> newAnimalList) {
         if (animalList != null && adapter != null) {
