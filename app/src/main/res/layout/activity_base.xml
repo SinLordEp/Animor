@@ -53,6 +53,12 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="130dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    <!-- Contenedor para fragments de detalle (inicialmente oculto) -->
+    <FrameLayout
+        android:id="@+id/detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

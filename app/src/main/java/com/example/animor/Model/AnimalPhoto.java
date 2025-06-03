@@ -9,7 +9,7 @@ public class AnimalPhoto {
 
     public AnimalPhoto() {}
 
-    public AnimalPhoto(int photoId, String photoUrl, boolean isCoverPhoto, int displayOrder, String filePath) {
+    public AnimalPhoto(int photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) { /*, String filePath*/
         this.photoId = photoId;
         this.photoUrl = photoUrl;
         this.isCoverPhoto = isCoverPhoto;

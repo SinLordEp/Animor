@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -20,6 +19,7 @@ public class CreateActivity extends AppCompatActivity {
     private ViewPager2 viewPager;
     private static final int IMAGE_PICK_REQUEST = 100;
     private Uri imageUri;
+    private int currentMode = 0;
 
     // Eliminar esta línea problemática:
     // Button subirImagenBtn = findViewById(R.id.btnSeleccionarImagen);
@@ -28,7 +28,7 @@ public class CreateActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
-        setContentView(R.layout.fragment_create);
+        setContentView(R.layout.activity_base);
 
         // Usar las variables de instancia, no crear variables locales
         viewPager = findViewById(R.id.viewPager);

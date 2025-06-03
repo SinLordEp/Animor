@@ -34,7 +34,7 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">  <!-- Margen para separar del texto -->
 
             <ImageView
-                android:id="@+id/imgAnimal"
+                android:id="@+id/imgUser"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/imagen_del_animal_que_se_da_en_adopci_n"
@@ -85,7 +85,7 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
 
             <TextView
-                android:id="@+id/textView"
+                android:id="@+id/tvSpecies"
                 android:layout_margin="20dp"
                 android:paddingEnd="0dp"
                 android:paddingStart="0dp"
@@ -97,7 +97,7 @@
     </LinearLayout>
 
     <TableLayout
-        android:id="@+id/dataRow"
+        android:id="@+id/dataTable"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
@@ -241,7 +241,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/dataRow"
+        app:layout_constraintTop_toBottomOf="@+id/dataTable"
         app:layout_constraintBottom_toTopOf="@+id/linearButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -272,7 +272,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dataRow">
+        app:layout_constraintTop_toBottomOf="@+id/dataTable">
 
         <Button
             android:id="@+id/buttonDeleteAnimal"
@@ -284,7 +284,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="10dp"
-            app:layout_constraintTop_toBottomOf="@+id/dataRow" />
+            app:layout_constraintTop_toBottomOf="@+id/dataTable" />
 
         <Button
             android:id="@+id/buttonCreateListingAnimal"
@@ -296,7 +296,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="10dp"
-            app:layout_constraintTop_toBottomOf="@+id/dataRow" />
+            app:layout_constraintTop_toBottomOf="@+id/dataTable" />
 
         <Button
             android:id="@+id/buttonEditAnimal"
@@ -308,7 +308,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_margin="10dp"
-            app:layout_constraintTop_toBottomOf="@+id/dataRow" />
+            app:layout_constraintTop_toBottomOf="@+id/dataTable" />
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

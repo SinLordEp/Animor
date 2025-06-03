@@ -16,7 +16,7 @@
         app:cardElevation="0dp">  <!-- Margen para separar del texto -->
 
         <ImageView
-            android:id="@+id/imgAnimal"
+            android:id="@+id/imgUser"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -39,16 +39,15 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/txtCity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ciudad" />
-
-        <TextView
             android:id="@+id/txtSex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sexo" />
+        <TextView
+            android:id="@+id/txtCity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ciudad" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="200dp"

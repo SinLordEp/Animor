@@ -9,10 +9,13 @@ import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.ShowActivity;
 import com.example.animor.UI.fragments.CreateAnimalFragment;
 import com.example.animor.UI.fragments.CreateListingFragment;
-import com.example.animor.UI.fragments.ShowAnimalFragment;
-import com.example.animor.UI.fragments.ShowListingFragment;
+import com.example.animor.UI.fragments.ShowMyAnimalsFragment;
+import com.example.animor.UI.fragments.ShowMyListingsFragment;
+import android.util.SparseArray;
+
 
 public class TabsAdapter extends FragmentStateAdapter {
+    private SparseArray<Fragment> fragmentSparseArray = new SparseArray<>();
 
     private final FragmentActivity fragmentActivity; // 👈 guardamos la referencia
 
@@ -24,27 +27,32 @@ public class TabsAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
+        Fragment fragment;
         if (fragmentActivity instanceof CreateActivity) {
             if (position == 0)
-                return new CreateAnimalFragment();
+                fragment = new CreateAnimalFragment();
             else
-                return new CreateListingFragment();
+                fragment = new CreateListingFragment();
         } else if (fragmentActivity instanceof ShowActivity) {
             if (position == 0)
-                return new ShowAnimalFragment();
+                fragment = new ShowMyAnimalsFragment();
             else
-                return new ShowListingFragment();
+                fragment = new ShowMyListingsFragment();
         } else {
-            return new Fragment(); // fallback si no coincide nada
+            fragment = new ShowMyAnimalsFragment(); // fallback si no coincide nada
         }
+        fragmentSparseArray.put(position, fragment);
+        return fragment;
     }
-
+    // Método para obtener el fragment actual
+    public Fragment getCurrentFragment(int position) {
+        return fragmentSparseArray.get(position);
+    }
+    public void clearFragments() {
+        fragmentSparseArray.clear();
+    }
     @Override
     public int getItemCount() {
-        if (fragmentActivity instanceof CreateActivity || fragmentActivity instanceof ShowActivity) {
             return 2;
-        } else {
-            return 1;
-        }
     }
 }

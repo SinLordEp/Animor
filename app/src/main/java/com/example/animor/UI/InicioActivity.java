@@ -57,13 +57,15 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
                     startActivity(new Intent(InicioActivity.this, FavActivity.class));
                     return true;
                 } else if (id == R.id.nav_listing) {
-                    startActivity(new Intent(InicioActivity.this, CreateActivity.class));
+                    Intent intent = new Intent(InicioActivity.this, CreateActivity.class);
+                    intent.putExtra("show_animals_mode", false);
+                    startActivity(intent);
                     return true;
                 } else if (id == R.id.nav_user) {
                     startActivity(new Intent(InicioActivity.this, UserActivity.class));
                     return true;
                 } else if (id == R.id.nav_animals) {
-                    startActivity(new Intent(InicioActivity.this, CreateActivity.class));
+                    startActivity(new Intent(InicioActivity.this, ShowActivity.class));
                     return true;
                 }
 

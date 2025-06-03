@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Animal implements Serializable {
 
     @JsonProperty("animalId")
-    private Integer animalId;
+    private Long animalId;
     @JsonProperty("animalName")
     private String animalName;
     @JsonProperty("speciesId")
@@ -22,7 +22,7 @@ public class Animal implements Serializable {
 
     private String town;
     @JsonProperty("sex")
-    private String sex;
+    private Sex sex;
     @JsonProperty("size")
     private String size;
     @JsonProperty("animalDescription")
@@ -35,14 +35,15 @@ public class Animal implements Serializable {
     private LocalDateTime createdAt;
     @JsonProperty("isAdopted")
     private Boolean isAdopted;
-    private ArrayList<Tag> tagList;
+    private ArrayList<Tag> tags;
     private ArrayList<AnimalPhoto> animalPhotoList;
 
     // Constructor vacío
     public Animal() {
     }
 
-    public Animal(String animalName, Integer speciesId, LocalDate birthDate, Boolean isBirthDateEstimated, String sex, String size, String animalDescription, Boolean isNeutered, String microchipNumber, Boolean isAdopted, ArrayList<Tag> tagList, ArrayList<AnimalPhoto> animalPhotoList) {
+    public Animal(Long animalId, String animalName, Integer speciesId, LocalDate birthDate, Boolean isBirthDateEstimated, Sex sex, String size, String animalDescription, Boolean isNeutered, String microchipNumber, Boolean isAdopted, ArrayList<Tag> tags, ArrayList<AnimalPhoto> animalPhotoList) {
+        this.animalId = animalId;
         this.animalName = animalName;
         this.speciesId = speciesId;
         this.birthDate = birthDate;
@@ -53,17 +54,18 @@ public class Animal implements Serializable {
         this.isNeutered = isNeutered;
         this.microchipNumber = microchipNumber;
         this.isAdopted = isAdopted;
-        this.tagList = tagList;
+        this.tags = tags;
         this.animalPhotoList = animalPhotoList;
 
 
     }
 
     // Constructor con todos los campos excepto ID (para inserciones)
-    public Animal(String animalName, Integer speciesId, LocalDate birthDate,
-                  Boolean isBirthDateEstimated, String sex, String town, String size,
+    public Animal(Long animalId, String animalName, Integer speciesId, LocalDate birthDate,
+                  Boolean isBirthDateEstimated, Sex sex, String town, String size,
                   String animalDescription, Boolean isNeutered,
                   String microchipNumber, Boolean isAdopted) {
+        this.animalId = animalId;
         this.animalName = animalName;
         this.speciesId = speciesId;
         this.birthDate = birthDate;
@@ -85,12 +87,12 @@ public class Animal implements Serializable {
         this.animalPhotoList = animalPhotoList;
     }
 
-    public ArrayList<Tag> getTagList() {
-        return tagList;
+    public ArrayList<Tag> getTags() {
+        return tags;
     }
 
-    public void setTagList(ArrayList<Tag> tagList) {
-        this.tagList = tagList;
+    public void setTags(ArrayList<Tag> tags) {
+        this.tags = tags;
     }
 
     public String getTown() {
@@ -110,11 +112,11 @@ public class Animal implements Serializable {
     }
 
     // Getters y Setters
-    public Integer getAnimalId() {
+    public Long getAnimalId() {
         return animalId;
     }
 
-    public void setAnimalId(Integer animalId) {
+    public void setAnimalId(Long animalId) {
         this.animalId = animalId;
     }
 
@@ -150,7 +152,7 @@ public class Animal implements Serializable {
         this.isBirthDateEstimated = isBirthDateEstimated;
     }
 
-    public String getSex() {
+    public Sex getSex() {
         return sex;
     }
 //
@@ -167,7 +169,7 @@ public class Animal implements Serializable {
 //        return sex;
 //    }
 
-    public void setSex(String sex) {
+    public void setSex(Sex sex) {
         this.sex = sex;
     }
 

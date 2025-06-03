@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.cardview)
     implementation(libs.firebase.storage)
+    implementation(libs.navigation.fragment)
     testImplementation(libs.junit)
 
 // Firebase
@@ -67,5 +68,7 @@ dependencies {
     implementation(libs.material.v1110) // o la última versión
 
     implementation(libs.jackson.datatype.jsr310)
+
+//navigation into fragments
 
 }

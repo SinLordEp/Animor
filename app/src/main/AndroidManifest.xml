@@ -6,7 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".App.MyApplication"
@@ -18,6 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.Animor">
         <activity
             android:name=".UI.LoginActivity"
@@ -32,8 +34,6 @@
         <activity android:name=".UI.InicioActivity"/>
         <activity android:name=".UI.ShowActivity"/>
         <activity android:name=".UI.FavActivity"/>
-        <activity android:name=".UI.MyregistriesActivity"/>
-        <activity android:name=".UI.RegistryActivity"/>
         <activity android:name=".UI.UserActivity"/>
         <activity android:name=".UI.CreateActivity"/>
 

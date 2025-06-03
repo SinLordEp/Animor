@@ -3,12 +3,22 @@ package com.example.animor.Model;
 import androidx.annotation.NonNull;
 
 public class Tag {
+    private Integer tagId;
     private String tagName;
 
     public Tag() {}
 
-    public Tag(String tagName) {
+    public Tag(Integer tagId, String tagName) {
+        this.tagId = tagId;
         this.tagName = tagName;
+    }
+
+    public Integer getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(Integer tagId) {
+        this.tagId = tagId;
     }
 
     // Getters and setters

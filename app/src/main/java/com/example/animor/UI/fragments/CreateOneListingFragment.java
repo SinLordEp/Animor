@@ -1,5 +1,6 @@
 package com.example.animor.UI.fragments;
 
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.animor.R;
 
-public class CreateListingTwoFragment extends Fragment {
+public class CreateOneListingFragment extends Fragment {
     private EditText etCiudad;
 
     @Nullable
@@ -21,23 +22,18 @@ public class CreateListingTwoFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_create_animal, container, false);
+        return inflater.inflate(R.layout.fragment_create_one_listing, container, false);
     }
     private void initViews(View view) {
 
-        etCiudad = view.findViewById(R.id.etCiudad);
+        //etCiudad = view.findViewById(R.id.e);
     }
 
     private void setupListeners() {
 
-        etCiudad.setOnClickListener(v -> selectCity());
+        //etCiudad.setOnClickListener(v -> selectCity());
     }
 
-    private void selectCity() {
-        // Implementar lógica para seleccionar ciudad
-        Toast.makeText(getContext(), "Seleccionar ciudad", Toast.LENGTH_SHORT).show();
-        // Podrías usar un diálogo con lista de ciudades o una API
-    }
 
 
     // Método para validar el formulario

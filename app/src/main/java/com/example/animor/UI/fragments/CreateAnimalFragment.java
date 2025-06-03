@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,8 +28,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
+import com.example.animor.Model.Sex;
+import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
@@ -68,10 +72,13 @@ public class CreateAnimalFragment extends Fragment {
     private Button btnGuardar;
     private ListView listTags;
     static LocalDate birthDate;
+    Spinner spSpecies;
 
-    static String sex = "";
+    static Sex sex = Sex.valueOf("Unknown");
     ApiRequests api = new ApiRequests();
     ArrayList<Tag> selectedTags = new ArrayList<>();
+    Species animalSpecies = new Species();
+    String imagePath="";
 
 
     @Nullable
@@ -123,14 +130,26 @@ public class CreateAnimalFragment extends Fragment {
         rbDesconocido = view.findViewById(R.id.rbDesconocido);
 
         // Imagen y botones
-        imgAnimal = view.findViewById(R.id.imgAnimal);
+        imgAnimal = view.findViewById(R.id.imgUser);
         btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
         btnGuardar = view.findViewById(R.id.buttonSave);
         btnGuardar.setVisibility(View.VISIBLE);
+        spSpecies = view.findViewById(R.id.spinnerSpecies);
+        new Thread(() -> {
+            ArrayList<Species> receivedSpecies = MyApplication.getSpecies();
+            requireActivity().runOnUiThread(() -> {
+                ArrayAdapter<Species> adapter = new ArrayAdapter<>(
+                        requireContext(),
+                        android.R.layout.simple_spinner_item,
+                        receivedSpecies);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spSpecies.setAdapter(adapter);
+            });
+        }).start();
         listTags = view.findViewById(R.id.listTags);
         listTags.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            ArrayList<Tag> receivedTags = api.askForTagsToDatabase();
+            ArrayList<Tag> receivedTags = MyApplication.getTags();
             ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
             requireActivity().runOnUiThread(() -> {
                 listTags.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -150,12 +169,29 @@ public class CreateAnimalFragment extends Fragment {
         btnGuardar.setOnClickListener(v -> {
             saveAnimal();
         });
+        spSpecies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Species selectedSpecies = (Species) parent.getItemAtPosition(position);
+                String speciesName = selectedSpecies.getSpeciesName();
+                int speciesId = selectedSpecies.getSpeciesId();
+                animalSpecies.setSpeciesId(speciesId);
+                animalSpecies.setSpeciesName(speciesName);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Manejar caso cuando no hay selección
+            }
+        });
         listTags.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
-                String items= String.valueOf(adapterView.getItemAtPosition(i));
-                Tag tag = new Tag(items);
-                selectedTags.add(tag);
+                Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
+                String tagName = selectedTag.getTagName(); // o el método que uses para el string
+                int tagId = selectedTag.getTagId();
+                selectedTags.add(selectedTag);
             }
         });
     }
@@ -267,9 +303,11 @@ public class CreateAnimalFragment extends Fragment {
             return;
         }
 
-        // Crear referencia única para la imagen
+// Crear referencia única para la imagen
+        String fid= MyApplication.getFirebaseInstallationId();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
-        StorageReference imageRef = storageReference.child("animales/" + fileName);
+        StorageReference imageRef = storageReference.child("foto/"+fid +"/"+fileName);
+        imagePath = imageRef.getPath();
 
         // Subir archivo
         imageRef.putFile(uri)
@@ -278,6 +316,7 @@ public class CreateAnimalFragment extends Fragment {
                     imageRef.getDownloadUrl()
                             .addOnSuccessListener(downloadUri -> {
                                 imageDownloadUrl = downloadUri.toString();
+                                Log.d("URL DE LA IMAGEN", imageDownloadUrl);
                                 imagenPendienteSubir = false; // Ya no hay imagen pendiente
                                 Toast.makeText(getContext(), "Imagen subida correctamente", Toast.LENGTH_SHORT).show();
                                 if (onSuccess != null) onSuccess.run();
@@ -342,11 +381,9 @@ public class CreateAnimalFragment extends Fragment {
         // Mostrar mensaje de que se está guardando
         btnGuardar.setEnabled(false);
         btnGuardar.setText("Guardando...");
-        guardarDatosAnimal();
-
-        // Si hay una imagen seleccionada, subirla primero
         if (imagenPendienteSubir && imagenSeleccionadaUri != null) {
             subirImagenAFirebase(imagenSeleccionadaUri, this::guardarDatosAnimal);
+
         }
     }
 
@@ -360,21 +397,20 @@ public class CreateAnimalFragment extends Fragment {
 
         int selectedId = rgSexo.getCheckedRadioButtonId();
         if (selectedId == R.id.rbMacho) {
-            sex = "Male";
+            sex = Sex.fromString("Male");
         } else if (selectedId == R.id.rbHembra) {
-            sex = "Female";
+            sex =Sex.fromString("Female");
         } else if (selectedId == R.id.rbDesconocido) {
-            sex = "Unknown";
+            sex =Sex.fromString("Unknown");
         }
-        Log.d("sexo del animal", sex);
+        Log.d("sexo del animal", sex.getDisplayName());
 
         String size = etTamano.getText().toString().trim();
         String animalDescription = etDescripcion.getText().toString().trim();
         boolean isNeutered = cbCastrado.isChecked();
         String microchip = etMicrochip.getText().toString().trim();
         Boolean isAdopted = false;
-        int speciesId = 1;
-        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
+        int speciesCode = animalSpecies.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
         // Ejemplo:
         // Animal animal = new Animal(nombre, especie, fechaNacimiento, nacimientoAprox,
         //                           sexo, ciudad, tamaño, descripcion, castrado,
@@ -386,9 +422,9 @@ public class CreateAnimalFragment extends Fragment {
         btnGuardar.setEnabled(true);
         btnGuardar.setText("Guardar");
         Animal animal = new Animal();
-        animal.setAnimalId(0);
+        animal.setAnimalId(0L);
         animal.setAnimalName(name);
-        animal.setSpeciesId(1);
+        animal.setSpeciesId(speciesCode);
         animal.setBirthDate(birthDate);
         animal.setIsBirthDateEstimated(isBirthDateEstimated);
         animal.setSex(sex);
@@ -398,7 +434,7 @@ public class CreateAnimalFragment extends Fragment {
         animal.setMicrochipNumber(microchip);
         animal.setCreatedAt(LocalDateTime.now());
         animal.setIsAdopted(isAdopted);
-        animal.setTagList(selectedTags);
+        animal.setTags(selectedTags);
         Thread thread = getThread(animal);
         try {
             thread.join();
@@ -417,7 +453,7 @@ public class CreateAnimalFragment extends Fragment {
         animalPhoto.setPhotoUrl(imageDownloadUrl);
         animalPhoto.setIsCoverPhoto(true);
         animalPhoto.setDisplayOrder(0);
-        animalPhoto.setFilePath(imageDownloadUrl);
+        animalPhoto.setFilePath(imagePath);
         ArrayList<AnimalPhoto> animalPhotos = new ArrayList<>();
         animal.setAnimalPhotoList(animalPhotos);
         Thread thread = new Thread(() -> {

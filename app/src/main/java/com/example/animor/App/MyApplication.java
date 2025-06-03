@@ -4,18 +4,25 @@ import android.app.Application;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.animor.Model.Species;
+import com.example.animor.Model.Tag;
 import com.example.animor.Utils.ApiRequests;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.installations.FirebaseInstallations;
 
+import java.util.ArrayList;
+
 public class MyApplication extends Application {
     private static final String TAG = "MyApplication";
 
     private static String appCheckToken;
     private static String firebaseInstallationId;
-
+    private static String deviceToken;
+    private static ArrayList<Tag> tags;
+    private static ArrayList<Species> species;
+    private static String notificationToken;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,7 +48,13 @@ public class MyApplication extends Application {
                                 // Enviar a servidor en un hilo aparte
                                 new Thread(() -> {
                                     ApiRequests api = new ApiRequests();
-                                    String deviceToken = api.sendFidDeviceToServer(appCheckToken, fid);
+                                    // Estos datos se inicializan en MyApplication.onCreate()
+                                    // Asegurarse de que se accede a ellos solo después de completarse la inicialización
+
+                                    deviceToken = api.sendFidDeviceToServer(appCheckToken, fid);
+                                    species = api.askForSpeciesToDatabase();
+                                    tags = api.askForTagsToDatabase();
+
                                     Log.d(TAG, "DEVICE-TOKEN: " + deviceToken);
 
                                     if (deviceToken == null) {
@@ -62,5 +75,19 @@ public class MyApplication extends Application {
 
     public static String getFirebaseInstallationId() {
         return firebaseInstallationId;
+    }
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public static ArrayList<Tag> getTags() {
+        return tags;
+    }
+
+    public static ArrayList<Species> getSpecies() {
+        return species;
+    }
+    public static String getNotificationToken() {
+        return notificationToken;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.animor.UI;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -17,10 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
 
-
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,74 +32,67 @@ public class UserActivity extends AppCompatActivity {
     ImageButton btnMenu;
     TextView nombreUsuario;
     TextView emailUsuario;
+    LinearLayout layoutNoLogin;
+    TableRow dataRow;
+    Button btnIniciarSesion;
+    ImageView imgUsuario;
 
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-        String nombre = prefs.getString("nombreUsuario", "No logueado");
-        String email = prefs.getString("email", "No logueado");
-        String deviceToken = prefs.getString("device-token", "No logueado");
-        Log.d("nombre:", nombre);
-        Log.d("email:", email);
+        setContentView(R.layout.activity_user);
 
+        // Inicializar GoogleSignInClient
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id)) // Asegúrate de tener este string
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        initializeViews();
+        setupNavigation();
+        updateUI();
+    }
+
+    private void initializeViews() {
         navigationView = findViewById(R.id.navigation_view);
         drawerLayout = findViewById(R.id.drawer_layout);
         btnMenu = findViewById(R.id.btn_menu);
         nombreUsuario = findViewById(R.id.textViewNombreUsuario);
-        nombreUsuario.setText(String.valueOf(prefs.getString("nombreUsuario", null)));
         emailUsuario = findViewById(R.id.textViewEmailUsuario);
-        emailUsuario.setText(String.valueOf(prefs.getString("email", null)));
-        LinearLayout layoutNoLogin = findViewById(R.id.layoutNoLogin);
-        TableRow dataRow = findViewById(R.id.dataRow);
-        Button btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
-// Lógica: ¿hay datos de usuario?
-        if (nombre.equals("No logueado")|| email.equals("No logueado")) {
-            // NO hay datos: mostrar el botón
-            layoutNoLogin.setVisibility(View.VISIBLE);
-            dataRow.setVisibility(View.GONE);
-
-            btnIniciarSesion.setOnClickListener(v -> {
-                // Redirige a LoginActivity
-                Intent intent = new Intent(UserActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            });
-        } else {
-        // SÍ hay datos: mostrar perfil
-        layoutNoLogin.setVisibility(View.GONE);
-            dataRow.setVisibility(View.VISIBLE);
-
-            nombreUsuario.setText(nombre);
-            emailUsuario.setText(email);
+        imgUsuario = findViewById(R.id.imgUser);
+        layoutNoLogin = findViewById(R.id.layoutNoLogin);
+        dataRow = findViewById(R.id.dataTable);
+        btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
     }
 
+    private void setupNavigation() {
         btnMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
+
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_logout) {
-                signOutFromGoogle(this);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.clear(); // Borra todas las claves y valores de este archivo
-                editor.apply();
-                layoutNoLogin.setVisibility(View.VISIBLE);
-
-                Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, LoginActivity.class));
-                finish();
+            if (id == R.id.nav_edit) {
+                signOutFromGoogle();
             } else if (id == R.id.nav_delete) {
                 ApiRequests api = new ApiRequests();
-                api.deleteAccount(this); // Este método maneja todo (eliminar, cerrar sesión, redirigir, etc.)
+                api.deleteAccount(this);
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;
-
         });
 
+        btnIniciarSesion.setOnClickListener(v -> {
+            Intent intent = new Intent(UserActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
+        setupBottomNavigation();
+    }
+
+    private void setupBottomNavigation() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_user);
 
@@ -122,24 +116,88 @@ public class UserActivity extends AppCompatActivity {
             return false;
         });
     }
-    public void signOutFromGoogle(Activity activity) {
+
+    private void updateUI() {
+        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        String nombre = prefs.getString("nombreUsuario", "No logueado");
+        String email = prefs.getString("email", "No logueado");
+        String deviceToken = prefs.getString("device-token", "No logueado");
+
+        Log.d("UserActivity", "nombre: " + nombre);
+        Log.d("UserActivity", "email: " + email);
+
+        // Lógica: ¿hay datos de usuario válidos?
+        if (nombre.equals("No logueado") || email.equals("No logueado") ||
+                nombre.isEmpty() || email.isEmpty() ||
+                nombre.equals("null") || email.equals("null")) {
+
+            // NO hay datos válidos: mostrar el botón de login
+            showLoginLayout();
+        } else {
+            // SÍ hay datos válidos: mostrar perfil
+            showProfileLayout(nombre, email);
+        }
+    }
+
+    private void showLoginLayout() {
+        layoutNoLogin.setVisibility(View.VISIBLE);
+        dataRow.setVisibility(View.GONE);
+
+        // Limpiar los campos de texto para evitar mostrar datos antiguos
+        nombreUsuario.setText("");
+        emailUsuario.setText("");
+    }
+
+    private void showProfileLayout(String nombre, String email) {
+        layoutNoLogin.setVisibility(View.GONE);
+        dataRow.setVisibility(View.VISIBLE);
+
+        nombreUsuario.setText(nombre);
+//        emailUsuario.setText(email);
+//        Picasso.get()
+//                .load()
+//                .placeholder(R.drawable.gatoinicio)
+//                .error(R.drawable.gatoinicio)
+//                .into(imgAnimal);
+//
+    }
+
+    public void signOutFromGoogle() {
+        // Primero limpiar SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+
+        // Actualizar UI inmediatamente
+        showLoginLayout();
+
+        // Cerrar sesión de Google en segundo plano
         new Thread(() -> {
-
-            mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, task -> {
+            try {
+                mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        Log.d("ProfileActivity", "Sesión de Google cerrada correctamente.");
-                        FirebaseAuth.getInstance().signOut();  // También cerrar sesión de Firebase
-
-                        // Redirigir al LoginActivity
-                        Intent intent = new Intent(this, LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
+                        Log.d("UserActivity", "Sesión de Google cerrada correctamente.");
                     } else {
-                        Log.e("ProfileActivity", "Error al cerrar sesión de Google.");
+                        Log.e("UserActivity", "Error al cerrar sesión de Google: " + task.getException());
                     }
                 });
+
+                // Cerrar sesión de Firebase
+                FirebaseAuth.getInstance().signOut();
+
+            } catch (Exception e) {
+                Log.e("UserActivity", "Error durante el signOut: " + e.getMessage());
+            }
         }).start();
+
+        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Actualizar UI cada vez que se regresa a esta activity
+        updateUI();
     }
 }

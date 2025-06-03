@@ -3,14 +3,12 @@ package com.example.animor.UI;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.FavoriteItem;
 import com.example.animor.R;
 import com.example.animor.Utils.FavoritesAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -22,7 +20,6 @@ public class FavActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewFavorites;
     private FavoritesAdapter favoritesAdapter;
-    private List<FavoriteItem> favoriteList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +31,8 @@ public class FavActivity extends AppCompatActivity {
         recyclerViewFavorites.setLayoutManager(new LinearLayoutManager(this));
 
         // Lista de prueba (reemplaza con datos reales si los tienes)
-        favoriteList = new ArrayList<>();
-        favoriteList.add(new FavoriteItem("Michi", "Madrid", "Hembra", "Gato", R.drawable.gatoinicio, true));
-        favoriteList.add(new FavoriteItem("Firulais", "Barcelona", "Macho", "Perro", R.drawable.gatoinicio, false));
-        favoriteList.add(new FavoriteItem("Nube", "Valencia", "Hembra", "Conejo", R.drawable.gatoinicio, true));
 
-        // Adaptador y asignación
-        favoritesAdapter = new FavoritesAdapter(favoriteList);
-        recyclerViewFavorites.setAdapter(favoritesAdapter);
+       // recyclerViewFavorites.setAdapter(favoritesAdapter);
 
         // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);

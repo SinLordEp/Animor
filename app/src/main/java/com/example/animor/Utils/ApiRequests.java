@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
+import com.example.animor.Model.Sex;
+import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
 import com.example.animor.Model.User;
 import com.example.animor.UI.LoginActivity;
@@ -20,9 +22,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,9 +76,10 @@ public class ApiRequests {
                 Log.d(TAG, "Respuesta del servidor: " + cuerpoRespuesta);
                 // Parsear JSON y extraer el campo "data"
                 JSONObject json = new JSONObject(cuerpoRespuesta);
-                Log.d("USER-TOKEN DEL SERVIDOR BUENO", cuerpoRespuesta.toString());
+                Log.d("DEVICE-TOKEN DEL SERVIDOR BUENO", cuerpoRespuesta.toString());
                 if (json.has("data")) {
                     deviceToken = json.getString("data");
+                    Log.d("DEVICE.TOKEN BUENO", deviceToken);
                     return deviceToken;
                 } else {
                     Log.e(TAG, "No se encontró el campo 'data' en la respuesta");
@@ -95,7 +102,7 @@ public class ApiRequests {
         String url = "https://www.animor.es/auth/firebase-login";
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
-        Log.d(TAG, "Token que se enviará al servidor (userToken): " + firebaseIdToken);
+        Log.d(TAG, "Token que se enviará al servidor (FId): " + firebaseIdToken);
 
         // Construye el cuerpo con el parámetro 'firebaseToken' que espera el backend
         RequestBody formBody = new FormBody.Builder()
@@ -116,6 +123,7 @@ public class ApiRequests {
                 JSONObject jsonObject = new JSONObject(respuesta);
                 JSONObject data = jsonObject.getJSONObject("data");
                 userToken = data.getString("token");
+                Log.d("USER TOKEN ES ESTO", userToken);
                 return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
             } else {
                 assert response.body() != null;
@@ -187,7 +195,7 @@ public class ApiRequests {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule());
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // Opcional: no incluir campos null
+            //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // Opcional: no incluir campos null
 
             Log.d("apirequest", "animal que se va a enviar:"+ animal.getAnimalName()+","+animal.getAnimalId()+","+animal.getAnimalDescription()+","+animal.getSex());
             String json = objectMapper.writeValueAsString(animal);
@@ -232,34 +240,39 @@ public class ApiRequests {
     }
 
     public void addPhotoIntoDatabase(Long receivedAnimalId, AnimalPhoto animalPhoto) {
-        String url = "https://www.animor.es/animal-photo/add-photo";
-        RequestBody formBody = new FormBody.Builder()
-                .add("animalId", String.valueOf(receivedAnimalId))
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("X-Device-Token", deviceToken)
-                .post(formBody)  // POST con el token como parámetro
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-                String respuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
-                JSONObject jsonObject = new JSONObject(respuesta);
-                JSONObject data = jsonObject.getJSONObject("data");
-                userToken = data.getString("token");
-                //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
-            } else {
-                assert response.body() != null;
-                Log.e(TAG, "Error guardando foto: " + response.code()
-                        + " | Respuesta: " + response.body().string());
-                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+        String url = "https://www.animor.es/animalPhoto/add-photo?animalId=" + receivedAnimalId;
+        RequestBody body = null;
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        try {
+            String json = objectMapper.writeValueAsString(animalPhoto);
+            Log.d("REQUEST_JSON", json);
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            RequestBody requestBody = RequestBody.create(json, JSON);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("X-Device-Token", deviceToken)
+                    .post(requestBody)  // POST con el token como parámetro
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    assert response.body() != null;
+                    String respuesta = response.body().string();
+                    Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                    //JSONObject jsonObject = new JSONObject(respuesta);
+                    //JSONObject data = jsonObject.getJSONObject("data");
+                    //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
+                } else {
+                    assert response.body() != null;
+                    Log.e(TAG, "Error guardando foto: " + response.code()
+                            + " | Respuesta: " + response.body().string());
+                }
+            } catch (JsonProcessingException e) {
+                System.out.println("Error mapeando animalPhoto");
             }
+
         } catch (Exception e) {
-            Log.e(TAG, "Error al enviar usuario: ", e);
+            Log.e(TAG, "Error al guardar foto: ", e);
         }
 
         //return null;
@@ -286,6 +299,7 @@ public class ApiRequests {
                     JSONObject jsonobject = jsonArray.getJSONObject(i);
                     Tag tag = new Tag();
                     tag.setTagName(jsonobject.getString("tagName"));
+                    tag.setTagId(jsonobject.getInt("tagId"));
                     tags.add(tag);
                 }
                 //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
@@ -302,31 +316,72 @@ public class ApiRequests {
         return tags;
     }
 
-    public ArrayList<Tag> askForSpeciesToDatabase() {
-        String url = "https://www.animor.es/tag/all";
+    public ArrayList<Animal> askForMyAnimalsToDatabase() {
+        String url = "https://www.animor.es/animal/my-animals";
         RequestBody formBody = new FormBody.Builder()
                 .build();
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
                 .get()
                 .build();
-        ArrayList<Tag> tags = null;
+        ArrayList<Animal> animals = null;
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 assert response.body() != null;
                 String respuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                Log.d(TAG, "Respuesta del servidor a la petición de animales: " + respuesta);
                 JSONObject jsonResponse = new JSONObject(respuesta);
                 JSONArray jsonArray = jsonResponse.getJSONArray("data");
-                tags = new ArrayList<>();
+                /*
+                {
+    "status": "AUTH_ERROR",
+    "data": null
+} if "data" = null "NO TIENES ANIMALES"
+                 */
+                animals = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonobject = jsonArray.getJSONObject(i);
-                    Tag tag = new Tag();
-                    tag.setTagName(jsonobject.getString("tagName"));
-                    tags.add(tag);
+                    JSONObject jsonobject = null;
+                    try {
+                        jsonobject = jsonArray.getJSONObject(i);
+                        JSONArray arrayTags = jsonobject.getJSONArray("tagDTOList");
+                        ArrayList<Tag> receivedTags = new ArrayList<>();
+                        for (int e = 0; e < arrayTags.length(); e++) {
+                            JSONObject jsonTags = arrayTags.getJSONObject(e);
+                            Tag tag = new Tag();
+                            tag.setTagId(jsonTags.getInt("tagId"));
+                            tag.setTagName(jsonTags.getString("tagName"));
+                            receivedTags.add(tag);
+                        }
+                        JSONArray arrayFotos = jsonobject.getJSONArray("animalPhotoList");
+                        ArrayList<AnimalPhoto> receivedPhotos = new ArrayList<>();
+                        for (int o = 0; o < arrayFotos.length(); o++) {
+                            JSONObject jsonPhotos = arrayFotos.getJSONObject(o);
+                            AnimalPhoto animalPhoto = new AnimalPhoto();
+                            animalPhoto.setPhotoId(jsonPhotos.getInt("photoId"));
+                            animalPhoto.setPhotoUrl(jsonPhotos.getString("photoUrl"));
+                            animalPhoto.setIsCoverPhoto(jsonPhotos.getBoolean("isCoverPhoto"));
+                            animalPhoto.setDisplayOrder(jsonPhotos.getInt("displayOrder"));
+                            receivedPhotos.add(animalPhoto);
+                        }
+                        Animal animal = new Animal();
+                        animal.setAnimalId(jsonobject.getLong("animalId"));
+                        animal.setAnimalName(jsonobject.getString("animalName"));
+                        animal.setMicrochipNumber(jsonobject.getString(("microchipNumber")));
+                        animal.setSpeciesId(jsonobject.getInt("speciesId"));
+                        animal.setBirthDate(LocalDate.parse(jsonobject.getString("birthDate")));
+                        animal.setIsNeutered(jsonobject.getBoolean("isNeutered"));
+                        String sex = jsonobject.getString("sex");
+                        animal.setSex(Sex.fromString(sex));
+                        animal.setIsBirthDateEstimated(jsonobject.getBoolean("isBirthDateEstimated"));
+                        animal.setTags(receivedTags);
+                        animal.setAnimalPhotoList(receivedPhotos);
+                        animals.add(animal);
+                    } catch (JSONException e) {
+                        System.out.println("Error leyendo animal: "+ e.getMessage());                    }
                 }
-                //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
+
             } else {
                 assert response.body() != null;
                 Log.e(TAG, "Error assert recibiendo tags: " + response.code()
@@ -337,7 +392,77 @@ public class ApiRequests {
             Log.e(TAG, "Error recibiendo tags: ", e);
         }
 
-        return tags;
+        return animals;
+    }
+    public void deleteAnimal(long animalId) {
+        String url = "https://www.animor.es/animal/delete-animal";
+        RequestBody formBody = new FormBody.Builder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("animalId", String.valueOf(animalId))
+                .delete()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                String respuesta = response.body().string();
+                Log.d(TAG, "Respuesta del servidor al borrado de animales: " + respuesta);
+                JSONObject jsonResponse = new JSONObject(respuesta);
+                if(jsonResponse.getString("Status").equals("ANIMAL_DELETE_SUCCESS")){
+                    Log.d("ApiRequest - Delete animal", "Borrado exitoso");
+                }
+
+            } else {
+                assert response.body() != null;
+                Log.e(TAG, "Error assert recibiendo tags: " + response.code()
+                        + " | Respuesta: " + response.body().string());
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (IOException e) {
+            System.out.println("Error de tipo in/out: "+ e.getMessage());
+        } catch (JSONException e) {
+            System.out.println("Error de json: "+ e.getMessage());        }
+    }
+
+    public ArrayList<Species> askForSpeciesToDatabase() {
+        String url = "https://www.animor.es/species/all";
+        RequestBody formBody = new FormBody.Builder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .get()
+                .build();
+        ArrayList<Species> species = null;
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                assert response.body() != null;
+                String respuesta = response.body().string();
+                Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                JSONObject jsonResponse = new JSONObject(respuesta);
+                JSONArray jsonArray = jsonResponse.getJSONArray("data");
+                species = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonobject = jsonArray.getJSONObject(i);
+                    Species species1 = new Species();
+                    species1.setSpeciesName(jsonobject.getString("name"));
+                    species1.setSpeciesId(Integer.parseInt(jsonobject.getString("speciesId")));
+                    species.add(species1);
+                }
+                //return new User(data.getString("token"),fidToken, data.getString("userName"),data.getString("email"));
+            } else {
+                assert response.body() != null;
+                Log.e(TAG, "Error assert recibiendo especies: " + response.code()
+                        + " | Respuesta: " + response.body().string());
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error recibiendo especies: ", e);
+        }
+
+        return species;
     }
 
 
