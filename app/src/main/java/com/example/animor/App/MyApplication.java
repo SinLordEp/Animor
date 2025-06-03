@@ -1,35 +1,41 @@
 package com.example.animor.App;
 
+import static com.example.animor.Utils.PreferenceUtils.KEY_DEVICE_TOKEN;
+import static com.example.animor.Utils.PreferenceUtils.KEY_SPECIES_LIST;
+import static com.example.animor.Utils.PreferenceUtils.KEY_TAG_LIST;
+
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.animor.Model.Species;
+import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.Tag;
+import com.example.animor.Model.User;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.PreferenceUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.installations.FirebaseInstallations;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MyApplication extends Application {
-    private static final String TAG = "MyApplication";
-    public static final String PREFS_NAME = "userPrefs";
-    public static final String KEY_DEVICE_TOKEN = "device_token";
-    public static final String KEY_GOOGLE_SIGNED_IN = "google_signed_in";
-    public static final String KEY_USER_EMAIL = "user_email";
-    public static final String KEY_USER_NAME = "user_name";
 
-    private static String appCheckToken;
+    public static final int NUM_CORES = Runtime.getRuntime().availableProcessors();
+    public static final int POOL_SIZE = Math.max(2, Math.min(NUM_CORES + 1, 4));
+    public static final ExecutorService executor = Executors.newFixedThreadPool(POOL_SIZE);
+    private static final String TAG = "MyApplication";
+
+    //private static String appCheckToken;
     private static String firebaseInstallationId;
     private static String deviceToken;
-    private static ArrayList<Tag> tags;
-    private static ArrayList<Species> species;
+    private static List<Tag> tags;
+    private static List<Species> species;
     private static String notificationToken;
     private static boolean isGoogleSignedIn = false;
     private static MyApplication instance;
@@ -38,7 +44,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-
+        PreferenceUtils.init(getApplicationContext());
         // Inicializar Firebase
         FirebaseApp.initializeApp(this);
 
@@ -57,128 +63,81 @@ public class MyApplication extends Application {
 
     private void authenticateDevice() {
         Log.d(TAG, "Iniciando autenticación de dispositivo...");
+        String[] appCheckTokenAndDeviceFid = new String[2];
+        final boolean[] tokenOk = {false};
+        final boolean[] idOk = {false};
+
+        Runnable tryContinue = () -> {
+            if (tokenOk[0] && idOk[0]) {
+                performDeviceAuthentication(appCheckTokenAndDeviceFid);
+            }
+        };
 
         FirebaseAppCheck.getInstance().getToken(false)
                 .addOnSuccessListener(tokenResult -> {
-                    appCheckToken = tokenResult.getToken();
-                    Log.d(TAG, "App Check Token obtenido");
-
-                    FirebaseInstallations.getInstance().getId()
-                            .addOnSuccessListener(fid -> {
-                                firebaseInstallationId = fid;
-                                Log.d(TAG, "Firebase Installation ID obtenido: " + fid);
-
-                                // Llamar al servidor para autenticar dispositivo
-                                performDeviceAuthentication();
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "Error al obtener Firebase Installation ID", e);
-                            });
+                    appCheckTokenAndDeviceFid[0] = tokenResult.getToken();
+                    tokenOk[0] = true;
+                    tryContinue.run();
                 })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error al obtener App Check Token", e);
-                });
+                .addOnFailureListener(e -> Log.e(TAG, "Error al obtener App Check Token", e));
+
+        FirebaseInstallations.getInstance().getId()
+                .addOnSuccessListener(deviceFid -> {
+                    appCheckTokenAndDeviceFid[1] = deviceFid;
+                    idOk[0] = true;
+                    tryContinue.run();
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error al obtener Firebase Installation ID", e));
     }
 
-    private void performDeviceAuthentication() {
-        new Thread(() -> {
+    private void performDeviceAuthentication(String[] appCheckTokenAndDeviceFid) {
+        executor.execute(()->{
             try {
                 ApiRequests api = new ApiRequests();
-                ApiRequests.ApiResponse response = api.sendFidDeviceToServer(appCheckToken, firebaseInstallationId);
+                StartupResource startupResource = api.sendFidDeviceToServer(appCheckTokenAndDeviceFid[0], appCheckTokenAndDeviceFid[1]);
 
                 // Guardar datos recibidos
-                species = response.getSpecies();
-                tags = response.getTags();
-                deviceToken = response.getDeviceToken();
-
+                species = startupResource.getSpecies();
+                tags = startupResource.getTags();
+                deviceToken = startupResource.getDeviceToken();
                 Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + deviceToken);
 
                 // Guardar en SharedPreferences
-                saveDeviceData();
+                ObjectMapper mapper = new ObjectMapper();
+                String tagListJson = mapper.writeValueAsString(startupResource.getTags());
+                String speciesListJson = mapper.writeValueAsString(startupResource.getSpecies());
 
+                PreferenceUtils.saveData(KEY_TAG_LIST, tagListJson);
+                PreferenceUtils.saveData(KEY_SPECIES_LIST, speciesListJson);
+                PreferenceUtils.saveData(KEY_DEVICE_TOKEN, deviceToken);
             } catch (Exception e) {
                 Log.e(TAG, "Error en autenticación de dispositivo", e);
             }
-        }).start();
-    }
-
-    private void saveDeviceData() {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        prefs.edit()
-                .putString(KEY_DEVICE_TOKEN, deviceToken)
-                .apply();
-
-        Log.d(TAG, "Datos de dispositivo guardados en SharedPreferences");
+        });
     }
 
     private void checkGoogleSignInState() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
+        User currentUser = PreferenceUtils.getUser();
         if (currentUser != null) {
             isGoogleSignedIn = true;
-            saveGoogleSignInState(currentUser.getEmail(), currentUser.getDisplayName(), true);
             Log.d(TAG, "Usuario Google ya autenticado: " + currentUser.getEmail());
         } else {
             isGoogleSignedIn = false;
             Log.d(TAG, "No hay usuario Google autenticado");
         }
     }
-
-    public void saveGoogleSignInState(String email, String name, boolean signedIn) {
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        editor.putBoolean(KEY_GOOGLE_SIGNED_IN, signedIn);
-
-        if (signedIn && email != null && name != null) {
-            editor.putString(KEY_USER_EMAIL, email);
-            editor.putString(KEY_USER_NAME, name);
-            Log.d(TAG, "Estado de Google Sign In guardado para: " + email);
-        } else {
-            editor.remove(KEY_USER_EMAIL);
-            editor.remove(KEY_USER_NAME);
-            Log.d(TAG, "Estado de Google Sign In limpiado");
-        }
-
-        editor.apply();
-        isGoogleSignedIn = signedIn;
-    }
-
     public void performCompleteLogout() {
         FirebaseAuth.getInstance().signOut();
 
         // Limpiar SharedPreferences
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        prefs.edit().clear().apply();
-
+        PreferenceUtils.removeUser();
         // Resetear variables
         isGoogleSignedIn = false;
         deviceToken = null;
-
         Log.d(TAG, "Logout completo realizado");
     }
 
     // Getters estáticos
-    public static Context getAppContext() {
-        return instance.getApplicationContext();
-    }
-
-    public static String getDeviceToken() {
-        return deviceToken;
-    }
-
-    public static ArrayList<Tag> getTags() {
-        return tags;
-    }
-
-    public static ArrayList<Species> getSpecies() {
-        return species;
-    }
-
-    public static boolean isGoogleSignedIn() {
-        return isGoogleSignedIn;
-    }
-
     public static String getNotificationToken() {
         return notificationToken;
     }

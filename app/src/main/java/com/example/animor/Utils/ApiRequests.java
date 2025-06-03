@@ -3,21 +3,21 @@ package com.example.animor.Utils;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Sex;
 import com.example.animor.Model.Species;
+import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.Tag;
 import com.example.animor.Model.User;
 import com.example.animor.UI.LoginActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -26,21 +26,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import okhttp3.*;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class ApiRequests {
     private static final String TAG = "ApiRequests";
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     OkHttpClient client;
     static String deviceToken;
-    static String fidToken;
+    static String deviceFid;
     static String userToken="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwiaWF0IjoxNzQ4ODgyNDI5LCJleHAiOjE3NDg5Njg4Mjl9.qV0Ow-dnHc3Nn249qQMAaYRyTThu7v8AlV_9db7CsGs";
 
     public ApiRequests() {
@@ -49,32 +52,24 @@ public class ApiRequests {
                 .readTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .build();
-        deviceToken = MyApplication.getAppContext()
-                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(MyApplication.KEY_DEVICE_TOKEN, null);
-        deviceToken = MyApplication.getAppContext()
-                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(MyApplication.KEY_DEVICE_TOKEN, null);
+        deviceToken = PreferenceUtils.getDeviceToken();
         System.out.println("DEVICE TOKEN DE SHAREDPREFERENCES:"+ deviceToken);
     }
 
-    public ApiResponse sendFidDeviceToServer(String appCheckToken, String fid) {
+    public StartupResource sendFidDeviceToServer(String appCheckToken, String deviceFid) {
         String url = "https://www.animor.es/auth/device-token";
-        fidToken = fid;
-        RequestBody formBody = new FormBody.Builder()
-                .add("deviceFid", fid)
-                .build();
+        ApiRequests.deviceFid = deviceFid;
 
         Log.d("Appchecktoken para postman", appCheckToken);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Firebase-AppCheck", appCheckToken)
-                .post(formBody)
+                .addHeader("X-Device-Fid", deviceFid)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            assert response.body() != null;
             if (response.isSuccessful()) {
-                assert response.body() != null;
                 String cuerpoRespuesta = response.body().string();
                 Log.d(TAG, "Respuesta del servidor: " + cuerpoRespuesta);
 
@@ -83,7 +78,7 @@ public class ApiRequests {
 
                 // Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
-                ArrayList<Tag> tags = new ArrayList<>();
+                List<Tag> tags = new ArrayList<>();
                 for (int i = 0; i < tagsArray.length(); i++) {
                     JSONObject tagObject = tagsArray.getJSONObject(i);
                     Tag tag = new Tag();
@@ -104,10 +99,8 @@ public class ApiRequests {
                 }
 
                 // Preparar respuesta
-                ApiResponse apiResponse = new ApiResponse(speciesList, tags, deviceToken);
-                return apiResponse;
+                return new StartupResource(speciesList, tags, deviceToken);
             } else {
-                assert response.body() != null;
                 Log.e(TAG, "Error en la solicitud: " + response.code()
                         + " | Respuesta: " + response.body().string());
             }
@@ -137,27 +130,21 @@ public class ApiRequests {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            if(response.body() == null){
+                return null;
+            }
             if (response.isSuccessful()) {
-                assert response.body() != null;
                 String respuesta = response.body().string();
                 Log.d(TAG, "Respuesta del servidor: " + respuesta);
                 JSONObject jsonObject = new JSONObject(respuesta);
                 JSONObject data = jsonObject.getJSONObject("data");
-                userToken = data.getString("token");
-                Log.d("USER TOKEN ES ESTO", userToken);
-                User user = new User();
-                user.setUserToken(userToken);
-                String userName = data.getString("userName");
-                String email = data.getString("email");
-                String userPhoto = data.getString("photoUrl");
-                user.setUserFid(fidToken);
-                user.setDeviceToken(deviceToken);
-                user.setUserPhoto(userPhoto);
-                user.setEmail(email);
-                user.setUserName(userName);
+                User user = JacksonUtils.readEntity(data.toString(), new TypeReference<User>(){});
+                if(user == null){
+                    throw new RuntimeException("User is null");
+                }
+                Log.d("USER TOKEN ES ESTO", user.getUserToken());
                 return user;
             } else {
-                assert response.body() != null;
                 Log.e(TAG, "Error en la solicitud de datos de usuario: " + response.code()
                         + " | Respuesta: " + response.body().string());
                 //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
@@ -468,41 +455,6 @@ public class ApiRequests {
         }
         return null;
 
-    }
-    public class ApiResponse {
-        private ArrayList<Species> species;
-        private ArrayList<Tag> tags;
-        private String deviceToken;
-
-        public ApiResponse(ArrayList<Species> species, ArrayList<Tag> tags, String deviceToken) {
-            this.species = species;
-            this.tags = tags;
-            this.deviceToken = deviceToken;
-        }
-
-        public ArrayList<Species> getSpecies() {
-            return species;
-        }
-
-        public void setSpecies(ArrayList<Species> species) {
-            this.species = species;
-        }
-
-        public ArrayList<Tag> getTags() {
-            return tags;
-        }
-
-        public void setTags(ArrayList<Tag> tags) {
-            this.tags = tags;
-        }
-
-        public String getDeviceToken() {
-            return deviceToken;
-        }
-
-        public void setDeviceToken(String deviceToken) {
-            this.deviceToken = deviceToken;
-        }
     }
 
 }

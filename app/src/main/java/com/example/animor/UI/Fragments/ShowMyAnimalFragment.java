@@ -17,18 +17,19 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.PreferenceUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ShowMyAnimalFragment extends Fragment {
 
@@ -69,7 +70,7 @@ public class ShowMyAnimalFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ArrayList<Species> species = MyApplication.getSpecies();
+        List<Species> species = PreferenceUtils.getSpeciesList();
         String speciesName="";
         for (Species s : species){
             if(s.getSpeciesId()== animal.getAnimalId()){
