@@ -19,14 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
-
-    private List<Animal> animalList;
-    private OnAnimalClickListener listener;
-
-    public AnimalAdapter(List<Animal> animalList, OnAnimalClickListener listener) {
+    List<Animal> animalList;
+    private List<Species> speciesList;
+    OnAnimalClickListener listener;
+    public AnimalAdapter(List<Animal> animalList, List<Species> speciesList, OnAnimalClickListener listener) {
         this.animalList = animalList;
+        this.speciesList = speciesList;
         this.listener = listener;
     }
+
 
     @NonNull
     @Override
@@ -42,19 +43,25 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         holder.txtName.setText(animal.getAnimalName());
         List<Species> species = PreferenceUtils.getSpeciesList();
         String speciesName="";
-        for (Species s : species){
-            if(s.getSpeciesId()== animal.getAnimalId()){
-                speciesName=s.getSpeciesName();
+        for (Species s : speciesList) {
+            if (s.getSpeciesId() == animal.getSpeciesId()) {
+                speciesName = s.getSpeciesName();
+                break;
             }
-        }
+
+    }
         holder.txtSpecies.setText(speciesName);
         ArrayList<AnimalPhoto> photoList = animal.getAnimalPhotoList();
         String photoUrl = "";
-        for (AnimalPhoto a : photoList){
-            if(a.getIsCoverPhoto()){
-                photoUrl=a.getPhotoUrl();
+        if (photoList != null) {
+            for (AnimalPhoto a : photoList) {
+                if (a.getIsCoverPhoto()) {
+                    photoUrl = a.getPhotoUrl();
+                    break;
+                }
             }
         }
+
         Picasso.get()
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
@@ -66,7 +73,6 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
 
         // Clicks en el icono de favorito
-        holder.btnFavorite.setOnClickListener(v -> listener.onFavoriteClick(animal));
     }
 
     @Override
@@ -87,11 +93,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
             btnFavorite = itemView.findViewById(R.id.btnFavorite);
         }
     }
-
     public interface OnAnimalClickListener {
         void onAnimalClick(Animal animal);
         void onFavoriteClick(Animal animal);
-
-        void onAttach(@NonNull Context context);
     }
+
 }

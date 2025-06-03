@@ -19,17 +19,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.Model.Animal;
+import com.example.animor.Model.Species;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
+    List<Species> speciesList = PreferenceUtils.getSpeciesList();
     private RecyclerView rvAnimals;
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
@@ -68,7 +71,8 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        adapter = new AnimalAdapter(animalList, this);
+        List<Species> speciesList = PreferenceUtils.getSpeciesList(); //
+        adapter = new AnimalAdapter(animalList, speciesList, this);   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 

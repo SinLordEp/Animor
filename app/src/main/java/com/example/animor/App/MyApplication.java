@@ -95,11 +95,13 @@ public class MyApplication extends Application {
             try {
                 ApiRequests api = new ApiRequests();
                 StartupResource startupResource = api.sendFidDeviceToServer(appCheckTokenAndDeviceFid[0], appCheckTokenAndDeviceFid[1]);
-
+                //lectura de SP
+                species = PreferenceUtils.getSpeciesList();
+                tags = PreferenceUtils.getTagList();
                 // Guardar datos recibidos
-                species = startupResource.getSpecies();
-                tags = startupResource.getTags();
-                deviceToken = startupResource.getDeviceToken();
+//                species = startupResource.getSpecies();
+//                tags = startupResource.getTags();
+//                deviceToken = startupResource.getDeviceToken();
                 Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + deviceToken);
 
                 // Guardar en SharedPreferences

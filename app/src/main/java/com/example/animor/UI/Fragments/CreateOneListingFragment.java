@@ -35,6 +35,7 @@ import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
 import com.example.animor.Utils.NonScrollListView;
+import com.example.animor.Utils.PreferenceUtils;
 import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
 
@@ -86,7 +87,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     private double currentLongitude = 0.0;
     double latitude;
     double longitude;
-
+    PreferenceUtils pu;
 
     public static CreateOneListingFragment newInstance(Animal animal) {
         CreateOneListingFragment fragment = new CreateOneListingFragment();
@@ -431,7 +432,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     // Método para cargar datos del animal
     public void loadAnimalData(Animal animal) {
         // Nombre especie
-        ArrayList<Species> species = MyApplication.getSpecies();
+        List<Species> species = PreferenceUtils.getSpeciesList();
         String speciesName = "";
         for (Species s : species) {
             if (s.getSpeciesId() == animal.getAnimalId()) {
