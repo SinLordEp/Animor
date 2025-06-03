@@ -45,6 +45,13 @@ public class ShowMyAnimalFragment extends Fragment {
     private DrawerLayout drawer;
     private NavigationView navigationView;
     Animal animal = null;
+    public static ShowMyAnimalFragment newInstance(Animal animal) {
+        ShowMyAnimalFragment fragment = new ShowMyAnimalFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("animal", animal); // O implementa Parcelable
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -146,4 +153,5 @@ public class ShowMyAnimalFragment extends Fragment {
             return true;
         });
     }
+
 }

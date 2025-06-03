@@ -49,14 +49,12 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("DEBUG", "onViewCreated() ejecutado");
+
         initializeViews(view);
         setupRecyclerView();
         loadAnimals();
 
-        // Configurar listener si la activity lo implementa
-        if (getActivity() instanceof OnAnimalSelectedListener) {
-            animalSelectedListener = (OnAnimalSelectedListener) getActivity();
-        }
     }
 
     private void initializeViews(View view) {
@@ -77,6 +75,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     private void loadAnimals() {
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
+            Log.d("DEBUG", "loadAnimals() llamado");
             List<Animal> newAnimalList = api.askForMyAnimalsToDatabase();
 
             if (getActivity() != null) {
@@ -99,25 +98,26 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         // Opción 1: Usar interface para comunicarse con la Activity
         if (animalSelectedListener != null) {
             animalSelectedListener.onAnimalSelected(animal);
+            navigateToDetail(animal);
             return;
         }
 
-        // Opción 2: Intentar navegar si hay un NavController disponible
-        try {
-            NavController navController = Navigation.findNavController(requireView().findViewById(R.id.nav_host_fragment_animals));
-           // NavController navController = NavHostFragment.findNavController(this);
-            Bundle args = new Bundle();
-            args.putSerializable("animal", animal);
-            // Cambia R.id.action_to_animal_detail por tu acción real
-            navController.navigate(R.id.action_showMyAnimals_to_showMyAnimal, args);
-
-        } catch (IllegalStateException e) {
-            Log.e("Navigation", "No se pudo navegar: " + e.getMessage());
-            // Fallback: mostrar información básica
-            Toast.makeText(getContext(),
-                    "Animal seleccionado: " + animal.getAnimalName(), Toast.LENGTH_SHORT).show();
-        }
     }
+    private void navigateToDetail(Animal animal) {
+        Fragment detailFragment = ShowMyAnimalFragment.newInstance(animal);
+
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                        android.R.anim.fade_in, android.R.anim.fade_out)
+                .add(R.id.detail_container, detailFragment)
+                .addToBackStack(null)
+                .commit();
+
+        // Mostrar el contenedor
+        requireActivity().findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onFavoriteClick(Animal animal) {
@@ -144,10 +144,5 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             animalList.addAll(newAnimalList);
             adapter.notifyDataSetChanged();
         }
-    }
-
-    // Método para refrescar la lista desde la Activity
-    public void refreshAnimalList() {
-        loadAnimals();
     }
 }

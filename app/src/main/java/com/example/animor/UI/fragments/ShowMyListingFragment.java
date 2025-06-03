@@ -46,17 +46,6 @@ public class ShowMyListingFragment extends Fragment{
         return view;
     }
 
-    public void onListingClick(Animal animal) {
-        NavHostFragment navHostFragment = (NavHostFragment) getChildFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment_animals);
-        NavController navController = navHostFragment.getNavController();
-
-        // Crea un Bundle y navega al fragmento de detalle
-        Bundle args = new Bundle();
-        args.putSerializable("animal", animal);
-        navController.navigate(R.id.action_showMyAnimals_to_showMyAnimal, args);
-    }
-
 
 //    private List<Animal> getAnimalesDelUsuario() {
 //        List<Animal> animales = new ArrayList<>();

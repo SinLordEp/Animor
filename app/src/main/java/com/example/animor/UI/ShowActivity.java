@@ -176,15 +176,4 @@ public class ShowActivity extends AppCompatActivity
         }
     }
 
-    // Método público para que los fragments puedan refrescar datos
-    public void refreshCurrentTab() {
-        if (tabsAdapter != null) {
-            Fragment currentFragment = tabsAdapter.getCurrentFragment(currentTab);
-            if (currentFragment instanceof ShowMyAnimalsFragment) {
-                ((ShowMyAnimalsFragment) currentFragment).refreshAnimalList();
-            } else if (currentFragment instanceof ShowMyListingsFragment) {
-                ((ShowMyListingsFragment) currentFragment).refreshListingList();
-            }
-        }
-    }
 }
