@@ -79,9 +79,9 @@ public class MyApplication extends Application {
                     if(!appCheckToken.isEmpty()){
                         appCheckTokenAndDeviceFid[0] = appCheckToken;
                         tokenOk[0] = true;
-                        Log.e(TAG, "Appcheck token");
+                        Log.e(TAG, "Appcheck token accomplished");
                     }else{
-                        Log.e(TAG, "Error getting appcheck token");
+                        Log.e(TAG, "Error getting appcheck token, is empty");
                     }
                     tryContinue.run();
                 })
@@ -94,7 +94,7 @@ public class MyApplication extends Application {
                         idOk[0] = true;
                         Log.e(TAG, "Device fid fetched: " + deviceFid);
                     }else{
-                        Log.e(TAG, "Error getting Device fid");
+                        Log.e(TAG, "Error getting Device fid, is empty");
                     }
                     tryContinue.run();
                 })
@@ -107,12 +107,12 @@ public class MyApplication extends Application {
                 ApiRequests api = new ApiRequests();
                 StartupResource startupResource = api.sendFidDeviceToServer(appCheckTokenAndDeviceFid[0], appCheckTokenAndDeviceFid[1]);
                 //lectura de SP
-                species = PreferenceUtils.getSpeciesList();
-                tags = PreferenceUtils.getTagList();
+                //species = PreferenceUtils.getSpeciesList();
+               // tags = PreferenceUtils.getTagList();
                 // Guardar datos recibidos
-//                species = startupResource.getSpecies();
-//                tags = startupResource.getTags();
-//                deviceToken = startupResource.getDeviceToken();
+                species = startupResource.getSpecies();
+                tags = startupResource.getTags();
+                deviceToken = startupResource.getDeviceToken();
                 Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + deviceToken);
 
                 // Guardar en SharedPreferences

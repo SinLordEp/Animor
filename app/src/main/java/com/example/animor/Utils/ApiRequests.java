@@ -71,7 +71,7 @@ public class ApiRequests {
             assert response.body() != null;
             if (response.isSuccessful()) {
                 String cuerpoRespuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + cuerpoRespuesta);
+                Log.d(TAG, "Respuesta del servidor con device-token, tags y species: " + cuerpoRespuesta);
 
                 JSONObject jsonResponse = new JSONObject(cuerpoRespuesta);
                 JSONObject dataObject = jsonResponse.getJSONObject("data");
@@ -101,11 +101,11 @@ public class ApiRequests {
                 // Preparar respuesta
                 return new StartupResource(speciesList, tags, deviceToken);
             } else {
-                Log.e(TAG, "Error en la solicitud: " + response.code()
+                Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + response.code()
                         + " | Respuesta: " + response.body().string());
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error en la solicitud: ", e);
+            Log.e(TAG, "Error inesperado en la ejecución: ", e);
         }
         return null;
     }
@@ -117,6 +117,8 @@ public class ApiRequests {
 
         // Muestra el token por si quieres copiarlo para pruebas manuales (curl o Postman)
         Log.d(TAG, "Token que se enviará al servidor (FId): " + firebaseIdToken);
+        Log.d(TAG, "Token que se enviará al servidor (deviceToken): " + deviceToken);
+
 
         // Construye el cuerpo con el parámetro 'firebaseToken' que espera el backend
         RequestBody formBody = new FormBody.Builder()
@@ -135,7 +137,7 @@ public class ApiRequests {
             }
             if (response.isSuccessful()) {
                 String respuesta = response.body().string();
-                Log.d(TAG, "Respuesta del servidor: " + respuesta);
+                Log.d(TAG, "Respuesta del servidor a petición de user data: " + respuesta);
                 JSONObject jsonObject = new JSONObject(respuesta);
                 JSONObject data = jsonObject.getJSONObject("data");
                 User user = JacksonUtils.readEntity(data.toString(), new TypeReference<User>(){});
