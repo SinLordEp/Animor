@@ -4,7 +4,7 @@ package com.example.animor.Model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class AnimalListingRequest implements Serializable {
+public class AnimalListing implements Serializable {
     private int listingId;
     private Animal animal;
     private int userId;
@@ -12,10 +12,10 @@ public class AnimalListingRequest implements Serializable {
     private String contactPhone;
     private String contactEmail;
 
-    public AnimalListingRequest() {}
+    public AnimalListing() {}
 
-    public AnimalListingRequest(int listingId, Animal animal, LocationRequest locationRequest, int userId,
-                                String contactPhone, String contactEmail, LocalDateTime createdAt) {
+    public AnimalListing(int listingId, Animal animal, LocationRequest locationRequest, int userId,
+                         String contactPhone, String contactEmail, LocalDateTime createdAt) {
         this.listingId = listingId;
         this.animal = animal;
         this.userId = userId;

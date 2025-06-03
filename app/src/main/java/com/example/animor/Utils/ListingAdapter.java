@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.AnimalListingRequest;
+import com.example.animor.Model.AnimalListing;
 import com.example.animor.Model.Species;
 import com.example.animor.R;
 import com.squareup.picasso.Picasso;
@@ -24,12 +24,12 @@ import java.util.Locale;
 
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingViewHolder> {
 
-    private List<AnimalListingRequest> animalListingRequestList;
+    private List<AnimalListing> animalListingList;
     private OnListingClickListener listener;
     private SimpleDateFormat dateFormat;
 
-    public ListingAdapter(List<AnimalListingRequest> animalListingRequestList, OnListingClickListener listener) {
-        this.animalListingRequestList = animalListingRequestList != null ? animalListingRequestList : new ArrayList<>();
+    public ListingAdapter(List<AnimalListing> animalListingList, OnListingClickListener listener) {
+        this.animalListingList = animalListingList != null ? animalListingList : new ArrayList<>();
         this.listener = listener;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
     }
@@ -44,14 +44,14 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     @Override
     public void onBindViewHolder(@NonNull ListingViewHolder holder, int position) {
-        AnimalListingRequest animalListingRequest = animalListingRequestList.get(position);
-        Animal animal = animalListingRequest.getAnimal();
+        AnimalListing animalListing = animalListingList.get(position);
+        Animal animal = animalListing.getAnimal();
 
-            holder.txtName.setText(animalListingRequest.getAnimal().getAnimalName());
+            holder.txtName.setText(animalListing.getAnimal().getAnimalName());
 
         // Mostrar ciudad
         holder.txtCity.setVisibility(View.VISIBLE);
-        holder.txtCity.setText(animalListingRequest.getLocationRequest().getCity() != null ? animalListingRequest.getLocationRequest().getCity() : "Sin especificar");
+        holder.txtCity.setText(animalListing.getLocationRequest().getCity() != null ? animalListing.getLocationRequest().getCity() : "Sin especificar");
 
         // Configurar datos del animal si existe
         if (animal != null) {
@@ -71,25 +71,25 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         }
 
         // Configurar icono de favorito según el tipo de listing
-        setupFavoriteIcon(animalListingRequest, holder.btnFavorite);
+        setupFavoriteIcon(animalListing, holder.btnFavorite);
 
         // Click listeners
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onListingClick(animalListingRequest);
+                listener.onListingClick(animalListing);
             }
         });
 
         holder.btnFavorite.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onFavoriteClick(animalListingRequest);
+                listener.onFavoriteClick(animalListing);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return animalListingRequestList.size();
+        return animalListingList.size();
     }
 
     // Métodos auxiliares
@@ -128,29 +128,29 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         }
     }
 
-    private void setupFavoriteIcon(AnimalListingRequest animalListingRequest, ImageView btnFavorite) {
+    private void setupFavoriteIcon(AnimalListing animalListing, ImageView btnFavorite) {
 
     }
 
     // Métodos públicos para actualizar datos
-    public void updateData(List<AnimalListingRequest> newAnimalListingRequests) {
-        this.animalListingRequestList.clear();
-        if (newAnimalListingRequests != null) {
-            this.animalListingRequestList.addAll(newAnimalListingRequests);
+    public void updateData(List<AnimalListing> newAnimalListings) {
+        this.animalListingList.clear();
+        if (newAnimalListings != null) {
+            this.animalListingList.addAll(newAnimalListings);
         }
         notifyDataSetChanged();
     }
 
-    public void addListing(AnimalListingRequest animalListingRequest) {
-        if (animalListingRequest != null) {
-            this.animalListingRequestList.add(animalListingRequest);
-            notifyItemInserted(animalListingRequestList.size() - 1);
+    public void addListing(AnimalListing animalListing) {
+        if (animalListing != null) {
+            this.animalListingList.add(animalListing);
+            notifyItemInserted(animalListingList.size() - 1);
         }
     }
 
     public void removeListing(int position) {
-        if (position >= 0 && position < animalListingRequestList.size()) {
-            animalListingRequestList.remove(position);
+        if (position >= 0 && position < animalListingList.size()) {
+            animalListingList.remove(position);
             notifyItemRemoved(position);
         }
     }
@@ -173,7 +173,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     // Interface para callbacks
     public interface OnListingClickListener {
-        void onListingClick(AnimalListingRequest animalListingRequest);
-        void onFavoriteClick(AnimalListingRequest animalListingRequest);
+        void onListingClick(AnimalListing animalListing);
+        void onFavoriteClick(AnimalListing animalListing);
     }
 }

@@ -23,33 +23,30 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    static User user = new User();
+    private User user = new User();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if (!shouldShowLoginScreen()) {
-            startActivity(new Intent(this, InicioActivity.class));
-            finish();
-            return;
-        }
-        setContentView(R.layout.activity_login);
-        // Inicializa solo FirebaseAuth y GoogleSignInClient (FirebaseApp y AppCheck están en MyApplication)
+
+        // Inicializar Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
+        // Configurar Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        // Botones
-        findViewById(R.id.btn_google_sign_in).setOnClickListener(v -> signIn());
-        findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutLogin());
+        // Configurar botones
+        findViewById(R.id.btn_google_sign_in).setOnClickListener(v -> signInWithGoogle());
+        findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutGoogleLogin());
     }
 
-    private void signIn() {
+    private void signInWithGoogle() {
+        Log.d(TAG, "Iniciando Google Sign In...");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -62,13 +59,11 @@ public class LoginActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "Google Sign In exitoso para: " + account.getEmail());
                 firebaseAuthWithGoogle(account.getIdToken());
-                /*if (account != null) {
-                    firebaseAuthWithGoogle(account.getIdToken());
-                }*/
             } catch (ApiException e) {
-                Log.e(TAG, "Error al obtener GoogleSignInAccount", e);
-                Toast.makeText(this, "Error al iniciar sesión con Google.", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error en Google Sign In", e);
+                Toast.makeText(this, "Error al iniciar sesión con Google: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -78,99 +73,116 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        FirebaseUser userFirebase = mAuth.getCurrentUser();
-                        if (userFirebase != null) {
-                            userFirebase.getIdToken(true).addOnCompleteListener(tokenTask -> {
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            Log.d(TAG, "Firebase Auth exitoso para: " + firebaseUser.getEmail());
+
+                            // Obtener el token de Firebase
+                            firebaseUser.getIdToken(true).addOnCompleteListener(tokenTask -> {
                                 if (tokenTask.isSuccessful()) {
                                     String firebaseIdToken = tokenTask.getResult().getToken();
-                                    Log.d("FirebaseAuth", "Firebase ID Token: " + firebaseIdToken);
 
-                                    new Thread(() -> {
-                                        try {
-                                            ApiRequests api = new ApiRequests();
-                                            user = api.sendUserToServer(firebaseIdToken);
-                                            SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-                                            SharedPreferences.Editor editor = prefs.edit();
-                                            editor.putString("token", user.getDeviceToken());
-                                            editor.putString("fid", user.getUserFid());
-                                            editor.putString("userName", user.getUserName());
-                                            editor.putString("email", user.getEmail());
-                                            editor.putString("photoUrl", user.getUserPhoto());
-                                            editor.apply();
-
-                                            runOnUiThread(() -> {
-                                                Log.d("Nombre Usuario", user.getUserName());
-                                                Log.d("Email Usuario", user.getEmail());
-                                                Log.d("Firebase Token", user.getDeviceToken());
-                                            });
-
-                                        } catch (Exception e) {
-                                            Log.e("API_ERROR", "Error al enviar usuario: ", e);
-                                        }
-                                    }).start();
-
-                                    updateUI(userFirebase);
-                                    startActivity(new Intent(LoginActivity.this, InicioActivity.class));
-                                    finish();
+                                    // Enviar datos del usuario al servidor
+                                    sendUserDataToServer(firebaseIdToken, firebaseUser);
                                 } else {
-                                    Log.e("FirebaseAuth", "Error: El token de usuario es nulo");
-                                    Toast.makeText(this, "Error al obtener el token de usuario.", Toast.LENGTH_SHORT).show();
+                                    Log.e(TAG, "Error al obtener Firebase ID Token", tokenTask.getException());
+                                    Toast.makeText(this, "Error al obtener el token de usuario", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
                     } else {
-                        Log.w(TAG, "Error de autenticación", task.getException());
-                        Toast.makeText(this, "Error de autenticación.", Toast.LENGTH_SHORT).show();
-                        updateUI(null);
+                        Log.e(TAG, "Error en Firebase Auth", task.getException());
+                        Toast.makeText(this, "Error de autenticación con Firebase", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateUI(mAuth.getCurrentUser());
+    private void sendUserDataToServer(String firebaseIdToken, FirebaseUser firebaseUser) {
+        new Thread(() -> {
+            try {
+                Log.d(TAG, "Enviando datos del usuario al servidor...");
+
+                ApiRequests api = new ApiRequests();
+                user = api.sendUserToServer(firebaseIdToken);
+
+                // Guardar datos del usuario en SharedPreferences
+                saveUserData(firebaseUser);
+
+                runOnUiThread(() -> {
+                    Log.d(TAG, "Datos del usuario guardados exitosamente");
+                    Log.d(TAG, "Usuario: " + user.getUserName());
+                    Log.d(TAG, "Email: " + user.getEmail());
+
+                    // Actualizar estado en MyApplication
+                    MyApplication app = (MyApplication) getApplication();
+                    app.saveGoogleSignInState(
+                            firebaseUser.getEmail(),
+                            firebaseUser.getDisplayName(),
+                            true
+                    );
+
+                    // Navegar a la siguiente actividad
+                    navigateToMainActivity();
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error al enviar datos del usuario al servidor", e);
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }).start();
     }
 
-    private void updateUI(FirebaseUser user) {
-        if (user != null) {
-            Log.d(TAG, "Usuario logeado: " + user.getDisplayName());
-        } else {
-            Log.d(TAG, "Usuario no logeado");
+    private void saveUserData(FirebaseUser firebaseUser) {
+        SharedPreferences prefs = getSharedPreferences(MyApplication.PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        // Guardar datos del usuario recibidos del servidor
+        if (user.getDeviceToken() != null) {
+            editor.putString("token", user.getDeviceToken());
         }
-    }
-    private void onGoogleSignInSuccess(FirebaseUser user) {
-        // Tu lógica existente de login...
+        if (user.getUserFid() != null) {
+            editor.putString("fid", user.getUserFid());
+        }
+        if (user.getUserName() != null) {
+            editor.putString("userName", user.getUserName());
+        }
+        if (user.getEmail() != null) {
+            editor.putString("email", user.getEmail());
+        }
+        if (user.getUserPhoto() != null) {
+            editor.putString("photoUrl", user.getUserPhoto());
+        }
 
-        // Guardar el estado de Google Sign In
+        editor.apply();
+
+        Log.d(TAG, "Datos del usuario guardados en SharedPreferences");
+    }
+
+    private void continueWithoutGoogleLogin() {
+        Log.d(TAG, "Continuando sin Google Sign In...");
+
         MyApplication app = (MyApplication) getApplication();
-        app.saveGoogleSignInState(
-                user.getEmail(),
-                user.getDisplayName(),
-                true
-        );
+        app.saveGoogleSignInState(null, null, false);
 
-        Log.d("Login", "Google Sign In guardado para: " + user.getEmail());
-
-        // Navegar a la siguiente actividad
-        // startActivity(new Intent(this, MainActivity.class));
-    }
-    // Método para verificar si necesitas mostrar la pantalla de login
-    private boolean shouldShowLoginScreen() {
-        MyApplication app = (MyApplication) getApplication();
-
-        // Verificar si tanto el dispositivo como Google están autenticados
-        boolean deviceAuth = MyApplication.isDeviceAuthenticated();
-        boolean googleAuth = MyApplication.isGoogleSignedIn();
-
-        Log.d("Login", "Device Auth: " + deviceAuth + ", Google Auth: " + googleAuth);
-
-        // Solo mostrar login si falta alguna autenticación
-        return !deviceAuth || !googleAuth;
+        navigateToMainActivity();
     }
 
-    private void continueWithoutLogin() {
-        startActivity(new Intent(LoginActivity.this, InicioActivity.class));
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, InicioActivity.class);
+        startActivity(intent);
         finish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Verificar si el usuario ya está autenticado con Google
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            Log.d(TAG, "Usuario ya autenticado: " + currentUser.getEmail());
+        }
     }
 }

@@ -1,20 +1,5 @@
 package com.example.animor.Utils;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalListingRequest;
-import com.example.animor.R;
-
-import java.util.List;
-
 public class FavoritesAdapter{
 
    /* private List<Animal> favoritesList;
