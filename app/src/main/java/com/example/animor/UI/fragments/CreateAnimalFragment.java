@@ -3,9 +3,7 @@ package com.example.animor.UI.fragments;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +22,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -36,8 +35,10 @@ import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Sex;
 import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
+import com.example.animor.Model.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.PreferenceUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -46,6 +47,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class CreateAnimalFragment extends Fragment {
 
@@ -137,8 +139,8 @@ public class CreateAnimalFragment extends Fragment {
         btnGuardar = view.findViewById(R.id.buttonSave);
         btnGuardar.setVisibility(View.VISIBLE);
         spSpecies = view.findViewById(R.id.spinnerSpecies);
-        new Thread(() -> {
-            ArrayList<Species> receivedSpecies = MyApplication.getSpecies();
+        MyApplication.executor.execute(()->{
+            List<Species> receivedSpecies = PreferenceUtils.getSpeciesList();
             requireActivity().runOnUiThread(() -> {
                 ArrayAdapter<Species> adapter = new ArrayAdapter<>(
                         requireContext(),
@@ -147,17 +149,17 @@ public class CreateAnimalFragment extends Fragment {
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spSpecies.setAdapter(adapter);
             });
-        }).start();
+        });
         listTags = view.findViewById(R.id.listTags);
         listTags.setVisibility(View.VISIBLE);
-        new Thread(() -> {
-            ArrayList<Tag> receivedTags = MyApplication.getTags();
+        MyApplication.executor.execute(()->{
+            List<Tag> receivedTags = PreferenceUtils.getTagList();
             ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
             requireActivity().runOnUiThread(() -> {
                 listTags.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 listTags.setAdapter(adapter);
             });
-        }).start();
+        });
     }
 
     private void setupListeners() {
@@ -306,11 +308,9 @@ public class CreateAnimalFragment extends Fragment {
         }
 
 // Crear referencia única para la imagen
-        SharedPreferences prefs = MyApplication.getAppContext()
-                .getSharedPreferences(MyApplication.PREFS_NAME, Context.MODE_PRIVATE);
-        String fid= prefs.getString(MyApplication.KEY_DEVICE_TOKEN, null);
+        User user = PreferenceUtils.getUser();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
-        StorageReference imageRef = storageReference.child("foto/"+fid +"/"+fileName);
+        StorageReference imageRef = storageReference.child("foto/"+user.getUserId() +"/"+fileName);
         imagePath = imageRef.getPath();
 
         // Subir archivo

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
 import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Species;
@@ -41,7 +40,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
         holder.txtName.setText(animal.getAnimalName());
-        ArrayList<Species> species = MyApplication.getSpecies();
+        List<Species> species = PreferenceUtils.getSpeciesList();
         String speciesName="";
         for (Species s : species){
             if(s.getSpeciesId()== animal.getAnimalId()){

@@ -9,10 +9,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.AnimalListing;
+import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Species;
 import com.example.animor.R;
 import com.squareup.picasso.Picasso;
@@ -94,7 +93,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     // Métodos auxiliares
     private String getSpeciesName(int speciesId) {
-        ArrayList<Species> species = MyApplication.getSpecies();
+        List<Species> species = PreferenceUtils.getSpeciesList();
         if (species != null) {
             for (Species s : species) {
                 if (s.getSpeciesId() == speciesId) {

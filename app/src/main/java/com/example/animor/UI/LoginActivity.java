@@ -1,7 +1,6 @@
 package com.example.animor.UI;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,10 +11,18 @@ import com.example.animor.App.MyApplication;
 import com.example.animor.Model.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
-import com.google.android.gms.auth.api.signin.*;
+import com.example.animor.Utils.JacksonUtils;
+import com.example.animor.Utils.PreferenceUtils;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.*;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -98,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendUserDataToServer(String firebaseIdToken, FirebaseUser firebaseUser) {
-        new Thread(() -> {
+        MyApplication.executor.execute(()->{
             try {
                 Log.d(TAG, "Enviando datos del usuario al servidor...");
 
@@ -106,24 +113,10 @@ public class LoginActivity extends AppCompatActivity {
                 user = api.sendUserToServer(firebaseIdToken);
 
                 // Guardar datos del usuario en SharedPreferences
-                saveUserData(firebaseUser);
+                saveUserData(user);
 
-                runOnUiThread(() -> {
-                    Log.d(TAG, "Datos del usuario guardados exitosamente");
-                    Log.d(TAG, "Usuario: " + user.getUserName());
-                    Log.d(TAG, "Email: " + user.getEmail());
-
-                    // Actualizar estado en MyApplication
-                    MyApplication app = (MyApplication) getApplication();
-                    app.saveGoogleSignInState(
-                            firebaseUser.getEmail(),
-                            firebaseUser.getDisplayName(),
-                            true
-                    );
-
-                    // Navegar a la siguiente actividad
-                    navigateToMainActivity();
-                });
+                // Navegar a la siguiente actividad
+                runOnUiThread(this::navigateToMainActivity);
 
             } catch (Exception e) {
                 Log.e(TAG, "Error al enviar datos del usuario al servidor", e);
@@ -131,41 +124,17 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
                 });
             }
-        }).start();
+        });
     }
 
-    private void saveUserData(FirebaseUser firebaseUser) {
-        SharedPreferences prefs = getSharedPreferences(MyApplication.PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
-        // Guardar datos del usuario recibidos del servidor
-        if (user.getDeviceToken() != null) {
-            editor.putString("token", user.getDeviceToken());
-        }
-        if (user.getUserFid() != null) {
-            editor.putString("fid", user.getUserFid());
-        }
-        if (user.getUserName() != null) {
-            editor.putString("userName", user.getUserName());
-        }
-        if (user.getEmail() != null) {
-            editor.putString("email", user.getEmail());
-        }
-        if (user.getUserPhoto() != null) {
-            editor.putString("photoUrl", user.getUserPhoto());
-        }
-
-        editor.apply();
-
+    private void saveUserData(User user) {
+        String userJson = JacksonUtils.entityToJson(user);
+        PreferenceUtils.saveData(PreferenceUtils.KEY_USER_MODEL, userJson);
         Log.d(TAG, "Datos del usuario guardados en SharedPreferences");
     }
 
     private void continueWithoutGoogleLogin() {
         Log.d(TAG, "Continuando sin Google Sign In...");
-
-        MyApplication app = (MyApplication) getApplication();
-        app.saveGoogleSignInState(null, null, false);
-
         navigateToMainActivity();
     }
 
@@ -178,7 +147,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         // Verificar si el usuario ya está autenticado con Google
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {

@@ -14,12 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.PreferenceUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -164,20 +165,13 @@ public class UserActivity extends AppCompatActivity {
     }
 
     public void performGoogleLogout() {
-        MyApplication app = (MyApplication) getApplication();
-
         // Actualizar UI inmediatamente
         showLoginLayout();
-
-        // Limpiar solo Google Sign In (mantener autenticación de dispositivo)
-        app.saveGoogleSignInState("", "", false);
-
         // Cerrar sesión de Google y Firebase en segundo plano
-        new Thread(() -> {
+        MyApplication.executor.execute(() ->{
             try {
                 // Cerrar sesión de Firebase
                 FirebaseAuth.getInstance().signOut();
-
                 // Cerrar sesión de Google
                 mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -185,7 +179,6 @@ public class UserActivity extends AppCompatActivity {
                     } else {
                         Log.e("UserActivity", "Error al cerrar sesión de Google: " + task.getException());
                     }
-
                     // Navegar a LoginActivity DESPUÉS de limpiar todo
                     runOnUiThread(() -> {
                         Intent intent = new Intent(this, LoginActivity.class);
@@ -206,8 +199,8 @@ public class UserActivity extends AppCompatActivity {
                     finish();
                 });
             }
-        }).start();
-
+        });
+        PreferenceUtils.removeUser();
         Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
     }
 
