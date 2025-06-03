@@ -68,7 +68,9 @@ public class ApiRequests {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            assert response.body() != null;
+            if(response.body() == null){
+                throw new RuntimeException("AppCheck response body is empty");
+            }
             if (response.isSuccessful()) {
                 String cuerpoRespuesta = response.body().string();
                 Log.d(TAG, "Respuesta del servidor con device-token, tags y species: " + cuerpoRespuesta);
@@ -78,28 +80,14 @@ public class ApiRequests {
 
                 // Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
-                List<Tag> tags = new ArrayList<>();
-                for (int i = 0; i < tagsArray.length(); i++) {
-                    JSONObject tagObject = tagsArray.getJSONObject(i);
-                    Tag tag = new Tag();
-                    tag.setTagId(tagObject.getInt("tagId"));
-                    tag.setTagName(tagObject.getString("tagName"));
-                    tags.add(tag);
-                }
+                List<Tag> tagList = JacksonUtils.readEntities(tagsArray.toString(), new TypeReference<>() {});
 
                 // Procesar species
                 JSONArray speciesArray = dataObject.getJSONArray("speciesDTOList");
-                ArrayList<Species> speciesList = new ArrayList<>();
-                for (int i = 0; i < speciesArray.length(); i++) {
-                    JSONObject speciesObject = speciesArray.getJSONObject(i);
-                    Species species = new Species();
-                    species.setSpeciesId(speciesObject.getInt("speciesId"));
-                    species.setSpeciesName(speciesObject.getString("name"));
-                    speciesList.add(species);
-                }
+                List<Species> speciesList = JacksonUtils.readEntities(speciesArray.toString(), new TypeReference<>() {});
 
                 // Preparar respuesta
-                return new StartupResource(speciesList, tags, deviceToken);
+                return new StartupResource(speciesList, tagList, deviceToken);
             } else {
                 Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + response.code()
                         + " | Respuesta: " + response.body().string());
