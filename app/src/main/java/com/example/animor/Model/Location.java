@@ -2,7 +2,7 @@ package com.example.animor.Model;
 
 import java.io.Serializable;
 
-public class LocationRequest implements Serializable {
+public class Location implements Serializable {
     String country;
     String province;
     String city;
@@ -13,10 +13,10 @@ public class LocationRequest implements Serializable {
     private int distanceMeters;
 
 
-    public LocationRequest() {
+    public Location() {
     }
 
-    public LocationRequest(String country, String province, String city, String postalCode, String address, double longitude, double latitude) {
+    public Location(String country, String province, String city, String postalCode, String address, double longitude, double latitude) {
         this.country = country;
         this.province = province;
         this.city = city;

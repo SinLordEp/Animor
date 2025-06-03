@@ -365,6 +365,23 @@
                     android:text="Dirección"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+                <!-- Sección de Ubicación -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ubicación"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Botón para obtener ubicación actual -->
+                <Button
+                    android:id="@+id/btnGetLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Obtener Mi Ubicación Actual"
+                    android:backgroundTint="@color/black"
+                    android:textColor="@android:color/white"
+                    android:layout_marginBottom="16dp" />
                 <EditText
                     android:id="@+id/etAddress"
                     android:layout_width="match_parent"
