@@ -75,16 +75,27 @@ public class MyApplication extends Application {
 
         FirebaseAppCheck.getInstance().getToken(false)
                 .addOnSuccessListener(tokenResult -> {
-                    appCheckTokenAndDeviceFid[0] = tokenResult.getToken();
-                    tokenOk[0] = true;
+                    String appCheckToken = tokenResult.getToken();
+                    if(!appCheckToken.isEmpty()){
+                        appCheckTokenAndDeviceFid[0] = appCheckToken;
+                        tokenOk[0] = true;
+                        Log.e(TAG, "Appcheck token");
+                    }else{
+                        Log.e(TAG, "Error getting appcheck token");
+                    }
                     tryContinue.run();
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error al obtener App Check Token", e));
 
         FirebaseInstallations.getInstance().getId()
                 .addOnSuccessListener(deviceFid -> {
-                    appCheckTokenAndDeviceFid[1] = deviceFid;
-                    idOk[0] = true;
+                    if(!deviceFid.isEmpty()){
+                        appCheckTokenAndDeviceFid[1] = deviceFid;
+                        idOk[0] = true;
+                        Log.e(TAG, "Device fid fetched: " + deviceFid);
+                    }else{
+                        Log.e(TAG, "Error getting Device fid");
+                    }
                     tryContinue.run();
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Error al obtener Firebase Installation ID", e));
