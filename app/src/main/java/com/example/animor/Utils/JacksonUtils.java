@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JacksonUtils {
-    private static ObjectMapper mapper = null;
-
+    private static final ObjectMapper mapper = new ObjectMapper();
+    static {
+        mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+    }
     public static <T> T readEntity(String json, TypeReference<T> typeReference){
-        if(mapper == null){
-            mapper = new ObjectMapper();
-        }
         try {
             return mapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
@@ -22,9 +21,6 @@ public class JacksonUtils {
     }
 
     public static <T> List<T> readEntities(String json, TypeReference<List<T>> typeReference){
-        if(mapper == null){
-            mapper = new ObjectMapper();
-        }
         try {
             return mapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
@@ -33,9 +29,6 @@ public class JacksonUtils {
     }
 
     public static <T> String entityToJson(T entity){
-        if(mapper == null){
-            mapper = new ObjectMapper();
-        }
         try{
             return mapper.writeValueAsString(entity);
         } catch (JsonProcessingException e) {
