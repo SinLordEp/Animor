@@ -61,8 +61,6 @@ public class CreateActivity extends AppCompatActivity {
         }
 
         bottomNavigationView.setSelectedItemId(R.id.nav_listing);
-
-        bottomNavigationView.setSelectedItemId(R.id.nav_inicio); // marcar como activo
         navigationHelper.setupBottomNavigation(bottomNavigationView);
 
         Log.d(TAG, "onCreate completed successfully");
