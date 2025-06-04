@@ -78,7 +78,7 @@ public class ApiRequests {
             }
             throw new IllegalArgumentException("Not supported class while converting json response body");
         } catch (JSONException e) {
-            throw new RuntimeException("Json format is invalid");
+            throw new RuntimeException("Json format is invalid. Input: " + body);
         }
     }
     private static JSONObject getJsonObjectFromBody(String body){
