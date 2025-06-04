@@ -50,7 +50,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.time.format.DateTimeFormatter;
 
 
 public class CreateAnimalFragment extends Fragment {
@@ -78,13 +77,13 @@ public class CreateAnimalFragment extends Fragment {
     private ImageView imgAnimal;
     private Button btnSeleccionarImagen;
     private Button btnGuardar;
-    private ListView listTags;
+    private ListView listTagsView;
     static LocalDate birthDate;
     Spinner spSpecies;
 
     static Sex sex = Sex.valueOf("Unknown");
     ApiRequests api = new ApiRequests();
-    List<Tag> selectedTags = new ArrayList<>();
+    List<TagRequest> selectedTags = new ArrayList<>();
     SpeciesDTO animalSpeciesDTO = new SpeciesDTO();
     String imagePath="";
 
@@ -153,16 +152,25 @@ public class CreateAnimalFragment extends Fragment {
                 spSpecies.setAdapter(adapter);
             });
         });
-        listTags = view.findViewById(R.id.listTags);
+        listTagsView = view.findViewById(R.id.listTags);
         MyApplication.executor.execute(()->{
             List<TagDTO> receivedTags = PreferenceUtils.getTagList();
-            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
+            List<Tag> tagsInList = new ArrayList<>();
+                for(TagDTO t: receivedTags){
+                    Tag tg = new Tag();
+                    tg.setTagId(t.getTagId());
+                    tg.setTagName(t.getTagName());
+                    tagsInList.add(tg);
+                }
             requireActivity().runOnUiThread(() -> {
-                listTags.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-                listTags.setAdapter(adapter);
+                ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
+                        requireContext(),
+                        android.R.layout.simple_list_item_multiple_choice,
+                        tagsInList);
+                listTagsView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+                listTagsView.setAdapter(adapter);
             });
         });
-        listTags.setVisibility(View.VISIBLE);
     }
 
     private void setupListeners() {
@@ -191,9 +199,9 @@ public class CreateAnimalFragment extends Fragment {
                 // Manejar caso cuando no hay selección
             }
         });
-        listTags.setOnItemClickListener((adapterView, view, i, l) -> {
+        listTagsView.setOnItemClickListener((adapterView, view, i, l) -> {
             Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
-            Tag tag = new Tag();
+            TagRequest tag = new TagRequest();
             tag.setTagName(selectedTag.getTagName());
             tag.setTagId(selectedTag.getTagId());
             selectedTags.add(tag);
@@ -432,7 +440,7 @@ public class CreateAnimalFragment extends Fragment {
         animal.setNeutered(isNeutered);
         animal.setMicrochipNumber(microchip);
         animal.setAdopted(isAdopted);
-        animal.setTagList(listTags);
+        animal.setTagList(selectedTags);
         Thread thread = getThread(animal);
         try {
             thread.join();

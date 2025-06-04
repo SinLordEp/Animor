@@ -4,6 +4,9 @@ public class TagRequest {
     private int tagId;
     private String tagName;
 
+    public TagRequest() {
+    }
+
     public int getTagId() {
         return tagId;
     }

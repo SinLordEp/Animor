@@ -223,4 +223,9 @@ public class Animal implements Serializable {
     public static List<Animal> fromDTOList(List<AnimalDTO> animalDTOList){
         return animalDTOList.stream().map(Animal::fromDTO).collect(Collectors.toList());
     }
+
+    public List<Photo> getPhotoList() {
+        return photoList;
+    }
+
 }
