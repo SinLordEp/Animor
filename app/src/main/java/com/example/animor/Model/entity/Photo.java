@@ -1,17 +1,17 @@
-package com.example.animor.Model;
+package com.example.animor.Model.entity;
 
 import java.io.Serializable;
 
-public class AnimalPhoto implements Serializable {
+public class Photo implements Serializable {
     private long photoId;
     private String photoUrl;
     private boolean isCoverPhoto;
     private int displayOrder;
     private String filePath;
 
-    public AnimalPhoto() {}
+    public Photo() {}
 
-    public AnimalPhoto(int photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) { /*, String filePath*/
+    public Photo(int photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) { /*, String filePath*/
         this.photoId = photoId;
         this.photoUrl = photoUrl;
         this.isCoverPhoto = isCoverPhoto;

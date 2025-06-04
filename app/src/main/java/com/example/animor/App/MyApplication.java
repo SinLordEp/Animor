@@ -7,20 +7,17 @@ import static com.example.animor.Utils.PreferenceUtils.KEY_TAG_LIST;
 import android.app.Application;
 import android.util.Log;
 
-import com.example.animor.Model.Species;
 import com.example.animor.Model.StartupResource;
-import com.example.animor.Model.Tag;
-import com.example.animor.Model.User;
+import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.JacksonUtils;
 import com.example.animor.Utils.PreferenceUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.appcheck.FirebaseAppCheck;
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.installations.FirebaseInstallations;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,16 +31,11 @@ public class MyApplication extends Application {
     //private static String appCheckToken;
     private static String firebaseInstallationId;
     private static String deviceToken;
-    private static List<Tag> tags;
-    private static List<Species> species;
     private static String notificationToken;
-    private static boolean isGoogleSignedIn = false;
-    private static MyApplication instance;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         PreferenceUtils.init(getApplicationContext());
         // Inicializar Firebase
         FirebaseApp.initializeApp(this);
@@ -110,15 +102,11 @@ public class MyApplication extends Application {
                 //species = PreferenceUtils.getSpeciesList();
                // tags = PreferenceUtils.getTagList();
                 // Guardar datos recibidos
-                species = startupResource.getSpecies();
-                tags = startupResource.getTags();
                 deviceToken = startupResource.getDeviceToken();
                 Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + deviceToken);
-
                 // Guardar en SharedPreferences
-                ObjectMapper mapper = new ObjectMapper();
-                String tagListJson = mapper.writeValueAsString(startupResource.getTags());
-                String speciesListJson = mapper.writeValueAsString(startupResource.getSpecies());
+                String tagListJson = JacksonUtils.entityToJson(startupResource.getTags());
+                String speciesListJson = JacksonUtils.entityToJson(startupResource.getSpecies());
 
                 PreferenceUtils.saveData(KEY_TAG_LIST, tagListJson);
                 PreferenceUtils.saveData(KEY_SPECIES_LIST, speciesListJson);
@@ -130,12 +118,10 @@ public class MyApplication extends Application {
     }
 
     private void checkGoogleSignInState() {
-        User currentUser = PreferenceUtils.getUser();
+        UserDTO currentUser = PreferenceUtils.getUser();
         if (currentUser != null) {
-            isGoogleSignedIn = true;
             Log.d(TAG, "Usuario Google ya autenticado: " + currentUser.getEmail());
         } else {
-            isGoogleSignedIn = false;
             Log.d(TAG, "No hay usuario Google autenticado");
         }
     }
@@ -145,7 +131,6 @@ public class MyApplication extends Application {
         // Limpiar SharedPreferences
         PreferenceUtils.removeUser();
         // Resetear variables
-        isGoogleSignedIn = false;
         deviceToken = null;
         Log.d(TAG, "Logout completo realizado");
     }

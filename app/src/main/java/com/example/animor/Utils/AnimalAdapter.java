@@ -9,22 +9,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Species;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
     List<Animal> animalList;
-    private List<Species> speciesList;
+    private List<SpeciesDTO> speciesDTOList;
     OnAnimalClickListener listener;
-    public AnimalAdapter(List<Animal> animalList, List<Species> speciesList, OnAnimalClickListener listener) {
+    public AnimalAdapter(List<Animal> animalList, List<SpeciesDTO> speciesDTOList, OnAnimalClickListener listener) {
         this.animalList = animalList;
-        this.speciesList = speciesList;
+        this.speciesDTOList = speciesDTOList;
         this.listener = listener;
     }
 
@@ -41,9 +40,9 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
         holder.txtName.setText(animal.getAnimalName());
-        List<Species> species = PreferenceUtils.getSpeciesList();
+        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
         String speciesName="";
-        for (Species s : speciesList) {
+        for (SpeciesDTO s : speciesDTOList) {
             if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
                 break;
@@ -51,10 +50,10 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
 
     }
         holder.txtSpecies.setText(speciesName);
-        ArrayList<AnimalPhoto> photoList = animal.getAnimalPhotoList();
+        List<Photo> photoList = animal.getAnimalPhotoList();
         String photoUrl = "";
         if (photoList != null) {
-            for (AnimalPhoto a : photoList) {
+            for (Photo a : photoList) {
                 if (a.getIsCoverPhoto()) {
                     photoUrl = a.getPhotoUrl();
                     break;

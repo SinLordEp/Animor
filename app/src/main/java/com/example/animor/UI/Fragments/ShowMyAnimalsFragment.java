@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.Species;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
@@ -32,7 +32,7 @@ import java.util.List;
 
 public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
-    List<Species> speciesList = PreferenceUtils.getSpeciesList();
+    List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList();
     private RecyclerView rvAnimals;
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
@@ -71,8 +71,8 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        List<Species> speciesList = PreferenceUtils.getSpeciesList(); //
-        adapter = new AnimalAdapter(animalList, speciesList, this);   //
+        List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList(); //
+        adapter = new AnimalAdapter(animalList, speciesDTOList, this);   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 
@@ -85,7 +85,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
-            List<Animal> newAnimalList = api.askForMyAnimalsToDatabase();
+            List<Animal> newAnimalList = api.getMyAnimalsFromServer();
             if (newAnimalList == null){
                 requireActivity().runOnUiThread(() -> {rvAnimals.setVisibility(View.GONE);});
                 LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);

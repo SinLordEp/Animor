@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.App.MyApplication;
-import com.example.animor.Model.User;
+import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private User user = new User();
+    private UserDTO user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserData(User user) {
+    private void saveUserData(UserDTO user) {
         String userJson = JacksonUtils.entityToJson(user);
         PreferenceUtils.saveData(PreferenceUtils.KEY_USER_MODEL, userJson);
         Log.d(TAG, "Datos del usuario guardados en SharedPreferences");

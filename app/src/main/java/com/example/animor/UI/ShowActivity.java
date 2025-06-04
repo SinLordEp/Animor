@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.animor.Model.Animal;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.Fragments.ShowMyAnimalFragment;
 import com.example.animor.UI.Fragments.ShowMyAnimalsFragment;

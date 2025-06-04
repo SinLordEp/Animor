@@ -1,4 +1,4 @@
-package com.example.animor.Model;
+package com.example.animor.Model.entity;
 
 import androidx.annotation.NonNull;
 

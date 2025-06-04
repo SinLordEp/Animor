@@ -17,10 +17,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.dto.TagDTO;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
@@ -28,7 +28,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyAnimalFragment extends Fragment {
@@ -70,16 +69,16 @@ public class ShowMyAnimalFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        List<Species> species = PreferenceUtils.getSpeciesList();
+        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
         String speciesName="";
-        for (Species s : species){
+        for (SpeciesDTO s : speciesDTOS){
             if(s.getSpeciesId()== animal.getAnimalId()){
                 speciesName=s.getSpeciesName();
             }
         }
-        ArrayList<AnimalPhoto> photoList = animal.getAnimalPhotoList();
+        List<Photo> photoList = animal.getAnimalPhotoList();
         String photoUrl = "";
-        for (AnimalPhoto a : photoList){
+        for (Photo a : photoList){
             if(a.getIsCoverPhoto()){
                 photoUrl=a.getPhotoUrl();
             }
@@ -131,8 +130,8 @@ public class ShowMyAnimalFragment extends Fragment {
         listTags = view.findViewById(R.id.listTags);
         listTags.setVisibility(View.VISIBLE);
         new Thread(() -> {
-            ArrayList<Tag> animalTags = animal.getTags();
-            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(),
+            List<TagDTO> animalTags = animal.getTagList();
+            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(requireContext(),
                     android.R.layout.simple_list_item_1,
                     animalTags);
             requireActivity().runOnUiThread(() -> {

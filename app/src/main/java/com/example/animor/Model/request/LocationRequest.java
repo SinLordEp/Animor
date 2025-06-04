@@ -1,30 +1,13 @@
-package com.example.animor.Model;
+package com.example.animor.Model.request;
 
-import java.io.Serializable;
-
-public class Location implements Serializable {
-    String country;
-    String province;
-    String city;
-    String postalCode;
-    String address;
-    double longitude;
-    double latitude;
-    private int distanceMeters;
-
-
-    public Location() {
-    }
-
-    public Location(String country, String province, String city, String postalCode, String address, double longitude, double latitude) {
-        this.country = country;
-        this.province = province;
-        this.city = city;
-        this.postalCode = postalCode;
-        this.address = address;
-        this.longitude = longitude;
-        this.latitude = latitude;
-    }
+public class LocationRequest {
+    private String country;
+    private String province;
+    private String city;
+    private String postalCode;
+    private String address;
+    private double longitude;
+    private double latitude;
 
     public String getCountry() {
         return country;
@@ -81,6 +64,4 @@ public class Location implements Serializable {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    public int getDistanceMeters() { return distanceMeters; }
-    public void setDistanceMeters(int distanceMeters) { this.distanceMeters = distanceMeters; }
 }
