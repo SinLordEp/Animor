@@ -46,14 +46,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ViewPager2 parafragments -->
+    <!-- ViewPager2 para los fragments -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="130dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    <!-- Contenedor para otros fragments (inicialmente oculto) -->
+    <!-- Contenedor para fragments de detalle (inicialmente oculto) -->
     <FrameLayout
         android:id="@+id/detail_container"
         android:layout_width="match_parent"
@@ -64,10 +64,9 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="130dp"
         android:layout_gravity="bottom"
         android:background="@color/primarytwo"
         app:menu="@menu/bottom_nav_menu"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -43,7 +43,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateOneListingFragment extends Fragment implements Geolocalization.LocationCallback {
+public class NoseusaCreateOneListingFragment extends Fragment implements Geolocalization.LocationCallback {
     // Vistas de información del animal
     private ImageView imgAnimal;
     private TextView tvName;
@@ -87,8 +87,8 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     double longitude;
     PreferenceUtils pu;
 
-    public static CreateOneListingFragment newInstance(Animal animal) {
-        CreateOneListingFragment fragment = new CreateOneListingFragment();
+    public static NoseusaCreateOneListingFragment newInstance(Animal animal) {
+        NoseusaCreateOneListingFragment fragment = new NoseusaCreateOneListingFragment();
         Bundle args = new Bundle();
         args.putSerializable("animal", animal);  // o putParcelable si usas Parcelable
         fragment.setArguments(args);

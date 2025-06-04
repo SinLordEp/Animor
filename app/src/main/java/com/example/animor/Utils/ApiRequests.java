@@ -5,7 +5,15 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+<<<<<<< Updated upstream
 import com.example.animor.App.MyApplication;
+=======
+import com.example.animor.Model.Animal;
+import com.example.animor.Model.AnimalListing;
+import com.example.animor.Model.AnimalPhoto;
+import com.example.animor.Model.Sex;
+import com.example.animor.Model.Species;
+>>>>>>> Stashed changes
 import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.dto.AnimalDTO;
 import com.example.animor.Model.dto.PhotoDTO;
@@ -82,13 +90,16 @@ public class ApiRequests {
     }
     public StartupResource sendFidDeviceToServer(String appCheckToken, String deviceFid) {
         String url = "https://www.animor.es/auth/device-token";
-        ApiRequests.deviceFid = deviceFid;
 
+        ApiRequests.deviceFid = deviceFid;
+        RequestBody formBody = new FormBody.Builder()
+                .build();
         Log.d("Appchecktoken para postman", appCheckToken);
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Firebase-AppCheck", appCheckToken)
                 .addHeader("X-Device-Fid", deviceFid)
+                .post(formBody)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
@@ -108,6 +119,9 @@ public class ApiRequests {
                 Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(response)
                         + " | Respuesta: " + getDataFromResponseBody(response));
             }
+        } catch (IOException e) {
+            Log.e(TAG, "Error de tipo in/out: ", e);
+            System.out.println(e.getMessage());
         } catch (Exception e) {
             Log.e(TAG, "Error inesperado en la ejecución: ", e);
         }
@@ -342,5 +356,4 @@ public class ApiRequests {
             Log.e(TAG, "Error al guardar animal: ", e);
         }
     }
-
 }

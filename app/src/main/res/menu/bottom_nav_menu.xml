@@ -7,34 +7,34 @@
         android:icon="@drawable/gatoinicio"
         android:scaleType="centerCrop"
         android:title="inicio"
-        android:titleCondensed="inicio"/>
+        android:titleCondensed="Inicio"/>
     <item
         android:id="@+id/nav_favs"
         android:icon="@drawable/heart"
         android:contentDescription="@string/coraz_n_para_favoritos"
         android:scaleType="centerCrop"
         android:title="@string/favoritos"
-        android:titleCondensed="favoritos"/>
+        android:titleCondensed="Favoritos"/>
 
     <item
     android:id="@+id/nav_listing"
     android:contentDescription="@string/boton_para_registrar_un_animal_para_adoptar"
     android:icon="@android:drawable/ic_input_add"
     android:scaleType="centerCrop"
-    android:title="crear animal" />
+    android:title="Dar en adopción" />
     <item
         android:id="@+id/nav_animals"
         android:contentDescription="mis animales"
         android:icon="@drawable/pawprint"
         android:scaleType="centerCrop"
         android:titleCondensed="registros"
-        android:title="mis registros"/>
+        android:title="Mis animales"/>
     <item
         android:id="@+id/nav_user"
         android:contentDescription="botón para ir a tu cuenta de usuario"
         android:icon="@drawable/user"
         android:scaleType="centerCrop"
         android:title="usuario"
-        android:titleCondensed="mi usuario" />
+        android:titleCondensed="Mi cuenta" />
 
 </menu>

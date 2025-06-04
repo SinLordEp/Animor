@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.R;
 import com.example.animor.Utils.FavoritesAdapter;
+import com.example.animor.Utils.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class FavActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewFavorites;
     private FavoritesAdapter favoritesAdapter;
+    private NavigationHelper navigationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,25 +39,8 @@ public class FavActivity extends AppCompatActivity {
         // Bottom Navigation
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_favs);
+        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.FAVORITES);
+        navigationHelper.setupBottomNavigation(bottomNavigationView);
 
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(FavActivity.this, InicioActivity.class));
-                return true;
-            } else if (id == R.id.nav_favs) {
-                return true;
-            } else if (id == R.id.nav_listing) {
-                startActivity(new Intent(FavActivity.this, CreateActivity.class));
-                return true;
-            } else if (id == R.id.nav_user) {
-                startActivity(new Intent(FavActivity.this, UserActivity.class));
-                return true;
-            } else if (id == R.id.nav_animals) {
-                startActivity(new Intent(FavActivity.this, ShowActivity.class));
-                return true;
-            }
-            return false;
-        });
     }
 }

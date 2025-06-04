@@ -21,18 +21,22 @@
         android:id="@+id/rvAnimalesUsuario"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"
+        android:visibility="visible"/>
 
     <TextView
         android:id="@+id/noanimales"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:gravity="center"
+        android:text="No tienes animales registrados.\nCrea uno primero"
+        android:layout_margin="30dp"
         android:visibility="gone"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="30dp"
         android:text="o bien"
         android:textSize="18sp"
         android:layout_marginBottom="16dp" />

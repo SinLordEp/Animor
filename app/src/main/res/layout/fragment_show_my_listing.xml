@@ -517,10 +517,7 @@
                     android:layout_span="2"
                     android:switchPadding="10dp"
                     android:text="@string/adoptado"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="tableDatos"
-                    app:layout_constraintBottom_toTopOf="linbtn"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    android:textStyle="bold" />
                 </TableRow>
             </TableLayout>
             <LinearLayout

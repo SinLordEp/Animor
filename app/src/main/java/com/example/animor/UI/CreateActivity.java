@@ -10,6 +10,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.Animal;
 import com.example.animor.R;
+import com.example.animor.Utils.NavigationHelper;
 import com.example.animor.Utils.TabsAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -21,6 +22,7 @@ public class CreateActivity extends AppCompatActivity {
     private static final int IMAGE_PICK_REQUEST = 100;
     private Uri imageUri;
     private int currentMode = 0;
+    private NavigationHelper navigationHelper;
 
     // Eliminar esta línea problemática:
     // Button subirImagenBtn = findViewById(R.id.btnSeleccionarImagen);
@@ -60,25 +62,8 @@ public class CreateActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.nav_listing);
 
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(CreateActivity.this, InicioActivity.class));
-                return true;
-            } else if (id == R.id.nav_favs) {
-                startActivity(new Intent(CreateActivity.this, FavActivity.class));
-                return true;
-            } else if (id == R.id.nav_listing) {
-                return true;
-            } else if (id == R.id.nav_user) {
-                startActivity(new Intent(CreateActivity.this, UserActivity.class));
-                return true;
-            } else if (id == R.id.nav_animals) {
-                startActivity(new Intent(CreateActivity.this, ShowActivity.class));
-                return true;
-            }
-            return false;
-        });
+        bottomNavigationView.setSelectedItemId(R.id.nav_inicio); // marcar como activo
+        navigationHelper.setupBottomNavigation(bottomNavigationView);
 
         Log.d(TAG, "onCreate completed successfully");
 

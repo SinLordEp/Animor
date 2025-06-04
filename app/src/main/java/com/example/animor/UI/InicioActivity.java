@@ -26,6 +26,7 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
     private AnimalAdapter adapter;
     private List<Animal> lista;
     AnimalAdapter.OnAnimalClickListener listener;
+    private NavigationHelper navigationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,34 +45,10 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
         // Configurar navegación inferior
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_inicio); // marcar como activo
+        bottomNavigationView.setSelectedItemId(R.id.nav_inicio);
+        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.HOME);
+        navigationHelper.setupBottomNavigation(bottomNavigationView);
 
-        bottomNavigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-
-                if (id == R.id.nav_inicio) {
-                    return true; // Ya estamos en esta actividad
-                } else if (id == R.id.nav_favs) {
-                    startActivity(new Intent(InicioActivity.this, FavActivity.class));
-                    return true;
-                } else if (id == R.id.nav_listing) {
-                    Intent intent = new Intent(InicioActivity.this, CreateActivity.class);
-                    intent.putExtra("show_animals_mode", false);
-                    startActivity(intent);
-                    return true;
-                } else if (id == R.id.nav_user) {
-                    startActivity(new Intent(InicioActivity.this, UserActivity.class));
-                    return true;
-                } else if (id == R.id.nav_animals) {
-                    startActivity(new Intent(InicioActivity.this, ShowActivity.class));
-                    return true;
-                }
-
-                return false;
-            }
-        });
     }
 
     private List<Animal> obtenerAnimales() {

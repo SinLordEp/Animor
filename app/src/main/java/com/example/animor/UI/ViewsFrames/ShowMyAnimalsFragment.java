@@ -116,7 +116,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         showAnimalsLayout(newAnimalList);
     }
 
-    // NUEVO MÉTODO: Mostrar layout cuando no hay login
+    // Mostrar layout cuando no hay login
     private void showNoLoginLayout() {
         Log.d("DEBUG", "Mostrando layout de no login");
 
@@ -136,7 +136,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         }
     }
 
-    // NUEVO MÉTODO: Mostrar layout cuando no hay animales
+    // layout cuando no hay animales
     private void showEmptyAnimalsLayout() {
         Log.d("DEBUG", "Usuario autenticado pero sin animales");
 

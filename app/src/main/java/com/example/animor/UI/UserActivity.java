@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.animor.App.MyApplication;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
+import com.example.animor.Utils.NavigationHelper;
 import com.example.animor.Utils.PreferenceUtils;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,6 +39,7 @@ public class UserActivity extends AppCompatActivity {
     TableRow dataRow;
     Button btnIniciarSesion;
     ImageView imgUsuario;
+    private NavigationHelper navigationHelper;
 
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -90,33 +92,10 @@ public class UserActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
-
-        setupBottomNavigation();
-    }
-
-    private void setupBottomNavigation() {
+        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.USER);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_user);
 
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(UserActivity.this, InicioActivity.class));
-                return true;
-            } else if (id == R.id.nav_favs) {
-                startActivity(new Intent(UserActivity.this, FavActivity.class));
-                return true;
-            } else if (id == R.id.nav_listing) {
-                startActivity(new Intent(UserActivity.this, CreateActivity.class));
-                return true;
-            } else if (id == R.id.nav_user) {
-                return true;
-            } else if (id == R.id.nav_animals) {
-                startActivity(new Intent(UserActivity.this, ShowActivity.class));
-                return true;
-            }
-            return false;
-        });
     }
 
     private void updateUI() {
@@ -129,9 +108,7 @@ public class UserActivity extends AppCompatActivity {
         Log.d("UserActivity", "email: " + email);
 
         // Lógica: ¿hay datos de usuario válidos?
-        if (nombre.equals("No logueado") || email.equals("No logueado") ||
-                nombre.isEmpty() || email.isEmpty() ||
-                nombre.equals("null") || email.equals("null")) {
+        if (PreferenceUtils.getUser()==null) {
 
             // NO hay datos válidos: mostrar el botón de login
             showLoginLayout();
@@ -142,8 +119,8 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void showLoginLayout() {
-        layoutNoLogin.setVisibility(View.VISIBLE);
         dataRow.setVisibility(View.GONE);
+        layoutNoLogin.setVisibility(View.VISIBLE);
 
         // Limpiar los campos de texto para evitar mostrar datos antiguos
         nombreUsuario.setText("");
