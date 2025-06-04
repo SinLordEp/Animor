@@ -34,6 +34,7 @@ import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Sex;
+import com.example.animor.Model.entity.Tag;
 import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.Model.request.TagRequest;
@@ -83,7 +84,7 @@ public class CreateAnimalFragment extends Fragment {
 
     static Sex sex = Sex.valueOf("Unknown");
     ApiRequests api = new ApiRequests();
-    List<TagRequest> selectedTags = new ArrayList<>();
+    List<Tag> selectedTags = new ArrayList<>();
     SpeciesDTO animalSpeciesDTO = new SpeciesDTO();
     String imagePath="";
 
@@ -153,7 +154,6 @@ public class CreateAnimalFragment extends Fragment {
             });
         });
         listTags = view.findViewById(R.id.listTags);
-        listTags.setVisibility(View.VISIBLE);
         MyApplication.executor.execute(()->{
             List<TagDTO> receivedTags = PreferenceUtils.getTagList();
             ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
@@ -162,6 +162,7 @@ public class CreateAnimalFragment extends Fragment {
                 listTags.setAdapter(adapter);
             });
         });
+        listTags.setVisibility(View.VISIBLE);
     }
 
     private void setupListeners() {
@@ -191,8 +192,8 @@ public class CreateAnimalFragment extends Fragment {
             }
         });
         listTags.setOnItemClickListener((adapterView, view, i, l) -> {
-            TagDTO selectedTag = (TagDTO) adapterView.getItemAtPosition(i);
-            TagRequest tag = new TagRequest();
+            Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
+            Tag tag = new Tag();
             tag.setTagName(selectedTag.getTagName());
             tag.setTagId(selectedTag.getTagId());
             selectedTags.add(tag);
@@ -431,7 +432,7 @@ public class CreateAnimalFragment extends Fragment {
         animal.setNeutered(isNeutered);
         animal.setMicrochipNumber(microchip);
         animal.setAdopted(isAdopted);
-        animal.setTagList(selectedTags);
+        animal.setTagList(listTags);
         Thread thread = getThread(animal);
         try {
             thread.join();

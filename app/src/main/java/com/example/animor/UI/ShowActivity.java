@@ -18,6 +18,7 @@ import com.example.animor.UI.ViewsFrames.ShowMyAnimalFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyAnimalsFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyListingFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyListingsFragment;
+import com.example.animor.Utils.NavigationHelper;
 import com.example.animor.Utils.TabsAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -34,7 +35,8 @@ public class ShowActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private TabsAdapter tabsAdapter;
-
+    NavigationHelper navigationHelper;
+    BottomNavigationView bottomNavigationView;
 
 
     // Estados para manejar la navegación
@@ -49,6 +51,7 @@ public class ShowActivity extends AppCompatActivity
 
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
+        navigationHelper = new NavigationHelper(this, NavigationHelper.ActivityType.CREATE);
 
 
         if (viewPager == null || tabLayout == null) {
@@ -57,8 +60,11 @@ public class ShowActivity extends AppCompatActivity
         }
 
         setupViewPager();
-        setupBottomNavigation();
+        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.SHOW);
 
+// Configurar bottom navigation
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
+        navigationHelper.setupBottomNavigation(bottomNavigationView);
         Log.d(TAG, "onCreate completed successfully");
     }
 
@@ -104,32 +110,6 @@ public class ShowActivity extends AppCompatActivity
         });
     }
 
-    private void setupBottomNavigation() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        if (bottomNavigationView == null) {
-            Log.e(TAG, "Error: BottomNavigationView is null");
-            return;
-        }
-
-        bottomNavigationView.setSelectedItemId(R.id.nav_animals);
-
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.nav_inicio) {
-                startActivity(new Intent(ShowActivity.this, InicioActivity.class));
-                return true;
-            } else if (id == R.id.nav_favs) {
-                startActivity(new Intent(ShowActivity.this, FavActivity.class));
-                return true;
-            } else if (id == R.id.nav_listing) {
-                startActivity(new Intent(ShowActivity.this, CreateActivity.class));
-                return true;
-            } else if (id == R.id.nav_user) {
-                startActivity(new Intent(ShowActivity.this, UserActivity.class));
-                return true;
-            } else return true;
-        });
-    }
     private void showDetailFragment(Fragment fragment, String backStackTag, String key, Serializable data) {
         isShowingDetails = true;
         tabLayout.setVisibility(View.GONE);

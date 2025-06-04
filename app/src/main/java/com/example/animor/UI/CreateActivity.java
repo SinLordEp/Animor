@@ -42,7 +42,7 @@ public class CreateActivity extends AppCompatActivity {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");
             return;
         }
-
+        navigationHelper = new NavigationHelper(this, NavigationHelper.ActivityType.CREATE);
         TabsAdapter tabsAdapter = new TabsAdapter(this);
         viewPager.setAdapter(tabsAdapter);
 

@@ -36,11 +36,18 @@ public class NavigationHelper {
      * @param bottomNavigationView El BottomNavigationView a configurar
      */
     public void setupBottomNavigation(BottomNavigationView bottomNavigationView) {
+        if (bottomNavigationView == null) {
+            Log.e("NavigationHelper", "BottomNavigationView es null");
+            return;
+        }
+
         // Marcar el item actual como seleccionado
         markCurrentItem(bottomNavigationView);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
+
+            Log.d("NavigationHelper", "Item seleccionado: " + id + ", Activity actual: " + currentActivityType);
 
             if (id == R.id.nav_inicio) {
                 return handleHomeNavigation();
@@ -62,41 +69,44 @@ public class NavigationHelper {
      * Marca el item actual como seleccionado en el bottom navigation
      */
     private void markCurrentItem(BottomNavigationView bottomNavigationView) {
-        switch (currentActivityType) {
-            case HOME:
-                bottomNavigationView.setSelectedItemId(R.id.nav_inicio);
-                break;
-            case FAVORITES:
-                bottomNavigationView.setSelectedItemId(R.id.nav_favs);
-                break;
-            case CREATE:
-                bottomNavigationView.setSelectedItemId(R.id.nav_listing);
-                break;
-            case SHOW:
-                bottomNavigationView.setSelectedItemId(R.id.nav_animals);
-                break;
-            case USER:
-                bottomNavigationView.setSelectedItemId(R.id.nav_user);
-                break;
+        try {
+            switch (currentActivityType) {
+                case HOME:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_inicio);
+                    break;
+                case FAVORITES:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_favs);
+                    break;
+                case CREATE:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_listing);
+                    break;
+                case SHOW:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_animals);
+                    break;
+                case USER:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_user);
+                    break;
+            }
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error marcando item actual", e);
         }
     }
 
     private boolean handleHomeNavigation() {
+        Log.d("NavigationHelper", "handleHomeNavigation - currentType: " + currentActivityType);
+
         // Si ya estamos en HOME, no navegar
         if (currentActivityType == ActivityType.HOME) {
             return true;
         }
-
-        // Navegar a la activity de inicio
-        // Asume que tienes una MainActivity o similar
-        // Intent intent = new Intent(activity, MainActivity.class);
-        // activity.startActivity(intent);
 
         // Por ahora, solo retornar true si no tienes activity principal definida
         return true;
     }
 
     private boolean handleFavoritesNavigation() {
+        Log.d("NavigationHelper", "handleFavoritesNavigation - currentType: " + currentActivityType);
+
         // Si ya estamos en FAVORITES, no navegar
         if (currentActivityType == ActivityType.FAVORITES) {
             return true;
@@ -109,12 +119,19 @@ public class NavigationHelper {
         }
 
         // Navegar a FavActivity
-        Intent intent = new Intent(activity, FavActivity.class);
-        activity.startActivity(intent);
-        return true;
+        try {
+            Intent intent = new Intent(activity, FavActivity.class);
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a FavActivity", e);
+            return false;
+        }
     }
 
     private boolean handleListingNavigation() {
+        Log.d("NavigationHelper", "handleListingNavigation - currentType: " + currentActivityType);
+
         // Si ya estamos en CREATE, no navegar
         if (currentActivityType == ActivityType.CREATE) {
             return true;
@@ -127,12 +144,19 @@ public class NavigationHelper {
         }
 
         // Navegar a CreateActivity
-        Intent intent = new Intent(activity, CreateActivity.class);
-        activity.startActivity(intent);
-        return true;
+        try {
+            Intent intent = new Intent(activity, CreateActivity.class);
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a CreateActivity", e);
+            return false;
+        }
     }
 
     private boolean handleAnimalsNavigation() {
+        Log.d("NavigationHelper", "handleAnimalsNavigation - currentType: " + currentActivityType);
+
         // Si ya estamos en SHOW, no navegar
         if (currentActivityType == ActivityType.SHOW) {
             return true;
@@ -145,21 +169,33 @@ public class NavigationHelper {
         }
 
         // Navegar a ShowActivity
-        Intent intent = new Intent(activity, ShowActivity.class);
-        activity.startActivity(intent);
-        return true;
+        try {
+            Intent intent = new Intent(activity, ShowActivity.class);
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a ShowActivity", e);
+            return false;
+        }
     }
 
     private boolean handleUserNavigation() {
+        Log.d("NavigationHelper", "handleUserNavigation - currentType: " + currentActivityType);
+
         // Si ya estamos en USER, no navegar
         if (currentActivityType == ActivityType.USER) {
             return true;
         }
 
         // Navegar a UserActivity (siempre permitido)
-        Intent intent = new Intent(activity, UserActivity.class);
-        activity.startActivity(intent);
-        return true;
+        try {
+            Intent intent = new Intent(activity, UserActivity.class);
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a UserActivity", e);
+            return false;
+        }
     }
 
     /**
@@ -167,17 +203,37 @@ public class NavigationHelper {
      * @return true si está logueado, false si no
      */
     private boolean isUserLogged() {
-        UserDTO user = PreferenceUtils.getUser();
-        Log.d("NAVIGATION HELPER", "user:"+user.getUserName());
-        return true;
+        try {
+            UserDTO user = PreferenceUtils.getUser();
+
+            if (user == null) {
+                Log.d("NavigationHelper", "Usuario es null - NO logueado");
+                return false;
+            }
+
+            // Verificar que tenga datos básicos
+            boolean isLogged = user.getUserName() != null && !user.getUserName().isEmpty();
+
+            Log.d("NavigationHelper", "Usuario: " + user.getUserName() + " - Logueado: " + isLogged);
+            return isLogged;
+
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error verificando usuario logueado", e);
+            return false;
+        }
     }
 
     /**
      * Navega a la pantalla de login/user
      */
     private void navigateToLogin() {
-        Intent intent = new Intent(activity, UserActivity.class);
-        activity.startActivity(intent);
+        Log.d("NavigationHelper", "Navegando a UserActivity (no logueado)");
+        try {
+            Intent intent = new Intent(activity, UserActivity.class);
+            activity.startActivity(intent);
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a login", e);
+        }
     }
 
     /**

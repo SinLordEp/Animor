@@ -3,7 +3,6 @@ package com.example.animor.UI;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +18,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.animor.App.MyApplication;
+import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NavigationHelper;
@@ -32,6 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 public class UserActivity extends AppCompatActivity {
+
+    // Views
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ImageButton btnMenu;
@@ -41,9 +43,13 @@ public class UserActivity extends AppCompatActivity {
     TableRow dataRow;
     Button btnIniciarSesion;
     ImageView imgUsuario;
+    BottomNavigationView bottomNavigationView;
+
+    // Navigation y Auth
     private NavigationHelper navigationHelper;
     private GoogleSignInClient mGoogleSignInClient;
 
+    // Datos de usuario
     private String nombre;
     private String photo;
     private String email;
@@ -55,7 +61,7 @@ public class UserActivity extends AppCompatActivity {
 
         // Inicializar GoogleSignInClient
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id)) // Asegúrate de tener este string
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -75,9 +81,15 @@ public class UserActivity extends AppCompatActivity {
         layoutNoLogin = findViewById(R.id.layoutNoLogin);
         dataRow = findViewById(R.id.tableanimal);
         btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
+        bottomNavigationView = findViewById(R.id.bottomNavigation);
     }
 
     private void setupNavigation() {
+        // CORREGIR: Configurar NavigationHelper DESPUÉS de inicializar las vistas
+        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.USER);
+        navigationHelper.setupBottomNavigation(bottomNavigationView);
+
+        // Drawer navigation
         btnMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
         navigationView.setNavigationItemSelectedListener(item -> {
@@ -92,32 +104,36 @@ public class UserActivity extends AppCompatActivity {
             return true;
         });
 
+        // Login button
         btnIniciarSesion.setOnClickListener(v -> {
             Intent intent = new Intent(UserActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         });
-        navigationHelper = NavigationHelper.create(this, NavigationHelper.ActivityType.USER);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
-        bottomNavigationView.setSelectedItemId(R.id.nav_user);
-
     }
 
     private void updateUI() {
-        String nombre = PreferenceUtils.getUser().getUserName();
-        String email =PreferenceUtils.getUser().getUserPhoto();
-        String photo =PreferenceUtils.getUser().getEmail();
+        // CORREGIR: Verificar si el usuario existe antes de acceder a sus propiedades
+        UserDTO user = PreferenceUtils.getUser();
+
+        if (user == null) {
+            Log.d("UserActivity", "Usuario no encontrado");
+            showLoginLayout();
+            return;
+        }
+
+        // Usuario existe, obtener datos
+        nombre = user.getUserName();
+        email = user.getEmail();
+        photo = user.getUserPhoto();
 
         Log.d("UserActivity", "nombre: " + nombre);
         Log.d("UserActivity", "email: " + email);
 
-        // Lógica: ¿hay datos de usuario válidos?
-        if (PreferenceUtils.getUser()==null) {
-
-            // NO hay datos válidos: mostrar el botón de login
+        // Verificar si los datos son válidos
+        if (nombre == null || nombre.isEmpty()) {
             showLoginLayout();
         } else {
-            // SÍ hay datos válidos: mostrar perfil
             showProfileLayout();
         }
     }
@@ -129,30 +145,45 @@ public class UserActivity extends AppCompatActivity {
         // Limpiar los campos de texto para evitar mostrar datos antiguos
         nombreUsuario.setText("");
         emailUsuario.setText("");
+
+        Log.d("UserActivity", "Mostrando layout de login");
     }
 
     private void showProfileLayout() {
         layoutNoLogin.setVisibility(View.GONE);
         dataRow.setVisibility(View.VISIBLE);
 
-        nombreUsuario.setText(nombre);
-        emailUsuario.setText(email);
-        Picasso.get()
-                .load(photo)
-                .placeholder(R.drawable.gatoinicio)
-                .error(R.drawable.gatoinicio)
-                .into(imgUsuario);
+        // CORREGIR: Verificar valores antes de usarlos
+        nombreUsuario.setText(nombre != null ? nombre : "Usuario");
+        emailUsuario.setText(email != null ? email : "Sin email");
 
+        // Cargar imagen de forma segura
+        if (photo != null && !photo.isEmpty()) {
+            Picasso.get()
+                    .load(photo)
+                    .placeholder(R.drawable.gatoinicio)
+                    .error(R.drawable.gatoinicio)
+                    .into(imgUsuario);
+        } else {
+            imgUsuario.setImageResource(R.drawable.gatoinicio);
+        }
+
+        Log.d("UserActivity", "Mostrando layout de perfil");
     }
 
     public void performGoogleLogout() {
-        // Actualizar UI inmediatamente
+        // PRIMERO: Limpiar datos locales
+        PreferenceUtils.removeUser();
+
+        // SEGUNDO: Actualizar UI inmediatamente
         showLoginLayout();
-        // Cerrar sesión de Google y Firebase en segundo plano
-        MyApplication.executor.execute(() ->{
+
+        // TERCERO: Cerrar sesión de Google y Firebase en segundo plano
+        MyApplication.executor.execute(() -> {
             try {
                 // Cerrar sesión de Firebase
                 FirebaseAuth.getInstance().signOut();
+
                 // Cerrar sesión de Google
                 mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
@@ -160,70 +191,24 @@ public class UserActivity extends AppCompatActivity {
                     } else {
                         Log.e("UserActivity", "Error al cerrar sesión de Google: " + task.getException());
                     }
-                    // Navegar a LoginActivity DESPUÉS de limpiar todo
+
+                    // Actualizar UI final
                     runOnUiThread(() -> {
-                        Intent intent = new Intent(this, LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
+                        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
+                        // NO navegar automáticamente, dejar al usuario en UserActivity
+                        updateUI(); // Refrescar UI
                     });
                 });
 
             } catch (Exception e) {
                 Log.e("UserActivity", "Error durante el signOut: " + e.getMessage());
 
-                // En caso de error, navegar de todos modos
                 runOnUiThread(() -> {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
+                    Toast.makeText(this, "Error cerrando sesión", Toast.LENGTH_SHORT).show();
+                    updateUI(); // Refrescar UI aunque haya error
                 });
             }
         });
-        PreferenceUtils.removeUser();
-        Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show();
-    }
-
-    // Si necesitas logout COMPLETO (incluyendo dispositivo):
-    public void performCompleteLogout() {
-        MyApplication app = (MyApplication) getApplication();
-
-        // Actualizar UI inmediatamente
-        showLoginLayout();
-
-        // Limpiar TODO - usar el método de MyApplication
-        app.performCompleteLogout();
-
-        // También limpiar tus SharedPreferences personales si es necesario
-        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
-
-        // Cerrar sesión de Google en segundo plano
-        new Thread(() -> {
-            try {
-                mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
-                    runOnUiThread(() -> {
-                        Intent intent = new Intent(this, LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        finish();
-                    });
-                });
-            } catch (Exception e) {
-                Log.e("UserActivity", "Error durante el signOut: " + e.getMessage());
-                runOnUiThread(() -> {
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                });
-            }
-        }).start();
-
-        Toast.makeText(this, "Sesión cerrada completamente", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -231,5 +216,6 @@ public class UserActivity extends AppCompatActivity {
         super.onResume();
         // Actualizar UI cada vez que se regresa a esta activity
         updateUI();
+        Log.d("UserActivity", "onResume() - UI actualizada");
     }
 }
