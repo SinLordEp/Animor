@@ -66,8 +66,7 @@ public class ApiRequests {
         }
     }
     @SuppressWarnings("unchecked")
-    private static <T> T getJsonObjectFromResponseBody(Response response, String param, Class<T> objectClass) {
-        String body = getResponseBody(response);
+    private static <T> T getJsonObjectFromResponseBody(String body, String param, Class<T> objectClass) {
         try {
             JSONObject jsonResponse = new JSONObject(body);
             if(objectClass == JSONObject.class){
@@ -80,11 +79,11 @@ public class ApiRequests {
             throw new RuntimeException("Json format is invalid");
         }
     }
-    private static JSONObject getDataFromResponseBody(Response response){
-        return getJsonObjectFromResponseBody(response, "data", JSONObject.class);
+    private static JSONObject getDataFromResponseBody(String body){
+        return getJsonObjectFromResponseBody(body, "data", JSONObject.class);
     }
-    private static String getStatusFromResponseBody(Response response){
-        return getJsonObjectFromResponseBody(response, "status", String.class);
+    private static String getStatusFromResponseBody(String body){
+        return getJsonObjectFromResponseBody(body, "status", String.class);
     }
     public StartupResource sendFidDeviceToServer(String appCheckToken, String deviceFid) {
         String url = "https://www.animor.es/auth/device-token";
@@ -101,8 +100,9 @@ public class ApiRequests {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
-                JSONObject dataObject = getDataFromResponseBody(response);
+                JSONObject dataObject = getDataFromResponseBody(responseBody);
                 // Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
                 List<TagDTO> tagList = JacksonUtils.readEntities(tagsArray.toString(), new TypeReference<>() {});
@@ -114,8 +114,8 @@ public class ApiRequests {
                 // Preparar respuesta
                 return new StartupResource(speciesDTOList, tagList, deviceToken);
             } else {
-                Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(response)
-                        + " | Respuesta: " + getDataFromResponseBody(response));
+                Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(responseBody)
+                        + " | Respuesta: " + getDataFromResponseBody(responseBody));
             }
         } catch (IOException e) {
             Log.e(TAG, "Error de tipo in/out: ", e);
@@ -148,9 +148,10 @@ public class ApiRequests {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            Log.d(TAG, "Respuesta del servidor a petición de user data: " + getStatusFromResponseBody(response));
+            String responseBody = getResponseBody(response);
+            Log.d(TAG, "Respuesta del servidor a petición de user data: " + getStatusFromResponseBody(responseBody));
             if (response.isSuccessful()) {
-                JSONObject data = getDataFromResponseBody(response);
+                JSONObject data = getDataFromResponseBody(responseBody);
                 UserDTO user = JacksonUtils.readEntity(data.toString(), new TypeReference<>(){});
                 if(user == null){
                     throw new RuntimeException("User is null");
@@ -185,8 +186,9 @@ public class ApiRequests {
 
         MyApplication.executor.execute(() ->{
             try (Response response = client.newCall(request).execute()) {
+                String responseBody = getResponseBody(response);
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Respuesta del servidor: " + getStatusFromResponseBody(response));
+                    Log.d(TAG, "Respuesta del servidor: " + getStatusFromResponseBody(responseBody));
                     activity.runOnUiThread(() -> {
                         // Limpiar datos locales
                         PreferenceUtils.removeUser();
@@ -198,8 +200,8 @@ public class ApiRequests {
                         activity.finish();
                     });
                 } else {
-                    Log.e(TAG, "Error en la solicitud de borrar cuenta: " + getStatusFromResponseBody(response)
-                            + " | Respuesta: " + getDataFromResponseBody(response));
+                    Log.e(TAG, "Error en la solicitud de borrar cuenta: " + getStatusFromResponseBody(responseBody)
+                            + " | Respuesta: " + getDataFromResponseBody(responseBody));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error al borrar cuenta: ", e);
@@ -234,8 +236,8 @@ public class ApiRequests {
                 Log.d(TAG, "ID del animal creado: " + idAnimal);
                 return idAnimal;
             } else {
-                Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(response)
-                        + " | Respuesta: " + getDataFromResponseBody(response));
+                Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(responseBody)
+                        + " | Respuesta: " + getDataFromResponseBody(responseBody));
             }
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
@@ -262,7 +264,8 @@ public class ApiRequests {
                     .post(requestBody)  // POST con el token como parámetro
                     .build();
             try (Response response = client.newCall(request).execute()) {
-                Log.d(TAG, "Respuesta del servidor: " + getStatusFromResponseBody(response));
+                String responseBody = getResponseBody(response);
+                Log.d(TAG, "Respuesta del servidor: " + getStatusFromResponseBody(responseBody));
             } catch (JsonProcessingException e) {
                 System.out.println("Error mapeando animalPhoto");
             }
@@ -286,9 +289,10 @@ public class ApiRequests {
         List<AnimalDTO> animalDTOList;
         List<Animal> animalList = new ArrayList<>();
         try (Response response = client.newCall(request).execute()) {
-            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + getResponseBody(response));
+            String responseBody = getResponseBody(response);
+            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
-                JSONObject jsonObject = getDataFromResponseBody(response);
+                JSONObject jsonObject = getDataFromResponseBody(responseBody);
                 JSONArray jsonArray = jsonObject.getJSONArray("animalDTOList");
                 animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
                 animalList = Animal.fromDTOList(animalDTOList);
@@ -312,13 +316,14 @@ public class ApiRequests {
                 .delete()
                 .build();
         try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
-                String status = getStatusFromResponseBody(response);
+                String status = getStatusFromResponseBody(responseBody);
                 if("ANIMAL_DELETE_SUCCESS".equals(status)){
                     Log.d("ApiRequest - Delete animal", "Borrado exitoso");
                 }
             } else {
-                Log.e(TAG, "Error assert recibiendo tags: " + getStatusFromResponseBody(response)
+                Log.e(TAG, "Error assert recibiendo tags: " + getStatusFromResponseBody(responseBody)
                         + " | Respuesta: " + getResponseBody(response));
                 //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
             }
@@ -348,7 +353,8 @@ public class ApiRequests {
         Log.d(TAG, "PETICIÓN ENVIADA: " + request);
 
         try (Response response = client.newCall(request).execute()) {
-            String status = getStatusFromResponseBody(response);
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
             Log.d(TAG, "Respuesta del servidor al enviar animal: " + status);
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
