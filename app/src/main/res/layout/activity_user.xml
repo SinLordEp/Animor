@@ -116,7 +116,7 @@
             </TableRow>
 
             <TableRow
-                android:id="@+id/dataTable"
+                android:id="@+id/tableanimal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone">

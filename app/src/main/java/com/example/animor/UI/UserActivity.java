@@ -66,7 +66,7 @@ public class UserActivity extends AppCompatActivity {
         emailUsuario = findViewById(R.id.textViewEmailUsuario);
         imgUsuario = findViewById(R.id.imgUser);
         layoutNoLogin = findViewById(R.id.layoutNoLogin);
-        dataRow = findViewById(R.id.dataTable);
+        dataRow = findViewById(R.id.tableanimal);
         btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
     }
 

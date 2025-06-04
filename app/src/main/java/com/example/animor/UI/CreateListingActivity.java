@@ -1,14 +1,14 @@
-package com.example.animor.UI.Fragments;
+package com.example.animor.UI;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
+
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.Animal;
@@ -31,7 +31,9 @@ import com.example.animor.Model.AnimalPhoto;
 import com.example.animor.Model.Location;
 import com.example.animor.Model.Species;
 import com.example.animor.Model.Tag;
+import com.example.animor.Model.User;
 import com.example.animor.R;
+import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
 import com.example.animor.Utils.NonScrollListView;
@@ -45,7 +47,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateOneListingFragment extends Fragment implements Geolocalization.LocationCallback {
+
+public class CreateListingActivity extends AppCompatActivity implements Geolocalization.LocationCallback{
     // Vistas de información del animal
     private ImageView imgAnimal;
     private TextView tvName;
@@ -74,12 +77,10 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     private ImageButton btnMenu;
     private NonScrollListView listTags;
     private NavigationView navigationView;
-    private DrawerLayout drawerLayout;
 
     // Geolocalización
     private Geolocalization geolocalization;
     private Geocoder geocoder;
-    private static final String TAG = "CreateOneListingFragment";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
     // Coordenadas actuales
@@ -87,89 +88,77 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     private double currentLongitude = 0.0;
     double latitude;
     double longitude;
+
+    //otras variables
     PreferenceUtils pu;
+    private String lastGeocodedAddress = "";
+    boolean isUserTyping = false;
 
-    public static CreateOneListingFragment newInstance(Animal animal) {
-        CreateOneListingFragment fragment = new CreateOneListingFragment();
-        Bundle args = new Bundle();
-        args.putSerializable("animal", animal);  // o putParcelable si usas Parcelable
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private static final String TAG = "CreateListingActivity";
 
+    private RecyclerView recyclerView;
+    private Button crearAnimalButton;
+    private AnimalAdapter adapter;
     private Animal animal;
+    private AnimalListing listing;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            animal = (Animal) getArguments().getSerializable("animal");
-        }
-    }
+        Log.d(TAG, "onCreate started");
+        setContentView(R.layout.activity_create_one_listing);
+        animal = (Animal) getIntent().getSerializableExtra("animal");
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_create_one_listing, container, false);
-        initViews(view);
+        initViews();
         initializeGeolocation();
         setupListeners();
         if (animal != null) {
             loadAnimalData(animal);
         }
-        return view;
     }
 
-    private void initViews(View view) {
+    private void initViews() {
         // Inicialización de vistas de información del animal
-        imgAnimal = view.findViewById(R.id.imgUser);
-        tvName = view.findViewById(R.id.txtName);
-        tvCity = view.findViewById(R.id.txtCity);
-        tvSex = view.findViewById(R.id.txtSex);
-        tvSpecies = view.findViewById(R.id.tvSpecies);
-        tvAnimalBirthdate = view.findViewById(R.id.textViewAnimalBirthdate);
-        tvEstimatedBirthdate = view.findViewById(R.id.textViewEstimatedBirthdate);
-        tvAnimalSize = view.findViewById(R.id.textViewAnimalSize);
-        tvAnimalDescription = view.findViewById(R.id.textViewAnimalDescription);
-        tvAnimalMicroNumber = view.findViewById(R.id.textViewAnimalMicroNumber);
-        tvAnimalNeutered = view.findViewById(R.id.textViewAnimalNeutered);
-        listTags = view.findViewById(R.id.listTags);
+        imgAnimal = findViewById(R.id.imgUser);
+        tvName = findViewById(R.id.txtName);
+        tvCity = findViewById(R.id.txtCity);
+        tvSex = findViewById(R.id.txtSex);
+        tvSpecies = findViewById(R.id.tvSpecies);
+        tvAnimalBirthdate = findViewById(R.id.textViewAnimalBirthdate);
+        tvEstimatedBirthdate = findViewById(R.id.textViewEstimatedBirthdate);
+        tvAnimalSize = findViewById(R.id.textViewAnimalSize);
+        tvAnimalDescription = findViewById(R.id.textViewAnimalDescription);
+        tvAnimalMicroNumber = findViewById(R.id.textViewAnimalMicroNumber);
+        tvAnimalNeutered = findViewById(R.id.textViewAnimalNeutered);
+        listTags = findViewById(R.id.listTags);
 
         // Campos del formulario de contacto/dirección
-        editTextPhone = view.findViewById(R.id.editTextPhone);
-        editTextTextEmailAddress = view.findViewById(R.id.editTextTextEmailAddress);
-        etAddress = view.findViewById(R.id.etAddress);
-        etCity = view.findViewById(R.id.etCiudad);
-        etProvince = view.findViewById(R.id.etProvincia);
-        etPostalCode = view.findViewById(R.id.etPostalCode);
-        etCountry = view.findViewById(R.id.etCountry);
+        editTextPhone = findViewById(R.id.editTextPhone);
+        editTextTextEmailAddress = findViewById(R.id.editTextTextEmailAddress);
+        etAddress = findViewById(R.id.etAddress);
+        etCity = findViewById(R.id.etCiudad);
+        etProvince = findViewById(R.id.etProvincia);
+        etPostalCode = findViewById(R.id.etPostalCode);
+        etCountry = findViewById(R.id.etCountry);
 
         // Botones
-        buttonSave = view.findViewById(R.id.buttonSave);
-        btnMenu = view.findViewById(R.id.btn_menu);
-        btnGetLocation = view.findViewById(R.id.btnGetLocation);
+        buttonSave = findViewById(R.id.buttonSave);
+        btnMenu = findViewById(R.id.btn_menu);
+        btnGetLocation = findViewById(R.id.btnGetLocation);
 
-        // Componentes del drawer
-        navigationView = view.findViewById(R.id.navigation_view);
-        drawerLayout = view.findViewById(R.id.drawer_layout);
 
         // Cargar datos del animal si existe
         if (animal != null) {
             loadAnimalData(animal);
         }
     }
-
     private void setupListeners() {
         btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
         buttonSave.setOnClickListener(v -> saveListing());
-        btnMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-
-        // Puedes agregar más listeners aquí según necesites
+    // listeners para geocodificar cuando el usuario termine de escribir
+        setupAddressChangeListeners();
     }
-
-    // Método para validar el formulario
+    // validar el formulario
     public boolean validateForm() {
         boolean isValid = true;
 
@@ -183,19 +172,22 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
             editTextPhone.setError("Teléfono requerido");
             isValid = false;
         }
+        // Validar que se tengan coordenadas
+        if (latitude == 0.0 && longitude == 0.0) {
+            Toast.makeText(this, "Use el botón de ubicación o complete la dirección.", Toast.LENGTH_LONG).show();
+            isValid = false;
+        }
 
         return isValid;
     }
-
     // Método para guardar el listing
     public void saveListing() {
         if (!validateForm()) {
-            Toast.makeText(getContext(), "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
             return;
         }
         Location location = new Location();
 
-        // Aquí iría la lógica para guardar los datos
         location.setAddress(etAddress.getText().toString().trim());
         location.setProvince(etProvince.getText().toString().trim());
         location.setPostalCode(etPostalCode.getText().toString().trim());
@@ -206,26 +198,26 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         AnimalListing animalListing = new AnimalListing();
         animalListing.setLocationRequest(location);
         animalListing.setAnimal(animal);
-        //animalListing.setUserId();
         animalListing.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         animalListing.setContactPhone(editTextPhone.getText().toString().trim());
+        User user = PreferenceUtils.getUser();
+        animalListing.setUserId(user.getUserId());
         ApiRequests api = new ApiRequests();
         //api.createListing(animalListing);
 
-        // ... obtener otros valores
 
-        Toast.makeText(getContext(), "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }
 
     private void initializeGeolocation() {
-        geolocalization = new Geolocalization(getContext(), this);
-        geocoder = new Geocoder(getContext(), Locale.getDefault());
+        geolocalization = new Geolocalization(this, this);
+        geocoder = new Geocoder(this, Locale.getDefault());
     }
 
     private void requestCurrentLocation() {
         if (checkLocationPermissions()) {
             Log.d(TAG, "Solicitando ubicación actual...");
-            Toast.makeText(getContext(), "Obteniendo ubicación...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Obteniendo ubicación...", Toast.LENGTH_SHORT).show();
             geolocalization.requestLocation();
         } else {
             requestLocationPermissions();
@@ -233,7 +225,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     }
 
     private void requestLocationPermissions() {
-        ActivityCompat.requestPermissions(getActivity(),
+        ActivityCompat.requestPermissions(this,
                 new String[]{
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION
@@ -243,9 +235,9 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
 
 
     private boolean checkLocationPermissions() {
-        return ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION)
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -259,7 +251,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
                 requestCurrentLocation();
             } else {
                 Log.d(TAG, "Permisos de ubicación denegados");
-                Toast.makeText(getContext(), "Permisos de ubicación necesarios para esta función", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Rellene la dirección manualmente", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -269,6 +261,10 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     public void onLocationReady(android.location.Location location) {
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
+        latitude = currentLatitude;
+        longitude = currentLongitude;
+        Log.d(TAG, "Ubicación obtenida - Lat: " + currentLatitude + ", Lng: " + currentLongitude);
+        reverseGeocode(currentLatitude, currentLongitude);
 
         Log.d(TAG, "Ubicación obtenida - Lat: " + currentLatitude + ", Lng: " + currentLongitude);
 
@@ -279,7 +275,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     @Override
     public void onLocationError(String error) {
         Log.e(TAG, "Error de geolocalización: " + error);
-        Toast.makeText(getContext(), "Error al obtener ubicación: " + error, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error al obtener ubicación: " + error, Toast.LENGTH_LONG).show();
     }
 
     private void reverseGeocode(double latitude, double longitude) {
@@ -291,26 +287,20 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
                     Address address = addresses.get(0);
 
                     // Actualizar UI en el hilo principal
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            updateAddressFields(address);
-                            Toast.makeText(getContext(), "Dirección obtenida automáticamente", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    this.runOnUiThread(() -> {
+                        updateAddressFields(address);
+                        Toast.makeText(this, "Dirección obtenida automáticamente", Toast.LENGTH_SHORT).show();
+                    });
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "No se pudo obtener la dirección", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    this.runOnUiThread(() -> {
+                        Toast.makeText(this, "No se pudo obtener la dirección", Toast.LENGTH_SHORT).show();
+                    });
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Error en geocodificación inversa", e);
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Error al obtener dirección", Toast.LENGTH_SHORT).show();
-                    });
-                }
+                this.runOnUiThread(() -> {
+                    Toast.makeText(this, "Error al obtener dirección", Toast.LENGTH_SHORT).show();
+                });
             }
         }).start();
     }
@@ -356,7 +346,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         String country = etCountry.getText().toString().trim();
 
         if (address.isEmpty() && city.isEmpty()) {
-            Toast.makeText(getContext(), "Ingresa al menos una dirección o ciudad", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Ingresa al menos una dirección y ciudad", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -367,9 +357,15 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         if (!province.isEmpty()) fullAddress.append(province).append(", ");
         if (!country.isEmpty()) fullAddress.append(country);
         String addressToGeocode = fullAddress.toString();
+
+        if (addressToGeocode.equals(lastGeocodedAddress)) {
+            return;
+        }
+        lastGeocodedAddress = addressToGeocode;
         Log.d(TAG, "Geocodificando dirección: " + addressToGeocode);
 
-        new Thread(() -> {
+
+        MyApplication.executor.execute(()->{
             try {
                 List<Address> addresses = geocoder.getFromLocationName(addressToGeocode, 1);
 
@@ -378,34 +374,64 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
                     currentLatitude = foundAddress.getLatitude();
                     currentLongitude = foundAddress.getLongitude();
 
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            latitude = currentLatitude;
-                            longitude =currentLongitude;
-                            Toast.makeText(getContext(), "Coordenadas obtenidas de la dirección", Toast.LENGTH_SHORT).show();
+                    this.runOnUiThread(() -> {
+                        latitude = currentLatitude;
+                        longitude = currentLongitude;
+                        Toast.makeText(this, "Coordenadas obtenidas de la dirección", Toast.LENGTH_SHORT).show();
 
-                            Log.d(TAG, "Coordenadas obtenidas - Lat: " + currentLatitude + ", Lng: " + currentLongitude);
-                        });
-                    }
+                        Log.d(TAG, "Coordenadas obtenidas - Lat: " + currentLatitude + ", Lng: " + currentLongitude);
+                    });
                 } else {
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "No se encontraron coordenadas para esta dirección", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                    this.runOnUiThread(() -> {
+                        latitude = 0.0;
+                        longitude = 0.0;
+                        Toast.makeText(this, "No se encontraron coordenadas para esta dirección", Toast.LENGTH_SHORT).show();
+                    });
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Error en geocodificación", e);
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        Toast.makeText(getContext(), "Error al buscar coordenadas", Toast.LENGTH_SHORT).show();
-                    });
-                }
+                latitude = 0.0;
+                longitude = 0.0;
+                this.runOnUiThread(() -> {
+                    Toast.makeText(this, "Error al buscar coordenadas", Toast.LENGTH_SHORT).show();
+                });
             }
-        }).start();
+        });
     }
+    private void setupAddressChangeListeners() {
+        // TextWatcher para detectar cambios en los campos de dirección
+        android.text.TextWatcher addressWatcher = new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                isUserTyping = true;
+            }
 
-    // Método para limpiar el formulario
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                if (geocodeHandler != null) {
+                    geocodeHandler.removeCallbacks(geocodeRunnable);
+                }
+                geocodeHandler.postDelayed(() -> {
+                    isUserTyping = false;
+                    geocodeFromAddress();
+                }, 2000); // Esperar 2 segundos después de que el usuario deje de escribir
+            }
+        };
+
+        etAddress.addTextChangedListener(addressWatcher);
+        etCity.addTextChangedListener(addressWatcher);
+        etProvince.addTextChangedListener(addressWatcher);
+        etCountry.addTextChangedListener(addressWatcher);
+        }
+
+    // Agregar estas variables de clase
+    private android.os.Handler geocodeHandler = new android.os.Handler();
+    private Runnable geocodeRunnable = this::geocodeFromAddress;
+
+    // limpiar el formulario
     public void clearForm() {
         // Limpiar campos de información del animal
         tvName.setText("");
@@ -429,7 +455,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
         etCountry.setText("");
     }
 
-    // Método para cargar datos del animal
+    // cargar datos del animal
     public void loadAnimalData(Animal animal) {
         // Nombre especie
         List<Species> species = PreferenceUtils.getSpeciesList();
@@ -481,18 +507,15 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
             tvAnimalNeutered.setText(animal.getIsNeutered() ? "sí" : "no");
         }
 
-        // Cargar etiquetas en segundo plano
+        // Cargar etiquetas en segundo plano, no hay prisa
         new Thread(() -> {
             ArrayList<Tag> animalTags = animal.getTags();
             ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
-                    requireContext(),
+                    this,
                     android.R.layout.simple_list_item_1,
                     animalTags
             );
-            requireActivity().runOnUiThread(() -> listTags.setAdapter(adapter));
+            this.runOnUiThread(() -> listTags.setAdapter(adapter));
         }).start();
     }
 }
-
-
-

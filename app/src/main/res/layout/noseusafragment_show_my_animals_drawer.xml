@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/layoutmenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:menu="@menu/drawer_menu_user" />
+        <ImageButton
+            android:id="@+id/btn_menu"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/menu"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:padding="8dp" />
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/layoutmenu">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -260,14 +286,14 @@
                         android:gravity="start"
                         android:text="@string/s_no" />
                 </TableRow>
+
             </TableLayout>
 
             <LinearLayout
-                android:id="@+id/layTags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toTopOf="@+id/tableDatos"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tableanimal"
@@ -289,265 +315,17 @@
                 <com.example.animor.Utils.NonScrollListView
                     android:id="@+id/listTags"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     tools:layout_editor_absoluteY="60dp"
                     android:background="@drawable/border"
                     app:layout_constraintTop_toBottomOf="@id/tvTags"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="8dp"/>
+
             </LinearLayout>
-            <TableLayout
-                android:id="@+id/tableDatos"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:stretchColumns="1"
-                android:shrinkColumns="1"
-                app:layout_constraintTop_toBottomOf="@+id/layTags"
-                app:layout_constraintStart_toStartOf="parent"
-                android:padding="16dp">
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Contacto"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_span="2"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Teléfono:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvPhone"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Teléfono"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Email:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvEmail"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="email"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Ubicación"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_span="2"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Calle:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvAddress"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Calle (sin número)"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Ciudad:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvCity"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Ciudad"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Provincia:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvProvince"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Provincia"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Código Postal:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvPostalCode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Código Postal"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="País:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvCountry"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="País"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchadop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start"
-                    android:layout_span="2"
-                    android:switchPadding="10dp"
-                    android:text="@string/adoptado"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="tableDatos"
-                    app:layout_constraintBottom_toTopOf="linbtn"
-                    app:layout_constraintStart_toStartOf="parent"/>
-                </TableRow>
-            </TableLayout>
-            <LinearLayout
-                android:id="@+id/linbtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/tableDatos"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <Button
-                    android:id="@+id/btnedit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/black"
-                    android:text="Editar" />
-
-                <Button
-                    android:id="@+id/btndel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/black"
-                    android:text="Borrar" />
-            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

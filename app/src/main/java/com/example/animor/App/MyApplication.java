@@ -69,6 +69,7 @@ public class MyApplication extends Application {
 
         Runnable tryContinue = () -> {
             if (tokenOk[0] && idOk[0]) {
+                Log.d("MyApplication", "Obtenidos ambos datos, procediendo a autenticar");
                 performDeviceAuthentication(appCheckTokenAndDeviceFid);
             }
         };
@@ -105,6 +106,7 @@ public class MyApplication extends Application {
         executor.execute(()->{
             try {
                 ApiRequests api = new ApiRequests();
+                Log.d("MyApplication","Ejecutando autenticación con el servidor");
                 StartupResource startupResource = api.sendFidDeviceToServer(appCheckTokenAndDeviceFid[0], appCheckTokenAndDeviceFid[1]);
                 //lectura de SP
                 //species = PreferenceUtils.getSpeciesList();

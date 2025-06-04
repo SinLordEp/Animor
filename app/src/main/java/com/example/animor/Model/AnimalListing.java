@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public class AnimalListing implements Serializable {
     private int listingId;
     private Animal animal;
-    private int userId;
+    private long userId;
     Location location;
     private String contactPhone;
     private String contactEmail;
@@ -29,8 +29,8 @@ public class AnimalListing implements Serializable {
     public void setListingId(int listingId) { this.listingId = listingId; }
     public Animal getAnimal() { return animal; }
     public void setAnimal(Animal animal) { this.animal = animal; }
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public long getUserId() { return userId; }
+    public void setUserId(long userId) { this.userId = userId; }
     public String getContactPhone() { return contactPhone; }
     public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
     public String getContactEmail() { return contactEmail; }

@@ -1,5 +1,6 @@
-package com.example.animor.UI.Fragments;
+package com.example.animor.UI.ViewsFrames;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,22 +15,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.R;
+import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
-// import com.example.animor.Model.Listing; // Tu modelo de Listing
-// import com.example.animor.Utils.ListingAdapter; // Tu adapter de Listing
+import com.example.animor.Model.AnimalListing;
+import com.example.animor.Utils.ListingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShowMyListingsFragment extends Fragment {
+public class ShowMyListingsFragment extends Fragment implements ListingAdapter.OnListingInteractionListener {
 
     private RecyclerView rvListings;
-    // private ListingAdapter adapter;
-    private ArrayList<Object> listingList; // Cambia Object por tu clase Listing
+    private ListingAdapter adapter;
+    private List<AnimalListing> listingList;
+    private ListingAdapter.OnListingInteractionListener parentListener;
+
 
     // Interface para comunicación con la Activity
     public interface OnListingSelectedListener {
-        void onListingSelected(Object listing); // Cambia Object por tu clase Listing
+        void onListingSelected(AnimalListing listing);
     }
 
     private OnListingSelectedListener listingSelectedListener;
@@ -42,7 +46,6 @@ public class ShowMyListingsFragment extends Fragment {
         return view;
     }
 
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
@@ -50,8 +53,8 @@ public class ShowMyListingsFragment extends Fragment {
         loadListings();
 
         // Configurar listener si la activity lo implementa
-        if (getActivity() instanceof OnListingSelectedListener) {
-            listingSelectedListener = (OnListingSelectedListener) getActivity();
+        if (getActivity() instanceof ListingAdapter.OnListingInteractionListener) {
+            parentListener = (ListingAdapter.OnListingInteractionListener) getActivity();
         }
     }
 
@@ -61,11 +64,9 @@ public class ShowMyListingsFragment extends Fragment {
 
     private void setupRecyclerView() {
         listingList = new ArrayList<>();
-        // adapter = new ListingAdapter(listingList, this::onListingClick);
+        adapter = new ListingAdapter(listingList, this);
         rvListings.setLayoutManager(new LinearLayoutManager(getContext()));
-        // rvListings.setAdapter(adapter);
-
-        // Opcional: añadir separadores
+        rvListings.setAdapter(adapter);
         rvListings.addItemDecoration(new DividerItemDecoration(
                 rvListings.getContext(), LinearLayoutManager.VERTICAL));
     }
@@ -73,14 +74,15 @@ public class ShowMyListingsFragment extends Fragment {
     private void loadListings() {
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
-            // List<Listing> newListingList = api.askForMyListingsToDatabase();
-            List<Object> newListingList = new ArrayList<>(); // Placeholder
+           // List<AnimalListing> newListingList = api.askForMyListingsToDatabase();
 
             if (getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {
                     listingList.clear();
-                    listingList.addAll(newListingList);
-                    // adapter.notifyDataSetChanged();
+                  //  if (newListingList != null) {
+                 //       listingList.addAll(newListingList);
+                 //   }
+                    adapter.notifyDataSetChanged();
 
                     if (listingList.isEmpty()) {
                         Toast.makeText(getContext(),
@@ -90,25 +92,41 @@ public class ShowMyListingsFragment extends Fragment {
             }
         }).start();
     }
+    @Override
+    public void onListingSelected(AnimalListing listing) {
+        // Navegación principal: ir a CreateListingActivity
+        Intent intent = new Intent(getActivity(), CreateListingActivity.class);
+        intent.putExtra("animal", listing.getAnimal());
+        intent.putExtra("location", listing.getLocationRequest());
+        intent.putExtra("animalListing", listing);
+        startActivity(intent);
 
-    public void onListingClick(Object listing) { // Cambia Object por tu clase Listing
-        if (listingSelectedListener != null) {
-            listingSelectedListener.onListingSelected(listing);
-        } else {
-            Toast.makeText(getContext(),
-                    "Registro seleccionado", Toast.LENGTH_SHORT).show();
+        // Notificar a la activity padre si implementa el listener
+        if (parentListener != null) {
+            parentListener.onListingSelected(listing);
+        }
+    }
+    @Override
+    public void onFavoriteClick(AnimalListing animalListing) {
+        Toast.makeText(getContext(), "Favorito: " + animalListing.getAnimal().getAnimalName(), Toast.LENGTH_SHORT).show();
+
+        // Notificar a la activity padre si implementa el listener
+        if (parentListener != null) {
+            parentListener.onFavoriteClick(animalListing);
         }
     }
 
-    public void updateListingList(ArrayList<Object> newListingList) { // Cambia Object por tu clase Listing
-        if (listingList != null) { // && adapter != null
+    // Métodos públicos existentes
+    public void updateListingList(ArrayList<AnimalListing> newListingList) {
+        if (listingList != null && adapter != null) {
             listingList.clear();
-            listingList.addAll(newListingList);
-            // adapter.notifyDataSetChanged();
+            if (newListingList != null) {
+                listingList.addAll(newListingList);
+            }
+            adapter.notifyDataSetChanged();
         }
     }
 
-    // Método para refrescar la lista desde la Activity
     public void refreshListingList() {
         loadListings();
     }

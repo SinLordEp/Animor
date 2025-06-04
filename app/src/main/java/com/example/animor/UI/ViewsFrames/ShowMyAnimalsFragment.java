@@ -1,4 +1,4 @@
-package com.example.animor.UI.Fragments;
+package com.example.animor.UI.ViewsFrames;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +23,7 @@ import com.example.animor.Model.Species;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
+import com.example.animor.UI.CreateActivity;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
@@ -37,11 +38,9 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
 
-
     // Interface para comunicación con la Activity
     public interface OnAnimalSelectedListener {
         void onAnimalSelected(Animal animal);
-
     }
 
     private OnAnimalSelectedListener animalSelectedListener;
@@ -62,7 +61,6 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         initializeViews(view);
         setupRecyclerView();
         loadAnimals();
-
     }
 
     private void initializeViews(View view) {
@@ -71,8 +69,8 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        List<Species> speciesList = PreferenceUtils.getSpeciesList(); //
-        adapter = new AnimalAdapter(animalList, speciesList, this);   //
+        List<Species> speciesList = PreferenceUtils.getSpeciesList();
+        adapter = new AnimalAdapter(animalList, speciesList, this);
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 
@@ -81,37 +79,124 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
                 rvAnimals.getContext(), LinearLayoutManager.VERTICAL));
     }
 
+    // MÉTODO PRINCIPAL CORREGIDO
     private void loadAnimals() {
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
             List<Animal> newAnimalList = api.askForMyAnimalsToDatabase();
-            if (newAnimalList == null){
-                requireActivity().runOnUiThread(() -> {rvAnimals.setVisibility(View.GONE);});
-                LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
-                requireActivity().runOnUiThread(() -> { layoutNoLogin.setVisibility(View.VISIBLE);});
-                Button btnIniciarSesion = getView().findViewById(R.id.btnIniciarSesion);
-                btnIniciarSesion.setOnClickListener(v -> {
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
-                    startActivity(intent);
-                    requireActivity().finish();
-                });
-            }
 
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    animalList.clear();
-                    animalList.addAll(newAnimalList);
-                    adapter.notifyDataSetChanged();
-
-                    if (animalList.isEmpty()) {
-                        Toast.makeText(getContext(),
-                                "No tienes animales registrados", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
+            // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
+            requireActivity().runOnUiThread(() -> {
+                handleAnimalsResult(newAnimalList);
+            });
         }).start();
     }
+
+    // NUEVO MÉTODO: Manejo centralizado de resultados
+    private void handleAnimalsResult(List<Animal> newAnimalList) {
+        // Verificar si el fragment aún está adjunto antes de proceder
+        if (!isAdded() || getView() == null) {
+            Log.w("DEBUG", "Fragment no está adjunto, saliendo de handleAnimalsResult");
+            return;
+        }
+
+        // CASO 1: Lista null = Usuario no autenticado o error de conexión grave
+        if (newAnimalList == null) {
+            showNoLoginLayout();
+            return;
+        }
+
+        // CASO 2: Lista vacía = Usuario autenticado pero sin animales
+        if (newAnimalList.isEmpty()) {
+            showEmptyAnimalsLayout();
+            return;
+        }
+
+        // CASO 3: Lista con animales = Mostrar normalmente
+        showAnimalsLayout(newAnimalList);
+    }
+
+    // NUEVO MÉTODO: Mostrar layout cuando no hay login
+    private void showNoLoginLayout() {
+        Log.d("DEBUG", "Mostrando layout de no login");
+
+        // Ocultar RecyclerView
+        rvAnimals.setVisibility(View.GONE);
+
+        // Mostrar layout de no login
+        LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
+        if (layoutNoLogin != null) {
+            layoutNoLogin.setVisibility(View.VISIBLE);
+
+            // Configurar botón de iniciar sesión
+            Button btnIniciarSesion = layoutNoLogin.findViewById(R.id.btnIniciarSesion);
+            if (btnIniciarSesion != null) {
+                btnIniciarSesion.setOnClickListener(v -> navigateToLogin());
+            }
+        }
+    }
+
+    // NUEVO MÉTODO: Mostrar layout cuando no hay animales
+    private void showEmptyAnimalsLayout() {
+        Log.d("DEBUG", "Usuario autenticado pero sin animales");
+
+        // Mostrar RecyclerView vacío
+        rvAnimals.setVisibility(View.VISIBLE);
+
+        // Ocultar layout de no login
+        LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
+        if (layoutNoLogin != null) {
+            layoutNoLogin.setVisibility(View.GONE);
+        }
+
+        // Limpiar lista y notificar adapter
+        animalList.clear();
+        adapter.notifyDataSetChanged();
+
+        // Mostrar mensaje informativo
+        Toast.makeText(getContext(), "No tienes animales registrados", Toast.LENGTH_LONG).show();
+
+    }
+
+    // NUEVO MÉTODO: Mostrar animales normalmente
+    private void showAnimalsLayout(List<Animal> newAnimalList) {
+        Log.d("DEBUG", "Mostrando " + newAnimalList.size() + " animales");
+
+        // Mostrar RecyclerView
+        rvAnimals.setVisibility(View.VISIBLE);
+
+        // Ocultar layout de no login
+        LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
+        if (layoutNoLogin != null) {
+            layoutNoLogin.setVisibility(View.GONE);
+        }
+
+
+        // Actualizar lista de forma segura
+        animalList.clear();
+        animalList.addAll(newAnimalList); // Ya no será null aquí
+        adapter.notifyDataSetChanged();
+    }
+
+    // NUEVO MÉTODO: Navegar a login
+    private void navigateToLogin() {
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        startActivity(intent);
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
+    }
+
+    // Navegar a crear animal
+    private void navigateToCreateAnimal() {
+        // Navegar a CreateActivity para crear un animal
+        Intent intent = new Intent(getActivity(), CreateActivity.class);
+        intent.putExtra("target_fragment", "create_animal");
+        intent.putExtra("mode", "create");
+        startActivity(intent);
+    }
+
     // Método fallback por si no hay listener (opcional, para casos extremos)
     private void navigateToDetailFallback(Animal animal) {
         if (getActivity() instanceof ShowActivity) {
@@ -123,6 +208,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     public void setAnimalSelectedListener(OnAnimalSelectedListener listener) {
         this.animalSelectedListener = listener;
     }
+
     @Override
     public void onAnimalClick(Animal animal) {
         // Usar únicamente el interface para comunicarse con ShowActivity
@@ -130,12 +216,10 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             animalSelectedListener.onAnimalSelected(animal);
         } else {
             // Fallback: Si no hay listener, intentar navegar directamente
-            // (esto no debería pasar si ShowActivity está configurado correctamente)
             Log.w("ShowMyAnimalsFragment", "No listener found, attempting direct navigation");
             navigateToDetailFallback(animal);
         }
     }
-
 
     @Override
     public void onFavoriteClick(Animal animal) {
@@ -159,19 +243,26 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof OnAnimalSelectedListener ) {
-            animalSelectedListener  = (OnAnimalSelectedListener) context;
+        if (context instanceof OnAnimalSelectedListener) {
+            animalSelectedListener = (OnAnimalSelectedListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnAnimalClickListener");
+            throw new RuntimeException(context.toString() + " must implement OnAnimalSelectedListener");
         }
     }
 
-
+    // MÉTODO MEJORADO: Actualización segura de lista
     public void updateAnimalList(ArrayList<Animal> newAnimalList) {
         if (animalList != null && adapter != null) {
             animalList.clear();
-            animalList.addAll(newAnimalList);
+            if (newAnimalList != null) {
+                animalList.addAll(newAnimalList);
+            }
             adapter.notifyDataSetChanged();
         }
+    }
+
+    // MÉTODO PÚBLICO: Para refrescar desde fuera
+    public void refreshAnimalList() {
+        loadAnimals();
     }
 }

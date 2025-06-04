@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.animor.Model.Animal;
 import com.example.animor.R;
 import com.example.animor.Utils.TabsAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -29,6 +30,7 @@ public class CreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_base);
+        Animal animal = (Animal) getIntent().getSerializableExtra("animal");
 
         // Usar las variables de instancia, no crear variables locales
         viewPager = findViewById(R.id.viewPager);
@@ -79,6 +81,7 @@ public class CreateActivity extends AppCompatActivity {
         });
 
         Log.d(TAG, "onCreate completed successfully");
+
     }
 
     public void goToTab(int index) {

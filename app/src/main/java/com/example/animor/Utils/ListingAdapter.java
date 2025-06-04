@@ -24,10 +24,10 @@ import java.util.Locale;
 public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingViewHolder> {
 
     private List<AnimalListing> animalListingList;
-    private OnListingClickListener listener;
+    private OnListingInteractionListener listener;
     private SimpleDateFormat dateFormat;
 
-    public ListingAdapter(List<AnimalListing> animalListingList, OnListingClickListener listener) {
+    public ListingAdapter(List<AnimalListing> animalListingList, OnListingInteractionListener listener) {
         this.animalListingList = animalListingList != null ? animalListingList : new ArrayList<>();
         this.listener = listener;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -46,36 +46,12 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         AnimalListing animalListing = animalListingList.get(position);
         Animal animal = animalListing.getAnimal();
 
-            holder.txtName.setText(animalListing.getAnimal().getAnimalName());
+        // ... tu código existente de bind ...
 
-        // Mostrar ciudad
-        holder.txtCity.setVisibility(View.VISIBLE);
-        holder.txtCity.setText(animalListing.getLocationRequest().getCity() != null ? animalListing.getLocationRequest().getCity() : "Sin especificar");
-
-        // Configurar datos del animal si existe
-        if (animal != null) {
-            // Especie
-            String speciesName = getSpeciesName(animal.getSpeciesId());
-            holder.txtSpecies.setText(speciesName);
-
-            // Sexo
-            holder.txtSex.setText(animal.getSex() != null ? animal.getSex().toString() : "Sin especificar");
-
-            // Imagen del animal
-            loadAnimalImage(animal, holder.imgAnimal);
-        } else {
-            holder.txtSpecies.setText("Sin animal asociado");
-            holder.txtSex.setText("N/A");
-            holder.imgAnimal.setImageResource(R.drawable.gatoinicio);
-        }
-
-        // Configurar icono de favorito según el tipo de listing
-        setupFavoriteIcon(animalListing, holder.btnFavorite);
-
-        // Click listeners
+        // Click listeners - CAMBIO AQUÍ
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onListingClick(animalListing);
+                listener.onListingSelected(animalListing); // Cambio de nombre del método
             }
         });
 
@@ -170,9 +146,8 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         }
     }
 
-    // Interface para callbacks
-    public interface OnListingClickListener {
-        void onListingClick(AnimalListing animalListing);
+    public interface OnListingInteractionListener {
+        void onListingSelected(AnimalListing animalListing);
         void onFavoriteClick(AnimalListing animalListing);
     }
 }

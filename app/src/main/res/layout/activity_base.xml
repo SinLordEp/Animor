@@ -46,14 +46,14 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ViewPager2 para los fragments -->
+    <!-- ViewPager2 parafragments -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="130dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    <!-- Contenedor para fragments de detalle (inicialmente oculto) -->
+    <!-- Contenedor para otros fragments (inicialmente oculto) -->
     <FrameLayout
         android:id="@+id/detail_container"
         android:layout_width="match_parent"

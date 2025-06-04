@@ -69,6 +69,10 @@ dependencies {
 
     implementation(libs.jackson.datatype.jsr310)
 
-//navigation into fragments
+//navigación de fragmentos
+    val fragment_version = "1.8.7"
+
+    // Java language implementation
+    implementation(libs.fragment)
 
 }

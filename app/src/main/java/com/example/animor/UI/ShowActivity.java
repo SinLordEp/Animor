@@ -4,23 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.Animal;
+import com.example.animor.Model.AnimalListing;
 import com.example.animor.R;
-import com.example.animor.UI.Fragments.ShowMyAnimalFragment;
-import com.example.animor.UI.Fragments.ShowMyAnimalsFragment;
-import com.example.animor.UI.Fragments.ShowMyListingFragment;
-import com.example.animor.UI.Fragments.ShowMyListingsFragment;
+import com.example.animor.UI.ViewsFrames.ShowMyAnimalFragment;
+import com.example.animor.UI.ViewsFrames.ShowMyAnimalsFragment;
+import com.example.animor.UI.ViewsFrames.ShowMyListingFragment;
+import com.example.animor.UI.ViewsFrames.ShowMyListingsFragment;
 import com.example.animor.Utils.TabsAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.Serializable;
+
 
 public class ShowActivity extends AppCompatActivity
         implements ShowMyAnimalsFragment.OnAnimalSelectedListener,
@@ -30,6 +33,8 @@ public class ShowActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private TabsAdapter tabsAdapter;
+
+
 
     // Estados para manejar la navegación
     private boolean isShowingDetails = false;
@@ -43,6 +48,7 @@ public class ShowActivity extends AppCompatActivity
 
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
+
 
         if (viewPager == null || tabLayout == null) {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");
@@ -151,7 +157,7 @@ public class ShowActivity extends AppCompatActivity
 
     // Implementación del interface para listings (asumiendo que tienes un modelo Listing)
     @Override
-    public void onListingSelected(Object listing) { // Cambia Object por tu clase Listing
+    public void onListingSelected(AnimalListing listing) { // Cambia Object por tu clase Listing
         showListingDetail(listing);
     }
 
@@ -160,7 +166,7 @@ public class ShowActivity extends AppCompatActivity
 
     }
 
-    private void showListingDetail(Object listing) {
+    private void showListingDetail(AnimalListing listing) {
         showDetailFragment(new ShowMyListingFragment(), "listing_detail", "listing", (Serializable) listing);
 
     }
@@ -180,4 +186,8 @@ public class ShowActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
+    }
 }

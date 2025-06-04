@@ -24,6 +24,9 @@ public class Geolocalization implements LocationListener {
     private final Context context;
     private final LocationCallback callback;
 
+    private String lastGeocodedAddress = "";
+    private boolean isUserTyping = false;
+
     public interface LocationCallback {
         void onLocationReady(Location location);
         void onLocationError(String error);

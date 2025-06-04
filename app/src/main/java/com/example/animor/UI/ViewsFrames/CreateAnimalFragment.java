@@ -1,4 +1,4 @@
-package com.example.animor.UI.Fragments;
+package com.example.animor.UI.ViewsFrames;
 
 import android.Manifest;
 import android.app.Activity;
@@ -48,6 +48,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+
 
 public class CreateAnimalFragment extends Fragment {
 
@@ -97,10 +99,10 @@ public class CreateAnimalFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Inicializar formateador de fecha
+        // formateador de fecha
         calendar = Calendar.getInstance();
 
-        // Inicializar Firebase Storage
+        // Firebase Storage
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReferenceFromUrl("gs://named-icon-460311-e4.firebasestorage.app");
 
@@ -117,7 +119,6 @@ public class CreateAnimalFragment extends Fragment {
     private void initViews(View view) {
         // EditTexts
         etNombre = view.findViewById(R.id.etNombre);
-      //  etEspecie = view.findViewById(R.id.etEspecie);
         etFechaNacimiento = view.findViewById(R.id.etFechaNacimiento);
         etTamano = view.findViewById(R.id.etTamano);
         etDescripcion = view.findViewById(R.id.etDescripcion);
@@ -183,20 +184,17 @@ public class CreateAnimalFragment extends Fragment {
                 animalSpecies.setSpeciesName(speciesName);
 
             }
-
+            //de la interfaz, vacío
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Manejar caso cuando no hay selección
             }
+
         });
-        listTags.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l){
-                Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
-                String tagName = selectedTag.getTagName(); // o el método que uses para el string
-                int tagId = selectedTag.getTagId();
-                selectedTags.add(selectedTag);
-            }
+        listTags.setOnItemClickListener((adapterView, view, i, l) -> {
+            Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
+            String tagName = selectedTag.getTagName();
+            int tagId = selectedTag.getTagId();
+            selectedTags.add(selectedTag);
         });
     }
 
@@ -214,22 +212,21 @@ public class CreateAnimalFragment extends Fragment {
                             imagenPendienteSubir = true;
                             // Cambiar el texto del botón para indicar que hay imagen seleccionada
                             btnSeleccionarImagen.setText("Imagen seleccionada ✓");
-                            Toast.makeText(getContext(), "Imagen seleccionada. Se subirá al guardar.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Imagen seleccionada, se subirá al guardar", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         );
 
         // Launcher para permisos
-        // Launcher para permisos
         pedirPermisos = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
                 result -> {
-                    // Solo verificamos el permiso esencial (READ_MEDIA_IMAGES o READ_EXTERNAL_STORAGE)
+                    // Verificación del permiso esencial
                     boolean permisoEsencialConcedido = false;
-
+                    //vamos a mantener ambos por control de versiones
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        // Android 13+: Solo necesitamos READ_MEDIA_IMAGES
+                        // (Android 13+ solo necesita READ_MEDIA_IMAGES)
                         permisoEsencialConcedido = Boolean.TRUE.equals(result.get(Manifest.permission.READ_MEDIA_IMAGES));
                     } else {
                         // Android <13: Solo necesitamos READ_EXTERNAL_STORAGE
@@ -256,13 +253,11 @@ public class CreateAnimalFragment extends Fragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 requireContext(),
                 (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Construyes el LocalDate
+                    // LocalDate
                     LocalDate fechaNacimiento = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay);
-
-                    // Opcional: mostrarlo en formato "yyyy-MM-dd"
-                    etFechaNacimiento.setText(fechaNacimiento.toString());
-
-                    // Si quieres guardar el LocalDate para usarlo luego:
+                    // formato en España
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    etFechaNacimiento.setText(formatter.format(fechaNacimiento));
                     birthDate = fechaNacimiento;
 
                 },
@@ -274,20 +269,18 @@ public class CreateAnimalFragment extends Fragment {
 
     private void solicitarPermisos() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // Android 14+: Pedimos el permiso esencial + opcionales
+            // Android 14+
             pedirPermisos.launch(new String[] {
                     Manifest.permission.READ_MEDIA_IMAGES,
-                    // Los siguientes permisos son opcionales:
-                    Manifest.permission.READ_MEDIA_VIDEO,
                     "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
             });
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13: Solo pedimos READ_MEDIA_IMAGES (obligatorio)
+            // Android 13:READ_MEDIA_IMAGES obligatorio
             pedirPermisos.launch(new String[] {
                     Manifest.permission.READ_MEDIA_IMAGES
             });
         } else {
-            // Android <13: Pedimos READ_EXTERNAL_STORAGE
+            // Android <13: READ_EXTERNAL_STORAGE
             pedirPermisos.launch(new String[] {
                     Manifest.permission.READ_EXTERNAL_STORAGE
             });
@@ -442,9 +435,8 @@ public class CreateAnimalFragment extends Fragment {
         Thread thread = getThread(animal);
         try {
             thread.join();
-            // Código que se ejecutará después que el hilo haya terminado
         } catch (InterruptedException e) {
-            System.out.println("Problema de ejecución del hilo:"+e.getMessage());
+            System.out.println("Problema de ejecución del hilo de guardado de animal:"+e.getMessage());
         }
         Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
         clearForm();
@@ -472,7 +464,7 @@ public class CreateAnimalFragment extends Fragment {
         return thread;
     }
 
-    // Método para limpiar el formulario
+    // limpiar el formulario, aunque no se usa
     public void clearForm() {
         etNombre.setText("");
        // etEspecie.setText("");
