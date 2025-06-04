@@ -2,6 +2,7 @@ package com.example.animor.Utils;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.R;
@@ -102,7 +103,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (isUserLogged()) {
+        if (!isUserLogged()) {
             navigateToLogin();
             return true;
         }
@@ -120,7 +121,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (isUserLogged()) {
+        if (!isUserLogged()) {
             navigateToLogin();
             return true;
         }
@@ -138,7 +139,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (isUserLogged()) {
+        if (!isUserLogged()) {
             navigateToLogin();
             return true;
         }
@@ -167,7 +168,8 @@ public class NavigationHelper {
      */
     private boolean isUserLogged() {
         UserDTO user = PreferenceUtils.getUser();
-        return user != null;
+        Log.d("NAVIGATION HELPER", "user:"+user.getUserName());
+        return true;
     }
 
     /**
