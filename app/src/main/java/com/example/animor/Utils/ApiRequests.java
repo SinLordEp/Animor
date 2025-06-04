@@ -235,6 +235,10 @@ public class ApiRequests {
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
+            Log.d(TAG, "=== RESPUESTA COMPLETA DEL SERVIDOR ===");
+            Log.d(TAG, "Status Code: " + response.code());
+            Log.d(TAG, "Response Body: " + responseBody);
+            Log.d(TAG, "Is Successful: " + response.isSuccessful());
             if (response.isSuccessful()) {
                 Log.d(TAG, "Respuesta del servidor al enviar animal: " + responseBody);
                 JSONObject jsonResponse = new JSONObject(responseBody);
