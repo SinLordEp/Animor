@@ -73,14 +73,20 @@ public class ApiRequests {
                 return (T) jsonResponse.getJSONObject(param);
             }else if(objectClass == String.class){
                 return (T) jsonResponse.getString(param);
+            }else if(objectClass == JSONArray.class){
+                return (T) jsonResponse.getJSONArray(param);
             }
             throw new IllegalArgumentException("Not supported class while converting json response body");
         } catch (JSONException e) {
             throw new RuntimeException("Json format is invalid");
         }
     }
-    private static JSONObject getDataFromResponseBody(String body){
+    private static JSONObject getJsonObjectFromBody(String body){
         return getJsonObjectFromResponseBody(body, "data", JSONObject.class);
+    }
+
+    private static JSONArray getJsonArrayFromBody(String body){
+        return getJsonObjectFromResponseBody(body, "data", JSONArray.class);
     }
     private static String getStatusFromResponseBody(String body){
         return getJsonObjectFromResponseBody(body, "status", String.class);
@@ -102,7 +108,7 @@ public class ApiRequests {
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
-                JSONObject dataObject = getDataFromResponseBody(responseBody);
+                JSONObject dataObject = getJsonObjectFromBody(responseBody);
                 // Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
                 List<TagDTO> tagList = JacksonUtils.readEntities(tagsArray.toString(), new TypeReference<>() {});
@@ -115,7 +121,7 @@ public class ApiRequests {
                 return new StartupResource(speciesDTOList, tagList, deviceToken);
             } else {
                 Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(responseBody)
-                        + " | Respuesta: " + getDataFromResponseBody(responseBody));
+                        + " | Respuesta: " + getJsonObjectFromBody(responseBody));
             }
         } catch (IOException e) {
             Log.e(TAG, "Error de tipo in/out: ", e);
@@ -151,7 +157,7 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             Log.d(TAG, "Respuesta del servidor a petición de user data: " + getStatusFromResponseBody(responseBody));
             if (response.isSuccessful()) {
-                JSONObject data = getDataFromResponseBody(responseBody);
+                JSONObject data = getJsonObjectFromBody(responseBody);
                 UserDTO user = JacksonUtils.readEntity(data.toString(), new TypeReference<>(){});
                 if(user == null){
                     throw new RuntimeException("User is null");
@@ -201,7 +207,7 @@ public class ApiRequests {
                     });
                 } else {
                     Log.e(TAG, "Error en la solicitud de borrar cuenta: " + getStatusFromResponseBody(responseBody)
-                            + " | Respuesta: " + getDataFromResponseBody(responseBody));
+                            + " | Respuesta: " + getJsonObjectFromBody(responseBody));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error al borrar cuenta: ", e);
@@ -237,7 +243,7 @@ public class ApiRequests {
                 return idAnimal;
             } else {
                 Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(responseBody)
-                        + " | Respuesta: " + getDataFromResponseBody(responseBody));
+                        + " | Respuesta: " + getJsonObjectFromBody(responseBody));
             }
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
@@ -292,13 +298,12 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
-                JSONObject jsonObject = getDataFromResponseBody(responseBody);
-                JSONArray jsonArray = jsonObject.getJSONArray("animalDTOList");
+                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
                 animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
                 animalList = Animal.fromDTOList(animalDTOList);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error recibiendo tags: ", e);
+            Log.e(TAG, "Error getting my animals: ", e);
         }
         return animalList;
     }
