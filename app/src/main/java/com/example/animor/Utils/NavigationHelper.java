@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.example.animor.Model.dto.UserDTO;
-import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.FavActivity;
@@ -103,7 +102,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (!isUserLogged()) {
+        if (isUserLogged()) {
             navigateToLogin();
             return true;
         }
@@ -121,7 +120,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (!isUserLogged()) {
+        if (isUserLogged()) {
             navigateToLogin();
             return true;
         }
@@ -139,7 +138,7 @@ public class NavigationHelper {
         }
 
         // Verificar si el usuario está logueado
-        if (!isUserLogged()) {
+        if (isUserLogged()) {
             navigateToLogin();
             return true;
         }

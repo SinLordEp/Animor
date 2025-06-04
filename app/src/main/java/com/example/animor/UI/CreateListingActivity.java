@@ -25,6 +25,10 @@ import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.dto.TagDTO;
+import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.dto.UserSimple;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
@@ -200,8 +204,12 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         animalListing.setAnimal(animal);
         animalListing.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         animalListing.setContactPhone(editTextPhone.getText().toString().trim());
-        User user = PreferenceUtils.getUser();
-        animalListing.setUserId(user.getUserId());
+        UserDTO user = PreferenceUtils.getUser();
+        UserSimple userSimple = new UserSimple();
+        userSimple.setUserid(user.getUserId());
+        userSimple.setUserName(user.getUserName());
+        userSimple.setUserPhoto(user.getUserPhoto());
+        animalListing.setUser(userSimple);
         ApiRequests api = new ApiRequests();
         //api.createListing(animalListing);
 
@@ -458,9 +466,9 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     // cargar datos del animal
     public void loadAnimalData(Animal animal) {
         // Nombre especie
-        List<Species> species = PreferenceUtils.getSpeciesList();
+        List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
         String speciesName = "";
-        for (Species s : species) {
+        for (SpeciesDTO s : species) {
             if (s.getSpeciesId() == animal.getAnimalId()) {
                 speciesName = s.getSpeciesName();
                 break;
@@ -469,7 +477,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         // Foto de portada
         String photoUrl = "";
-        for (AnimalPhoto photo : animal.getAnimalPhotoList()) {
+        for (Photo photo : animal.getAnimalPhotoList()) {
             if (photo.getIsCoverPhoto()) {
                 photoUrl = photo.getPhotoUrl();
                 break;
@@ -509,8 +517,8 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         // Cargar etiquetas en segundo plano, no hay prisa
         new Thread(() -> {
-            ArrayList<Tag> animalTags = animal.getTags();
-            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
+            List<TagDTO> animalTags = PreferenceUtils.getTagList();
+            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_list_item_1,
                     animalTags
