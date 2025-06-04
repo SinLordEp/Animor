@@ -81,12 +81,8 @@ public class ApiRequests {
             throw new RuntimeException("Json format is invalid");
         }
     }
-    private static JSONObject getJsonObjectFromBody(String body){
-        return getJsonObjectFromResponseBody(body, "data", JSONObject.class);
-    }
-
-    private static JSONArray getJsonArrayFromBody(String body){
-        return getJsonObjectFromResponseBody(body, "data", JSONArray.class);
+    private static <T> T getObjectFromBody(String body, Class<T> objectClass){
+        return getJsonObjectFromResponseBody(body, "data", objectClass);
     }
     private static String getStatusFromResponseBody(String body){
         return getJsonObjectFromResponseBody(body, "status", String.class);
@@ -108,7 +104,7 @@ public class ApiRequests {
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
-                JSONObject dataObject = getJsonObjectFromBody(responseBody);
+                JSONObject dataObject = getObjectFromBody(responseBody, JSONObject.class);
                 // Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
                 List<TagDTO> tagList = JacksonUtils.readEntities(tagsArray.toString(), new TypeReference<>() {});
@@ -121,7 +117,7 @@ public class ApiRequests {
                 return new StartupResource(speciesDTOList, tagList, deviceToken);
             } else {
                 Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(responseBody)
-                        + " | Respuesta: " + getJsonObjectFromBody(responseBody));
+                        + " | Respuesta: " + getObjectFromBody(responseBody, JSONObject.class));
             }
         } catch (IOException e) {
             Log.e(TAG, "Error de tipo in/out: ", e);
@@ -157,7 +153,7 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             Log.d(TAG, "Respuesta del servidor a petición de user data: " + getStatusFromResponseBody(responseBody));
             if (response.isSuccessful()) {
-                JSONObject data = getJsonObjectFromBody(responseBody);
+                JSONObject data = getObjectFromBody(responseBody, JSONObject.class);
                 UserDTO user = JacksonUtils.readEntity(data.toString(), new TypeReference<>(){});
                 if(user == null){
                     throw new RuntimeException("User is null");
@@ -207,7 +203,7 @@ public class ApiRequests {
                     });
                 } else {
                     Log.e(TAG, "Error en la solicitud de borrar cuenta: " + getStatusFromResponseBody(responseBody)
-                            + " | Respuesta: " + getJsonObjectFromBody(responseBody));
+                            + " | Respuesta: " + getObjectFromBody(responseBody, JSONObject.class));
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error al borrar cuenta: ", e);
@@ -235,15 +231,12 @@ public class ApiRequests {
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
+            Log.d(TAG, "Respuesta del servidor al enviar animal: " + responseBody);
             if (response.isSuccessful()) {
-                Log.d(TAG, "Respuesta del servidor al enviar animal: " + responseBody);
                 JSONObject jsonResponse = new JSONObject(responseBody);
                 long idAnimal = jsonResponse.getLong("data");
                 Log.d(TAG, "ID del animal creado: " + idAnimal);
                 return idAnimal;
-            } else {
-                Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(responseBody)
-                        + " | Respuesta: " + getJsonObjectFromBody(responseBody));
             }
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
@@ -298,7 +291,7 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
-                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                JSONArray jsonArray = getObjectFromBody(responseBody, JSONArray.class);
                 animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
                 animalList = Animal.fromDTOList(animalDTOList);
             }
