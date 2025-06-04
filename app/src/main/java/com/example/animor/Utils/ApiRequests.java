@@ -68,6 +68,7 @@ public class ApiRequests {
     }
     private static JSONObject getJsonObjectFromResponseBody(Response response, String param) {
         String body = getResponseBody(response);
+        Log.d(TAG, "BODY: "+ body);
         try {
             JSONObject jsonResponse = new JSONObject(body);
             return jsonResponse.getJSONObject(param);

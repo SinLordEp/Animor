@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.animor.App.MyApplication;
+import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
@@ -96,17 +97,17 @@ public class ShowMyListingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Obtener nombre de la especie
-        List<Species> species = PreferenceUtils.getSpeciesList();
-        for (Species s : species) {
+        List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
+        for (SpeciesDTO s : species) {
             if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
                 break;
             }
         }
         // Obtener URL de la foto de portada
-        ArrayList<AnimalPhoto> photoList = animal.getAnimalPhotoList();
+        List<Photo> photoList = animal.getAnimalPhotoList();
         if (photoList != null) {
-            for (AnimalPhoto a : photoList) {
+            for (Photo a : photoList) {
                 if (a.getIsCoverPhoto()) {
                     photoUrl = a.getPhotoUrl();
                     break;
@@ -208,7 +209,7 @@ public class ShowMyListingFragment extends Fragment {
 
     private void loadAnimalTags() {
         new Thread(() -> {
-            ArrayList<Tag> animalTags = animal.getTags();
+            List<Tag> animalTags = animal.getTagList();
             if (animalTags != null && !animalTags.isEmpty()) {
                 ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(),
                         android.R.layout.simple_list_item_1,

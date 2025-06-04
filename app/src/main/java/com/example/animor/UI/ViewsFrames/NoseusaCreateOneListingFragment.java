@@ -480,15 +480,15 @@ public class NoseusaCreateOneListingFragment extends Fragment implements Geoloca
         }
 
         // Cargar etiquetas en segundo plano
-        new Thread(() -> {
-            List<TagDTO> animalTags = animal.getTagList();
-            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(
-                    requireContext(),
-                    android.R.layout.simple_list_item_1,
-                    animalTags
-            );
-            requireActivity().runOnUiThread(() -> listTags.setAdapter(adapter));
-        }).start();
+//        new Thread(() -> {
+//            List<TagDTO> animalTags = animal.getTagList();
+//            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(
+//                    requireContext(),
+//                    android.R.layout.simple_list_item_1,
+//                    animalTags
+//            );
+//            requireActivity().runOnUiThread(() -> listTags.setAdapter(adapter));
+//        }).start();
     }
 }
 
