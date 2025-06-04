@@ -6,7 +6,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.animor.App.MyApplication;
-
 import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.dto.AnimalDTO;
 import com.example.animor.Model.dto.PhotoDTO;
@@ -66,20 +65,26 @@ public class ApiRequests {
             throw new RuntimeException("Response body cannot be read as String");
         }
     }
-    private static JSONObject getJsonObjectFromResponseBody(Response response, String param) {
+    @SuppressWarnings("unchecked")
+    private static <T> T getJsonObjectFromResponseBody(Response response, String param, Class<T> objectClass) {
         String body = getResponseBody(response);
         try {
             JSONObject jsonResponse = new JSONObject(body);
-            return jsonResponse.getJSONObject(param);
+            if(objectClass == JSONObject.class){
+                return (T) jsonResponse.getJSONObject(param);
+            }else if(objectClass == String.class){
+                return (T) jsonResponse.getString(param);
+            }
+            throw new IllegalArgumentException("Not supported class while converting json response body");
         } catch (JSONException e) {
             throw new RuntimeException("Json format is invalid");
         }
     }
     private static JSONObject getDataFromResponseBody(Response response){
-        return getJsonObjectFromResponseBody(response, "data");
+        return getJsonObjectFromResponseBody(response, "data", JSONObject.class);
     }
     private static String getStatusFromResponseBody(Response response){
-        return getJsonObjectFromResponseBody(response, "status").toString();
+        return getJsonObjectFromResponseBody(response, "status", String.class);
     }
     public StartupResource sendFidDeviceToServer(String appCheckToken, String deviceFid) {
         String url = "https://www.animor.es/auth/device-token";
