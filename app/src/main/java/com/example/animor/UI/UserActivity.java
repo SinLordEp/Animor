@@ -3,6 +3,7 @@ package com.example.animor.UI;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 public class UserActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
@@ -40,8 +42,11 @@ public class UserActivity extends AppCompatActivity {
     Button btnIniciarSesion;
     ImageView imgUsuario;
     private NavigationHelper navigationHelper;
-
     private GoogleSignInClient mGoogleSignInClient;
+
+    private String nombre;
+    private String photo;
+    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,10 +104,9 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        SharedPreferences prefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-        String nombre = prefs.getString("nombreUsuario", "No logueado");
-        String email = prefs.getString("email", "No logueado");
-        String deviceToken = prefs.getString("device-token", "No logueado");
+        String nombre = PreferenceUtils.getUser().getUserName();
+        String email =PreferenceUtils.getUser().getUserPhoto();
+        String photo =PreferenceUtils.getUser().getEmail();
 
         Log.d("UserActivity", "nombre: " + nombre);
         Log.d("UserActivity", "email: " + email);
@@ -114,7 +118,7 @@ public class UserActivity extends AppCompatActivity {
             showLoginLayout();
         } else {
             // SÍ hay datos válidos: mostrar perfil
-            showProfileLayout(nombre, email);
+            showProfileLayout();
         }
     }
 
@@ -127,18 +131,18 @@ public class UserActivity extends AppCompatActivity {
         emailUsuario.setText("");
     }
 
-    private void showProfileLayout(String nombre, String email) {
+    private void showProfileLayout() {
         layoutNoLogin.setVisibility(View.GONE);
         dataRow.setVisibility(View.VISIBLE);
 
         nombreUsuario.setText(nombre);
-//        emailUsuario.setText(email);
-//        Picasso.get()
-//                .load()
-//                .placeholder(R.drawable.gatoinicio)
-//                .error(R.drawable.gatoinicio)
-//                .into(imgAnimal);
-//
+        emailUsuario.setText(email);
+        Picasso.get()
+                .load(photo)
+                .placeholder(R.drawable.gatoinicio)
+                .error(R.drawable.gatoinicio)
+                .into(imgUsuario);
+
     }
 
     public void performGoogleLogout() {
