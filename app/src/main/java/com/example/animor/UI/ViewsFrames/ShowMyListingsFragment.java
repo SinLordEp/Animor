@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.animor.R;
 import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
-import com.example.animor.Model.AnimalListing;
+import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Utils.ListingAdapter;
 
 import java.util.ArrayList;

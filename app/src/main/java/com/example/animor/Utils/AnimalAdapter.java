@@ -71,7 +71,6 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         // Clicks en el animal completo
         holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
 
-        // Clicks en el icono de favorito
     }
 
     @Override

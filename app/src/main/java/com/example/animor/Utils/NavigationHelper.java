@@ -3,7 +3,8 @@ package com.example.animor.Utils;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.example.animor.Model.User;
+import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.FavActivity;
@@ -166,7 +167,7 @@ public class NavigationHelper {
      * @return true si está logueado, false si no
      */
     private boolean isUserLogged() {
-        User user = PreferenceUtils.getUser();
+        UserDTO user = PreferenceUtils.getUser();
         return user != null;
     }
 

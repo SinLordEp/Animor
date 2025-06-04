@@ -18,12 +18,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.Species;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Species;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.PreferenceUtils;
 
@@ -38,7 +39,7 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
 
     private AnimalAdapter animalAdapter;
     private List<Animal> animalList;
-    private List<Species> speciesList;
+    private List<SpeciesDTO> speciesList;
     private TextView noanimales;
 
     // Interface para comunicación con la Activity (opcional)
@@ -103,7 +104,7 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             // Cargar los animales del usuario actual
-            List<Animal> userAnimals = api.askForMyAnimalsToDatabase(); // Asegúrate de tener este método
+            List<Animal> userAnimals = api.getMyAnimalsFromServer(); // Asegúrate de tener este método
 
             if (getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {

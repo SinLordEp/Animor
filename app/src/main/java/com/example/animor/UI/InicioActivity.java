@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
+import com.example.animor.Utils.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;

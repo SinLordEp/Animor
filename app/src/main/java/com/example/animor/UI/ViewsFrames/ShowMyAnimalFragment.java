@@ -17,10 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
+import com.example.animor.Model.entity.Species;
+import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.ShowActivity;

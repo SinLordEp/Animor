@@ -5,15 +5,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-<<<<<<< Updated upstream
 import com.example.animor.App.MyApplication;
-=======
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalListing;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Sex;
-import com.example.animor.Model.Species;
->>>>>>> Stashed changes
+
 import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.dto.AnimalDTO;
 import com.example.animor.Model.dto.PhotoDTO;

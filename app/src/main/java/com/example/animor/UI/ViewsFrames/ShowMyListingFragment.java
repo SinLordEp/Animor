@@ -19,12 +19,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.animor.App.MyApplication;
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalListing;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Location;
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.AnimalListing;
+import com.example.animor.Model.entity.Photo;
+import com.example.animor.Model.entity.Location;
+import com.example.animor.Model.entity.Species;
+import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
 import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
