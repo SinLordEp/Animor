@@ -61,23 +61,25 @@ public class ApiRequests {
             throw new RuntimeException("Response body is empty");
         }
         try {
-            return response.body().string();
+            String body = response.body().string();
+            Log.d(TAG, "BODY RESPONSE BODY: "+ body);
+            return body;
         }catch (IOException e) {
-            throw new RuntimeException("Response body cannot be read as String");
+            throw new RuntimeException("Response body cannot be read as String"+ e.getMessage());
         }
     }
-    private static JSONObject getJsonObjectFromResponseBody(Response response, String param) {
+    private static Object getJsonObjectFromResponseBody(Response response, String param) {
         String body = getResponseBody(response);
         Log.d(TAG, "BODY: "+ body);
         try {
             JSONObject jsonResponse = new JSONObject(body);
-            return jsonResponse.getJSONObject(param);
+            return jsonResponse.get(param);
         } catch (JSONException e) {
-            throw new RuntimeException("Json format is invalid");
+            throw new RuntimeException("Json format is invalid: "+e.getMessage());
         }
     }
     private static JSONObject getDataFromResponseBody(Response response){
-        return getJsonObjectFromResponseBody(response, "data");
+        return (JSONObject) getJsonObjectFromResponseBody(response, "data");
     }
     private static String getStatusFromResponseBody(Response response){
         return getJsonObjectFromResponseBody(response, "status").toString();
