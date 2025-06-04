@@ -30,12 +30,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.animor.App.MyApplication;
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Sex;
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
-import com.example.animor.Model.User;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.dto.TagDTO;
+import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.Sex;
+import com.example.animor.Model.request.AnimalRequest;
+import com.example.animor.Model.request.PhotoRequest;
+import com.example.animor.Model.request.TagRequest;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
@@ -44,7 +45,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -82,8 +83,8 @@ public class CreateAnimalFragment extends Fragment {
 
     static Sex sex = Sex.valueOf("Unknown");
     ApiRequests api = new ApiRequests();
-    ArrayList<Tag> selectedTags = new ArrayList<>();
-    Species animalSpecies = new Species();
+    List<TagRequest> selectedTags = new ArrayList<>();
+    SpeciesDTO animalSpeciesDTO = new SpeciesDTO();
     String imagePath="";
 
 
@@ -141,9 +142,9 @@ public class CreateAnimalFragment extends Fragment {
         btnGuardar.setVisibility(View.VISIBLE);
         spSpecies = view.findViewById(R.id.spinnerSpecies);
         MyApplication.executor.execute(()->{
-            List<Species> receivedSpecies = PreferenceUtils.getSpeciesList();
+            List<SpeciesDTO> receivedSpecies = PreferenceUtils.getSpeciesList();
             requireActivity().runOnUiThread(() -> {
-                ArrayAdapter<Species> adapter = new ArrayAdapter<>(
+                ArrayAdapter<SpeciesDTO> adapter = new ArrayAdapter<>(
                         requireContext(),
                         android.R.layout.simple_spinner_item,
                         receivedSpecies);
@@ -154,8 +155,8 @@ public class CreateAnimalFragment extends Fragment {
         listTags = view.findViewById(R.id.listTags);
         listTags.setVisibility(View.VISIBLE);
         MyApplication.executor.execute(()->{
-            List<Tag> receivedTags = PreferenceUtils.getTagList();
-            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
+            List<TagDTO> receivedTags = PreferenceUtils.getTagList();
+            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_multiple_choice, receivedTags);
             requireActivity().runOnUiThread(() -> {
                 listTags.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
                 listTags.setAdapter(adapter);
@@ -171,30 +172,30 @@ public class CreateAnimalFragment extends Fragment {
         btnSeleccionarImagen.setOnClickListener(v -> solicitarPermisos());
 
         // Listener para guardar
-        btnGuardar.setOnClickListener(v -> {
-            saveAnimal();
-        });
+        btnGuardar.setOnClickListener(v -> saveAnimal());
+
         spSpecies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Species selectedSpecies = (Species) parent.getItemAtPosition(position);
-                String speciesName = selectedSpecies.getSpeciesName();
-                int speciesId = selectedSpecies.getSpeciesId();
-                animalSpecies.setSpeciesId(speciesId);
-                animalSpecies.setSpeciesName(speciesName);
+                SpeciesDTO selectedSpeciesDTO = (SpeciesDTO) parent.getItemAtPosition(position);
+                String speciesName = selectedSpeciesDTO.getSpeciesName();
+                int speciesId = selectedSpeciesDTO.getSpeciesId();
+                animalSpeciesDTO.setSpeciesId(speciesId);
+                animalSpeciesDTO.setSpeciesName(speciesName);
 
             }
-            //de la interfaz, vacío
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+                // Manejar caso cuando no hay selección
             }
-
         });
         listTags.setOnItemClickListener((adapterView, view, i, l) -> {
-            Tag selectedTag = (Tag) adapterView.getItemAtPosition(i);
-            String tagName = selectedTag.getTagName();
-            int tagId = selectedTag.getTagId();
-            selectedTags.add(selectedTag);
+            TagDTO selectedTag = (TagDTO) adapterView.getItemAtPosition(i);
+            TagRequest tag = new TagRequest();
+            tag.setTagName(selectedTag.getTagName());
+            tag.setTagId(selectedTag.getTagId());
+            selectedTags.add(tag);
         });
     }
 
@@ -212,12 +213,13 @@ public class CreateAnimalFragment extends Fragment {
                             imagenPendienteSubir = true;
                             // Cambiar el texto del botón para indicar que hay imagen seleccionada
                             btnSeleccionarImagen.setText("Imagen seleccionada ✓");
-                            Toast.makeText(getContext(), "Imagen seleccionada, se subirá al guardar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Imagen seleccionada. Se subirá al guardar.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
         );
 
+        // Launcher para permisos
         // Launcher para permisos
         pedirPermisos = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(),
@@ -275,7 +277,7 @@ public class CreateAnimalFragment extends Fragment {
                     "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
             });
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Android 13:READ_MEDIA_IMAGES obligatorio
+            // Android 13: Solo pedimos READ_MEDIA_IMAGES (obligatorio)
             pedirPermisos.launch(new String[] {
                     Manifest.permission.READ_MEDIA_IMAGES
             });
@@ -301,7 +303,7 @@ public class CreateAnimalFragment extends Fragment {
         }
 
 // Crear referencia única para la imagen
-        User user = PreferenceUtils.getUser();
+        UserDTO user = PreferenceUtils.getUser();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
         StorageReference imageRef = storageReference.child("foto/"+user.getUserId() +"/"+fileName);
         imagePath = imageRef.getPath();
@@ -336,7 +338,7 @@ public class CreateAnimalFragment extends Fragment {
                 });
     }
 
-    // Método para validar el formulario
+    // Method para validar el formulario
     public boolean validateForm() {
         boolean isValid = true;
 
@@ -368,7 +370,7 @@ public class CreateAnimalFragment extends Fragment {
         return isValid;
     }
 
-    // Método para guardar el animal
+    // Method para guardar el animal
     public void saveAnimal() {
         if (!validateForm()) {
             Toast.makeText(getContext(), "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
@@ -384,7 +386,7 @@ public class CreateAnimalFragment extends Fragment {
         }
     }
 
-    // Método separado para guardar los datos del animal
+    // Method separado para guardar los datos del animal
     private void guardarDatosAnimal() {
         // Obtener datos del formulario
         String name = etNombre.getText().toString().trim();
@@ -407,7 +409,7 @@ public class CreateAnimalFragment extends Fragment {
         boolean isNeutered = cbCastrado.isChecked();
         String microchip = etMicrochip.getText().toString().trim();
         Boolean isAdopted = false;
-        int speciesCode = animalSpecies.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
+        int speciesCode = animalSpeciesDTO.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
         // Ejemplo:
         // Animal animal = new Animal(nombre, especie, fechaNacimiento, nacimientoAprox,
         //                           sexo, ciudad, tamaño, descripcion, castrado,
@@ -418,20 +420,18 @@ public class CreateAnimalFragment extends Fragment {
         // Restablecer el botón
         btnGuardar.setEnabled(true);
         btnGuardar.setText("Guardar");
-        Animal animal = new Animal();
-        animal.setAnimalId(0L);
+        AnimalRequest animal = new AnimalRequest();
         animal.setAnimalName(name);
         animal.setSpeciesId(speciesCode);
         animal.setBirthDate(birthDate);
-        animal.setIsBirthDateEstimated(isBirthDateEstimated);
+        animal.setBirthDateEstimated(isBirthDateEstimated);
         animal.setSex(sex);
         animal.setSize(size);
         animal.setAnimalDescription(animalDescription);
-        animal.setIsNeutered(isNeutered);
+        animal.setNeutered(isNeutered);
         animal.setMicrochipNumber(microchip);
-        animal.setCreatedAt(LocalDateTime.now());
-        animal.setIsAdopted(isAdopted);
-        animal.setTags(selectedTags);
+        animal.setAdopted(isAdopted);
+        animal.setTagList(selectedTags);
         Thread thread = getThread(animal);
         try {
             thread.join();
@@ -443,19 +443,20 @@ public class CreateAnimalFragment extends Fragment {
     }
 
     @NonNull
-    private Thread getThread(Animal animal) {
-        AnimalPhoto animalPhoto = new AnimalPhoto();
-        animalPhoto.setPhotoId(0);
-        animalPhoto.setPhotoUrl(imageDownloadUrl);
-        animalPhoto.setIsCoverPhoto(true);
-        animalPhoto.setDisplayOrder(0);
-        animalPhoto.setFilePath(imagePath);
-        ArrayList<AnimalPhoto> animalPhotos = new ArrayList<>();
-        animal.setAnimalPhotoList(animalPhotos);
+    private Thread getThread(AnimalRequest animal) {
+        PhotoRequest photo = new PhotoRequest();
+        photo.setPhotoUrl(imageDownloadUrl);
+        photo.setCoverPhoto(true);
+        photo.setDisplayOrder(0);
+        photo.setFilePath(imagePath);
+        List<PhotoRequest> animalPhotos = new ArrayList<>();
+        animalPhotos.add(photo);
+        animal.setPhotoList(animalPhotos);
+
         Thread thread = new Thread(() -> {
             Long receivedAnimalId = api.addAnimalIntoDatabase(animal);
             if (receivedAnimalId != null) {
-                api.addPhotoIntoDatabase(receivedAnimalId, animalPhoto);
+                api.addPhotoIntoDatabase(receivedAnimalId, photo);
             }else{
                 System.out.println("No se ha podido recibir el animal id del servidor");
             }
@@ -464,6 +465,7 @@ public class CreateAnimalFragment extends Fragment {
         return thread;
     }
 
+    // Method para limpiar el formulario
     // limpiar el formulario, aunque no se usa
     public void clearForm() {
         etNombre.setText("");

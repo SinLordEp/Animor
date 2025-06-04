@@ -3,9 +3,9 @@ package com.example.animor.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
-import com.example.animor.Model.User;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.dto.TagDTO;
+import com.example.animor.Model.dto.UserDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ import java.util.List;
 public class PreferenceUtils {
     private static Context context;
     private static String deviceToken = null;
-    private static List<Tag> tagList = null;
-    private static List<Species> speciesList = null;
-    private static User user = null;
+    private static List<TagDTO> tagList = null;
+    private static List<SpeciesDTO> speciesDTOList = null;
+    private static UserDTO user = null;
     public static final String PREFS_NAME = "userPrefs";
     public static final String KEY_DEVICE_TOKEN = "device_token";
     public static final String KEY_TAG_LIST = "tag_list";
@@ -55,20 +55,20 @@ public class PreferenceUtils {
         return json.isEmpty() ? new ArrayList<>() : JacksonUtils.readEntities(json, typeReference);
     }
 
-    public static List<Tag> getTagList() {
+    public static List<TagDTO> getTagList() {
         if (tagList != null) {
             return tagList;
         }
-        tagList = getList(KEY_TAG_LIST, new TypeReference<List<Tag>>() {});
+        tagList = getList(KEY_TAG_LIST, new TypeReference<List<TagDTO>>() {});
         return tagList;
     }
 
-    public static List<Species> getSpeciesList() {
-        if (speciesList != null) {
-            return speciesList;
+    public static List<SpeciesDTO> getSpeciesList() {
+        if (speciesDTOList != null) {
+            return speciesDTOList;
         }
-        speciesList = getList(KEY_SPECIES_LIST, new TypeReference<List<Species>>() {});
-        return speciesList;
+        speciesDTOList = getList(KEY_SPECIES_LIST, new TypeReference<List<SpeciesDTO>>() {});
+        return speciesDTOList;
     }
 
     public static String getDeviceToken(){
@@ -79,11 +79,11 @@ public class PreferenceUtils {
         return deviceToken;
     }
 
-    public static User getUser(){
+    public static UserDTO getUser(){
         if(user != null){
             return user;
         }
-        user = getEntity(KEY_USER_MODEL, new TypeReference<User>() {});
+        user = getEntity(KEY_USER_MODEL, new TypeReference<UserDTO>() {});
         return user;
     }
 

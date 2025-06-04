@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
-import com.example.animor.Utils.*;
+import com.example.animor.Utils.AnimalAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.time.LocalDate;

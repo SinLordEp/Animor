@@ -1,36 +1,43 @@
-package com.example.animor.Model;
+package com.example.animor.Model.entity;
 
+
+import com.example.animor.Model.dto.UserSimple;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 public class AnimalListing implements Serializable {
     private int listingId;
     private Animal animal;
-    private long userId;
-    Location location;
+    private UserSimple user;
+    private Location location;
     private String contactPhone;
     private String contactEmail;
+    private int distance;
 
     public AnimalListing() {}
-
-    public AnimalListing(int listingId, Animal animal, Location location, int userId,
-                         String contactPhone, String contactEmail, LocalDateTime createdAt) {
-        this.listingId = listingId;
-        this.animal = animal;
-        this.userId = userId;
-        this.location = location;
-        this.contactPhone = contactPhone;
-        this.contactEmail = contactEmail;
-    }
 
     // Getters and setters
     public int getListingId() { return listingId; }
     public void setListingId(int listingId) { this.listingId = listingId; }
     public Animal getAnimal() { return animal; }
     public void setAnimal(Animal animal) { this.animal = animal; }
-    public long getUserId() { return userId; }
-    public void setUserId(long userId) { this.userId = userId; }
+
+    public UserSimple getUser() {
+        return user;
+    }
+
+    public void setUser(UserSimple user) {
+        this.user = user;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public String getContactPhone() { return contactPhone; }
     public void setContactPhone(String contactPhone) { this.contactPhone = contactPhone; }
     public String getContactEmail() { return contactEmail; }
@@ -42,5 +49,13 @@ public class AnimalListing implements Serializable {
 
     public void setLocationRequest(Location location) {
         this.location = location;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

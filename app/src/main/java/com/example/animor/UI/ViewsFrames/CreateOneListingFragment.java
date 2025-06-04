@@ -24,12 +24,12 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalListing;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Location;
-import com.example.animor.Model.Species;
-import com.example.animor.Model.Tag;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.dto.TagDTO;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.AnimalListing;
+import com.example.animor.Model.entity.Location;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
@@ -40,7 +40,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -431,9 +430,9 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
     // Método para cargar datos del animal
     public void loadAnimalData(Animal animal) {
         // Nombre especie
-        List<Species> species = PreferenceUtils.getSpeciesList();
+        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
         String speciesName = "";
-        for (Species s : species) {
+        for (SpeciesDTO s : speciesDTOS) {
             if (s.getSpeciesId() == animal.getAnimalId()) {
                 speciesName = s.getSpeciesName();
                 break;
@@ -442,7 +441,7 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
 
         // Foto de portada
         String photoUrl = "";
-        for (AnimalPhoto photo : animal.getAnimalPhotoList()) {
+        for (Photo photo : animal.getAnimalPhotoList()) {
             if (photo.getIsCoverPhoto()) {
                 photoUrl = photo.getPhotoUrl();
                 break;
@@ -482,8 +481,8 @@ public class CreateOneListingFragment extends Fragment implements Geolocalizatio
 
         // Cargar etiquetas en segundo plano
         new Thread(() -> {
-            ArrayList<Tag> animalTags = animal.getTags();
-            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
+            List<TagDTO> animalTags = animal.getTagList();
+            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(
                     requireContext(),
                     android.R.layout.simple_list_item_1,
                     animalTags

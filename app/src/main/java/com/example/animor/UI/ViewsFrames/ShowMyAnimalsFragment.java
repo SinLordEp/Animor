@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.Species;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
-    List<Species> speciesList = PreferenceUtils.getSpeciesList();
+    List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList();
     private RecyclerView rvAnimals;
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
@@ -69,8 +69,8 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        List<Species> speciesList = PreferenceUtils.getSpeciesList();
-        adapter = new AnimalAdapter(animalList, speciesList, this);
+        List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList(); //
+        adapter = new AnimalAdapter(animalList, speciesDTOList, this);   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 
@@ -79,12 +79,11 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
                 rvAnimals.getContext(), LinearLayoutManager.VERTICAL));
     }
 
-    // MÉTODO PRINCIPAL CORREGIDO
     private void loadAnimals() {
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
-            List<Animal> newAnimalList = api.askForMyAnimalsToDatabase();
+            List<Animal> newAnimalList = api.getMyAnimalsFromServer();
 
             // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
             requireActivity().runOnUiThread(() -> {
@@ -196,7 +195,6 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         intent.putExtra("mode", "create");
         startActivity(intent);
     }
-
     // Método fallback por si no hay listener (opcional, para casos extremos)
     private void navigateToDetailFallback(Animal animal) {
         if (getActivity() instanceof ShowActivity) {
@@ -208,7 +206,6 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     public void setAnimalSelectedListener(OnAnimalSelectedListener listener) {
         this.animalSelectedListener = listener;
     }
-
     @Override
     public void onAnimalClick(Animal animal) {
         // Usar únicamente el interface para comunicarse con ShowActivity
@@ -250,7 +247,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         }
     }
 
-    // MÉTODO MEJORADO: Actualización segura de lista
+
     public void updateAnimalList(ArrayList<Animal> newAnimalList) {
         if (animalList != null && adapter != null) {
             animalList.clear();
@@ -259,10 +256,5 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             }
             adapter.notifyDataSetChanged();
         }
-    }
-
-    // MÉTODO PÚBLICO: Para refrescar desde fuera
-    public void refreshAnimalList() {
-        loadAnimals();
     }
 }

@@ -9,10 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.animor.Model.Animal;
-import com.example.animor.Model.AnimalListing;
-import com.example.animor.Model.AnimalPhoto;
-import com.example.animor.Model.Species;
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.AnimalListing;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.squareup.picasso.Picasso;
 
@@ -69,9 +69,9 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     // Métodos auxiliares
     private String getSpeciesName(int speciesId) {
-        List<Species> species = PreferenceUtils.getSpeciesList();
-        if (species != null) {
-            for (Species s : species) {
+        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
+        if (speciesDTOS != null) {
+            for (SpeciesDTO s : speciesDTOS) {
                 if (s.getSpeciesId() == speciesId) {
                     return s.getSpeciesName();
                 }
@@ -84,7 +84,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         String photoUrl = "";
 
         if (animal.getAnimalPhotoList() != null) {
-            for (AnimalPhoto photo : animal.getAnimalPhotoList()) {
+            for (Photo photo : animal.getAnimalPhotoList()) {
                 if (photo.getIsCoverPhoto()) {
                     photoUrl = photo.getPhotoUrl();
                     break;
