@@ -1,6 +1,7 @@
 package com.example.animor.Model.entity;
 
 import com.example.animor.Model.dto.AnimalDTO;
+import com.example.animor.Model.dto.TagDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -229,10 +230,9 @@ public class Animal implements Serializable {
         animal.setIsNeutered(animalDTO.isNeutered());
         animal.setMicrochipNumber(animalDTO.getMicrochipNumber());
         animal.setIsAdopted(animalDTO.isAdopted());
-
         // IMPORTANTE: Convertir las fotos
         animal.setPhotoList(Photo.fromDTOList(animalDTO.getPhotoList()));
-
+        animal.setTagList(Tag.fromDTOList(animalDTO.getTagList()));
         return animal;
     }
     @JsonIgnore

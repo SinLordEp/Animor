@@ -309,6 +309,7 @@ public class ApiRequests {
                 animalList = new ArrayList<>();
                 for(AnimalDTO animalDTO : animalDTOList) {
                     animalList.add(Animal.fromDTO(animalDTO));
+                    Log.d(TAG, "TAGS RECIBIDOS: "+ Animal.fromDTO(animalDTO).getTagList().size());
                 }
                // animalList = Animal.fromDTOList(animalDTOList);
 
@@ -324,7 +325,7 @@ public class ApiRequests {
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
         }
-        url.newBuilder()
+       url = url.newBuilder()
                 .addQueryParameter("animalID", String.valueOf(animalId))
                 .build();
         Request request = new Request.Builder()
@@ -335,6 +336,7 @@ public class ApiRequests {
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
+                //Log.d("API", "Animal deleted successfully - Status: " + response.code());
                 String status = getStatusFromResponseBody(responseBody);
                 if("ANIMAL_DELETE_SUCCESS".equals(status)){
                     Log.d("ApiRequest - Delete animal", "Borrado exitoso");

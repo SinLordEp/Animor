@@ -52,6 +52,7 @@ public class ShowMyAnimalFragment extends Fragment {
     Animal animal = null;
     String speciesName = "";
     String photoUrl = "";
+    private final String TAG="ShowMyAnimalFragment";
 
     //menú hamburguesa que aún no se implementa
 //    private ImageButton btnMenu;
@@ -94,6 +95,7 @@ public class ShowMyAnimalFragment extends Fragment {
                 photoUrl = a.getPhotoUrl();
             }
         }
+        Log.d(TAG, "se ha conseguido la foto: "+photoUrl);
         initViews(view);
         setupListeners();
     }

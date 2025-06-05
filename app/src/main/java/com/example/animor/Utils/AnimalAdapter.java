@@ -60,6 +60,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         // CORRECCIÓN: Declarar photoUrl como variable local y resetearla
         String photoUrl = null;
         List<Photo> photoList = animal.getAnimalPhotoList();
+        Log.d(TAG, "BIRTHDATE: "+animal.getBirthDate());
 
         // Agregar logs para debugging
         Log.d(TAG, "Animal: " + animal.getAnimalName() + " - PhotoList size: " +

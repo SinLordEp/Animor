@@ -1,6 +1,8 @@
 package com.example.animor.Model.request;
 
-public class TagRequest {
+import java.io.Serializable;
+
+public class TagRequest implements Serializable {
     private int tagId;
     private String tagName;
 

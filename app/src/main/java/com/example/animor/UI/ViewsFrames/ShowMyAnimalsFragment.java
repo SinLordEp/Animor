@@ -90,6 +90,8 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 // Debug corregido:
             for(Animal a: newAnimalList) {
                 System.out.println("Animal: " + a.getAnimalName());
+                System.out.println("Animal: " + a.getBirthDate());
+
 
                 List<Photo> photoList = a.getAnimalPhotoList(); // Es una List, no un Photo
 
@@ -199,7 +201,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         adapter.notifyDataSetChanged();
     }
 
-    // NUEVO MÉTODO: Navegar a login
+    // method Navegar a login
     private void navigateToLogin() {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
@@ -216,14 +218,14 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         intent.putExtra("mode", "create");
         startActivity(intent);
     }
-    // Método fallback por si no hay listener (opcional, para casos extremos)
+    //  fallback por si no hay listener
     private void navigateToDetailFallback(Animal animal) {
         if (getActivity() instanceof ShowActivity) {
             ((ShowActivity) getActivity()).onAnimalSelected(animal);
         }
     }
 
-    // Método para establecer el listener desde ShowActivity
+    // method para establecer el listener desde ShowActivity
     public void setAnimalSelectedListener(OnAnimalSelectedListener listener) {
         this.animalSelectedListener = listener;
     }
@@ -244,7 +246,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         // Implementa tu lógica para favoritos
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
-            // Aquí harías la llamada para actualizar favoritos
+            // llamada para actualizar favoritos
             // boolean success = api.updateFavoriteStatus(animal);
 
             if (getActivity() != null) {

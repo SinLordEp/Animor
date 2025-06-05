@@ -110,29 +110,15 @@ public class ShowActivity extends AppCompatActivity
         });
     }
 
-    private void showDetailFragment(Fragment fragment, String backStackTag, String key, Serializable data) {
-        isShowingDetails = true;
-        tabLayout.setVisibility(View.GONE);
-        viewPager.setVisibility(View.GONE);
-
-        Bundle args = new Bundle();
-        args.putSerializable(key, data);
-        fragment.setArguments(args);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.detail_container, fragment)
-                .addToBackStack(backStackTag)
-                .commit();
-
-        findViewById(R.id.detail_container).setVisibility(View.VISIBLE);
-    }
 
 
     @Override
     public void onAnimalSelected(Animal animal) {
-        showAnimalDetail(animal);
-
+        Intent intent = new Intent(ShowActivity.this, ShowMyAnimalActivity.class);
+        intent.putExtra("animal", animal);
+        intent.putExtra("tags", (Serializable) animal.getTagList());
+        startActivity(intent);
+        finish();
     }
 
 
@@ -142,13 +128,10 @@ public class ShowActivity extends AppCompatActivity
         showListingDetail(listing);
     }
 
-    private void showAnimalDetail(Animal animal) {
-        showDetailFragment(new ShowMyAnimalFragment(), "animal_detail", "animal", animal);
-
-    }
-
     private void showListingDetail(AnimalListing listing) {
-        showDetailFragment(new ShowMyListingFragment(), "listing_detail", "listing", (Serializable) listing);
+        Intent intent = new Intent(ShowActivity.this, ShowMyListingActivity.class);
+        intent.putExtra("listing", listing);
+        startActivity(intent);
 
     }
 
