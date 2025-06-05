@@ -1,5 +1,8 @@
 package com.example.animor.Utils;
 
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +24,14 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     List<Animal> animalList;
     private List<SpeciesDTO> speciesDTOList;
     OnAnimalClickListener listener;
-    public AnimalAdapter(List<Animal> animalList, List<SpeciesDTO> speciesDTOList, OnAnimalClickListener listener) {
+    private final String TAG = "AnimalAdapter";
+    private Context context;
+
+    public AnimalAdapter(List<Animal> animalList, List<SpeciesDTO> speciesDTOList, OnAnimalClickListener listener, Context context) {
         this.animalList = animalList;
         this.speciesDTOList = speciesDTOList;
         this.listener = listener;
+        this.context = context;
     }
 
 
@@ -40,37 +47,60 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
         holder.txtName.setText(animal.getAnimalName());
-        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
-        String speciesName="";
+
+        String speciesName = "";
         for (SpeciesDTO s : speciesDTOList) {
             if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
                 break;
             }
-
-    }
+        }
         holder.txtSpecies.setText(speciesName);
+
+        // CORRECCIÓN: Declarar photoUrl como variable local y resetearla
+        String photoUrl = null;
         List<Photo> photoList = animal.getAnimalPhotoList();
-        String photoUrl = "";
-        if (photoList != null) {
-            for (Photo a : photoList) {
-                if (a.getIsCoverPhoto()) {
-                    photoUrl = a.getPhotoUrl();
+
+        // Agregar logs para debugging
+        Log.d(TAG, "Animal: " + animal.getAnimalName() + " - PhotoList size: " +
+                (photoList != null ? photoList.size() : "null"));
+
+        if (photoList != null && !photoList.isEmpty()) {
+            for (Photo photo : photoList) {
+                Log.d(TAG, "Checking photo - isCoverPhoto: " + photo.getIsCoverPhoto() +
+                        ", URL: " + photo.getPhotoUrl());
+
+                if (photo.getIsCoverPhoto()) {
+                    photoUrl = photo.getPhotoUrl();
+                    Log.d(TAG, "Found cover photo URL: " + photoUrl);
                     break;
                 }
             }
+
+            // Si no hay foto de portada, tomar la primera disponible
+            if (photoUrl == null && !photoList.isEmpty()) {
+                photoUrl = photoList.get(0).getPhotoUrl();
+                Log.d(TAG, "No cover photo found, using first photo: " + photoUrl);
+            }
         }
 
-        Picasso.get()
-                .load(photoUrl)
-                .placeholder(R.drawable.gatoinicio)
-                .error(R.drawable.gatoinicio)
-                .into(holder.imgAnimal);
-        holder.txtSex.setText(animal.getSex().toString());  // getSex() es enum, lo convierto a string
-       // holder.imgAnimal.setImageResource(animal.getImage());
-        // Clicks en el animal completo
-        holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
+        // Cargar imagen
+        if (photoUrl != null && !photoUrl.trim().isEmpty()) {
+            Log.d(TAG, "Loading photo with Picasso: " + photoUrl);
 
+            // NO necesitas runOnUiThread aquí - onBindViewHolder ya se ejecuta en UI thread
+            Picasso.get()
+                    .load(photoUrl)
+                    .placeholder(R.drawable.gatoinicio)
+                    .error(R.drawable.gatoinicio)
+                    .into(holder.imgAnimal);
+        } else {
+            Log.d(TAG, "No valid photo URL available, using default image");
+            holder.imgAnimal.setImageResource(R.drawable.gatoinicio);
+        }
+
+        holder.txtSex.setText(animal.getSex().toString());
+        holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
     }
 
     @Override

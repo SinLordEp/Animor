@@ -297,7 +297,7 @@ public class ApiRequests {
                 .get()
                 .build();
         List<AnimalDTO> animalDTOList = new ArrayList<>();
-        List<Animal> animalList = new ArrayList<>();
+        List<Animal>animalList = new ArrayList<>();
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             System.out.println("responsebody"+responseBody);
@@ -305,7 +305,13 @@ public class ApiRequests {
             if (response.isSuccessful()) {
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
                 animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<List<AnimalDTO>>() {});
-                animalList = Animal.fromDTOList(animalDTOList);
+                // Entonces tu código se simplifica a:
+                animalList = new ArrayList<>();
+                for(AnimalDTO animalDTO : animalDTOList) {
+                    animalList.add(Animal.fromDTO(animalDTO));
+                }
+               // animalList = Animal.fromDTOList(animalDTOList);
+
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting my animals: ", e);

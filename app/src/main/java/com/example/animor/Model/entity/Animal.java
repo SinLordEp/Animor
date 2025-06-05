@@ -214,10 +214,26 @@ public class Animal implements Serializable {
     }
 
     @JsonIgnore
-    public static Animal fromDTO(AnimalDTO animalDTO){
-        return new Animal(animalDTO.getAnimalId(), animalDTO.getAnimalName(), animalDTO.getSpeciesId(),
-                animalDTO.getBirthDate(), animalDTO.isBirthDateEstimated(), animalDTO.getSex(), animalDTO.getSize(),
-                animalDTO.getAnimalDescription(), animalDTO.isNeutered(), animalDTO.getMicrochipNumber(), animalDTO.isAdopted());
+    public static Animal fromDTO(AnimalDTO animalDTO) {
+        if (animalDTO == null) return null;
+
+        Animal animal = new Animal();
+        animal.setAnimalId(animalDTO.getAnimalId());
+        animal.setAnimalName(animalDTO.getAnimalName());
+        animal.setSpeciesId(animalDTO.getSpeciesId());
+        animal.setBirthDate(animalDTO.getBirthDate());
+        animal.setIsBirthDateEstimated(animalDTO.isBirthDateEstimated());
+        animal.setSex(animalDTO.getSex());
+        animal.setSize(animalDTO.getSize());
+        animal.setAnimalDescription(animalDTO.getAnimalDescription());
+        animal.setIsNeutered(animalDTO.isNeutered());
+        animal.setMicrochipNumber(animalDTO.getMicrochipNumber());
+        animal.setIsAdopted(animalDTO.isAdopted());
+
+        // IMPORTANTE: Convertir las fotos
+        animal.setPhotoList(Photo.fromDTOList(animalDTO.getPhotoList()));
+
+        return animal;
     }
     @JsonIgnore
     public static List<Animal> fromDTOList(List<AnimalDTO> animalDTOList){

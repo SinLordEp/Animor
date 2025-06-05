@@ -82,7 +82,7 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
         animalList = new ArrayList<>();
         speciesList = PreferenceUtils.getSpeciesList(); // Obtener lista de especies
 
-        animalAdapter = new AnimalAdapter(animalList, speciesList, this);
+        animalAdapter = new AnimalAdapter(animalList, speciesList, this, getContext());
         rvAnimalesUsuario.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rvAnimalesUsuario.setAdapter(animalAdapter);
 

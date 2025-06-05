@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.ShowActivity;
@@ -71,7 +72,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
         List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList(); //
-        adapter = new AnimalAdapter(animalList, speciesDTOList, this);   //
+        adapter = new AnimalAdapter(animalList, speciesDTOList, this, getContext());   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 
@@ -84,8 +85,27 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
-             newAnimalList = api.getMyAnimalsFromServer();
+            newAnimalList = api.getMyAnimalsFromServer();
 
+// Debug corregido:
+            for(Animal a: newAnimalList) {
+                System.out.println("Animal: " + a.getAnimalName());
+
+                List<Photo> photoList = a.getAnimalPhotoList(); // Es una List, no un Photo
+
+                if (photoList == null) {
+                    System.out.println("  PhotoList es NULL");
+                } else if (photoList.isEmpty()) {
+                    System.out.println("  PhotoList está vacía");
+                } else {
+                    System.out.println("  PhotoList tiene " + photoList.size() + " fotos:");
+                    for (int i = 0; i < photoList.size(); i++) {
+                        Photo photo = photoList.get(i);
+                        System.out.println("    Foto " + i + ": " + photo.getPhotoUrl() +
+                                " (Cover: " + photo.getIsCoverPhoto() + ")");
+                    }
+                }
+            }
             // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
             requireActivity().runOnUiThread(() -> {
                 handleAnimalsResult(newAnimalList);

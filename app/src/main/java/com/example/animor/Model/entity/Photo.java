@@ -1,8 +1,11 @@
 package com.example.animor.Model.entity;
 
+import com.example.animor.Model.dto.PhotoDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Photo implements Serializable {
     private long photoId;
@@ -41,4 +44,23 @@ public class Photo implements Serializable {
 
     public int getDisplayOrder() { return displayOrder; }
     public void setDisplayOrder(int displayOrder) { this.displayOrder = displayOrder; }
+    public static Photo fromDTO(PhotoDTO photoDTO) {
+        if (photoDTO == null) return null;
+
+        Photo photo = new Photo();
+        photo.setPhotoId(photoDTO.getPhotoId());
+        photo.setPhotoUrl(photoDTO.getPhotoUrl());
+        photo.setIsCoverPhoto(photoDTO.isCoverPhoto());
+        photo.setDisplayOrder(photoDTO.getDisplayOrder());
+        return photo;
+    }
+    public static List<Photo> fromDTOList(List<PhotoDTO> photoDTOList) {
+        if (photoDTOList == null) return new ArrayList<>();
+
+        List<Photo> photoList = new ArrayList<>();
+        for (PhotoDTO photoDTO : photoDTOList) {
+            photoList.add(fromDTO(photoDTO));
+        }
+        return photoList;
+    }
 }
