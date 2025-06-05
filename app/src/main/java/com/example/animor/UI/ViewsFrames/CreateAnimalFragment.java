@@ -315,7 +315,7 @@ public class CreateAnimalFragment extends Fragment {
         UserDTO user = PreferenceUtils.getUser();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
         StorageReference imageRef = storageReference.child("foto/"+user.getUserId() +"/"+fileName);
-        imagePath = imageRef.getPath().substring(1);
+        imagePath = imageRef.getPath();
 
         // Subir archivo
         imageRef.putFile(uri)
