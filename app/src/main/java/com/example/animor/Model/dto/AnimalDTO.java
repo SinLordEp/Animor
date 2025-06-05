@@ -1,6 +1,7 @@
 package com.example.animor.Model.dto;
 
 import com.example.animor.Model.entity.Sex;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,12 +11,15 @@ public class AnimalDTO {
     private String animalName;
     private int speciesId;
     private LocalDate birthDate;
+    @JsonProperty("isBirthDateEstimated")
     private boolean isBirthDateEstimated;
     private Sex sex;
     private String size;
     private String animalDescription;
+    @JsonProperty("isNeutered")
     private boolean isNeutered;
     private String microchipNumber;
+    @JsonProperty("isAdopted")
     private boolean isAdopted;
     private List<PhotoDTO> photoList;
     private List<TagDTO> tagList;

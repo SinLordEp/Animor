@@ -21,7 +21,7 @@ public class Animal implements Serializable {
     @JsonProperty("birthDate")
     private LocalDate birthDate;
     @JsonProperty("isBirthDateEstimated")
-    private Boolean isBirthDateEstimated;
+    private boolean isBirthDateEstimated;
     @JsonProperty("sex")
     private Sex sex;
     @JsonProperty("size")
@@ -30,12 +30,12 @@ public class Animal implements Serializable {
     private String animalDescription;
     String image;
     @JsonProperty("isNeutered")
-    private Boolean isNeutered;
+    private boolean isNeutered;
     @JsonProperty("microchipNumber")
     private String microchipNumber;
     private LocalDateTime createdAt;
     @JsonProperty("isAdopted")
-    private Boolean isAdopted;
+    private boolean isAdopted;
     @JsonProperty("tagList")
     private List<Tag> tagList;
     @JsonProperty("photoList")
