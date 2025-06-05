@@ -457,7 +457,7 @@ public class CreateAnimalFragment extends Fragment {
         photo.setPhotoUrl(imageDownloadUrl);
         photo.setCoverPhoto(true);
         photo.setDisplayOrder(0);
-        photo.setFilePath(imagePath);
+        photo.setFilePath(imagePath.substring(1));
         List<PhotoRequest> animalPhotos = new ArrayList<>();
         animalPhotos.add(photo);
         animal.setPhotoList(animalPhotos);
