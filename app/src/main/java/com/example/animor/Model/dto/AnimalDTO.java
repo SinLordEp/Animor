@@ -17,7 +17,7 @@ public class AnimalDTO {
     private boolean isNeutered;
     private String microchipNumber;
     private boolean isAdopted;
-    private List<PhotoDTO> animalPhotoList;
+    private List<PhotoDTO> photoList;
     private List<TagDTO> tagList;
 
     public long getAnimalId() {
@@ -108,12 +108,12 @@ public class AnimalDTO {
         isAdopted = adopted;
     }
 
-    public List<PhotoDTO> getAnimalPhotoList() {
-        return animalPhotoList;
+    public List<PhotoDTO> getPhotoList() {
+        return photoList;
     }
 
-    public void setAnimalPhotoList(List<PhotoDTO> animalPhotoList) {
-        this.animalPhotoList = animalPhotoList;
+    public void setPhotoList(List<PhotoDTO> photoList) {
+        this.photoList = photoList;
     }
 
     public List<TagDTO> getTagList() {
