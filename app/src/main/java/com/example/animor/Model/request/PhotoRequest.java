@@ -7,6 +7,9 @@ public class PhotoRequest {
     private boolean isCoverPhoto;
     private int displayOrder;
 
+    public PhotoRequest() {
+    }
+
     public long getPhotoId() {
         return photoId;
     }

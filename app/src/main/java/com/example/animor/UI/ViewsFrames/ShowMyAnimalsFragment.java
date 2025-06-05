@@ -28,6 +28,7 @@ import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     private RecyclerView rvAnimals;
     private AnimalAdapter adapter;
     private ArrayList<Animal> animalList;
-
+    private List<Animal> newAnimalList=new ArrayList<>();
     // Interface para comunicación con la Activity
     public interface OnAnimalSelectedListener {
         void onAnimalSelected(Animal animal);
@@ -83,7 +84,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
             Log.d("DEBUG", "loadAnimals() llamado");
-            List<Animal> newAnimalList = api.getMyAnimalsFromServer();
+             newAnimalList = api.getMyAnimalsFromServer();
 
             // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
             requireActivity().runOnUiThread(() -> {
@@ -174,7 +175,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
         // Actualizar lista de forma segura
         animalList.clear();
-        animalList.addAll(newAnimalList); // Ya no será null aquí
+        animalList.addAll(newAnimalList);
         adapter.notifyDataSetChanged();
     }
 

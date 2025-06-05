@@ -20,6 +20,9 @@ public class AnimalDTO {
     private List<PhotoDTO> photoList;
     private List<TagDTO> tagList;
 
+    public AnimalDTO() {
+    }
+
     public long getAnimalId() {
         return animalId;
     }

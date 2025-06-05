@@ -9,6 +9,9 @@ public class ListingDTO {
     private UserSimple user;
     private int distance;
 
+    public ListingDTO() {
+    }
+
     public long getListingId() {
         return listingId;
     }

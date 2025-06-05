@@ -19,6 +19,9 @@ public class AnimalRequest {
     private List<PhotoRequest> photoList;
     private List<TagRequest> tagList;
 
+    public AnimalRequest() {
+    }
+
     public String getAnimalName() {
         return animalName;
     }

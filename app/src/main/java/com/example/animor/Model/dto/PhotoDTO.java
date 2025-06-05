@@ -8,6 +8,9 @@ public class PhotoDTO {
     private boolean isCoverPhoto;
     private int displayOrder;
 
+    public PhotoDTO() {
+    }
+
     public PhotoDTO(long photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) {
         this.photoId = photoId;
         this.photoUrl = photoUrl;

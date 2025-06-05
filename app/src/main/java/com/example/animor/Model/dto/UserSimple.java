@@ -5,6 +5,9 @@ public class UserSimple {
     private String userName;
     private String userPhoto;
 
+    public UserSimple() {
+    }
+
     public long getUserid() {
         return userid;
     }

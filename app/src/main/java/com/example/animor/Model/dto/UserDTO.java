@@ -7,6 +7,9 @@ public class UserDTO {
     private String email;
     private String userPhoto;
 
+    public UserDTO() {
+    }
+
     public String getUserPhoto() {
         return userPhoto;
     }

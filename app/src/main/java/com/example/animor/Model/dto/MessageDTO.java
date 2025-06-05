@@ -6,6 +6,9 @@ public class MessageDTO {
     private String content;
     private long timestamp;
 
+    public MessageDTO() {
+    }
+
     public long getMessageId() {
         return messageId;
     }

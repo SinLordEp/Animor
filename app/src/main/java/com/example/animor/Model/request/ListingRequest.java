@@ -5,6 +5,9 @@ public class ListingRequest {
     private String contactPhone;
     private LocationRequest locationRequest;
 
+    public ListingRequest() {
+    }
+
     public String getContactEmail() {
         return contactEmail;
     }

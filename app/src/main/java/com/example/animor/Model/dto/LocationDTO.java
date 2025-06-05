@@ -5,6 +5,9 @@ public class LocationDTO {
     private String province;
     private String city;
 
+    public LocationDTO() {
+    }
+
     public String getCountry() {
         return country;
     }

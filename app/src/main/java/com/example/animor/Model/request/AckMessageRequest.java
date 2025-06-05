@@ -5,6 +5,9 @@ import java.util.List;
 public class AckMessageRequest {
     List<Long> messageIdList;
 
+    public AckMessageRequest() {
+    }
+
     public List<Long> getMessageIdList() {
         return messageIdList;
     }

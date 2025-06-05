@@ -9,6 +9,9 @@ public class LocationRequest {
     private double longitude;
     private double latitude;
 
+    public LocationRequest() {
+    }
+
     public String getCountry() {
         return country;
     }
