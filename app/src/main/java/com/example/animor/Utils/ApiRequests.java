@@ -325,6 +325,7 @@ public class ApiRequests {
     }
     public void deleteAnimal(long animalId) {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/animal/delete-animal");
+        Log.d(TAG, "ANIMALID: "+animalId);
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
         }

@@ -125,7 +125,10 @@ public class ShowActivity extends AppCompatActivity
     // Implementación del interface para listings (asumiendo que tienes un modelo Listing)
     @Override
     public void onListingSelected(AnimalListing listing) { // Cambia Object por tu clase Listing
-        showListingDetail(listing);
+        Intent intent = new Intent(ShowActivity.this, ShowMyListingActivity.class);
+        intent.putExtra("listing", listing);
+        startActivity(intent);
+        finish();
     }
 
     private void showListingDetail(AnimalListing listing) {
