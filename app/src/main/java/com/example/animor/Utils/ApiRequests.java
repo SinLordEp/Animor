@@ -329,7 +329,7 @@ public class ApiRequests {
             throw new IllegalArgumentException("URL is not valid");
         }
        url = url.newBuilder()
-                .addQueryParameter("animalID", String.valueOf(animalId))
+                .addQueryParameter("animalId", String.valueOf(animalId))
                 .build();
         Request request = new Request.Builder()
                 .url(url)
