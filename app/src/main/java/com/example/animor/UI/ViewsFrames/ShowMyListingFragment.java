@@ -108,10 +108,10 @@ public class ShowMyListingFragment extends Fragment {
         List<Photo> photoList = animal.getAnimalPhotoList();
         if (photoList != null) {
             for (Photo a : photoList) {
-                if (a.getIsCoverPhoto()) {
-                    photoUrl = a.getPhotoUrl();
-                    break;
-                }
+               // if (a.getIsCoverPhoto()) {
+                photoUrl = a.getPhotoUrl();
+                break;
+               // }
             }
         }
 

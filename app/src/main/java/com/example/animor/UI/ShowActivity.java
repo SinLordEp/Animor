@@ -115,6 +115,7 @@ public class ShowActivity extends AppCompatActivity
     @Override
     public void onAnimalSelected(Animal animal) {
         Intent intent = new Intent(ShowActivity.this, ShowMyAnimalActivity.class);
+        Log.d(TAG, "PHOTOURL ANTES DE MANDARSE: "+animal.getPhotoList());
         intent.putExtra("animal", animal);
         intent.putExtra("tags", (Serializable) animal.getTagList());
         startActivity(intent);
