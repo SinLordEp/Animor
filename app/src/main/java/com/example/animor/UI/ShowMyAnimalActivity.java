@@ -120,7 +120,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         imgAnimal = findViewById(R.id.imgUser);
         btndel = findViewById(R.id.btndel);
         btnedit = findViewById(R.id.btnedit);
-        Log.d(TAG, "PHOTOURL: "+photoUrl);
+
         Picasso.get()
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
