@@ -60,7 +60,9 @@ public class ApiRequests {
             throw new RuntimeException("Response body is empty");
         }
         try {
-            return response.body().string();
+            String responseBody = response.body().string();
+            Log.d("Reading Response body", "Response: " +responseBody);
+            return responseBody;
         }catch (IOException e) {
             throw new RuntimeException("Response body cannot be read as String");
         }
@@ -68,6 +70,7 @@ public class ApiRequests {
     @SuppressWarnings("unchecked")
     private static <T> T getJsonObjectFromResponseBody(String body, String param, Class<T> objectClass) {
         try {
+            Log.d("Parsing response", "Response: " + body);
             JSONObject jsonResponse = new JSONObject(body);
             if(objectClass == JSONObject.class){
                 return (T) jsonResponse.getJSONObject(param);
