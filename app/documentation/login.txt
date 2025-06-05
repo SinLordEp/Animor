@@ -1,0 +1,94 @@
+@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        // Configura Google Sign-In
+        configureGoogleSignIn();
+
+        // Configura los listeners
+        findViewById(R.id.btn_google_sign_in).setOnClickListener(v -> checkNetworkAndSignIn());
+        findViewById(R.id.textView2).setOnClickListener(v -> continueWithoutLogin());
+    }
+
+    // Genera un nonce seguro (ejemplo simplificado)
+    private String generateNonce() {
+        SecureRandom random = new SecureRandom();
+        byte[] nonceBytes = new byte[16];
+        random.nextBytes(nonceBytes);
+        return Base64.encodeToString(nonceBytes, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    }
+    private void configureGoogleSignIn() {
+        // Configura las opciones de inicio de sesión con el ID de cliente
+        GetGoogleIdOption googleIdOption = new GetGoogleIdOption.Builder()
+                .setFilterByAuthorizedAccounts(true)
+                .setServerClientId(WEB_CLIENT_ID)
+                .setAutoSelectEnabled(true)
+                .setNonce(generateNonce())
+                .build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            GetCredentialRequest request = new GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build();
+        }
+        coroutineScope.launch(() -> {
+            try {
+                GetCredentialResponse result = credentialManager.getCredentialAsync(
+                        request,
+                        activityContext
+                ).get(); // Using get() to wait for the async operation
+                handleSignIn(result);
+            } catch (GetCredentialException e) {
+                handleFailure(e);
+            } catch (InterruptedException | ExecutionException e) {
+                // Handle other potential exceptions from the Future
+                handleFailure(e);
+            }
+        });
+
+        void handleSignIn(GetCredentialResponse result) {
+            // Handle the successfully returned credential.
+            Credential credential = result.getCredentialAsync();
+
+            if (credential instanceof PublicKeyCredential) {
+                // Passkey credential
+                PublicKeyCredential publicKeyCredential = (PublicKeyCredential) credential;
+                // Share responseJson such as a GetCredentialResponse on your server to
+                // validate and authenticate
+                String responseJson = publicKeyCredential.getAuthenticationResponseJson();
+            } else if (credential instanceof PasswordCredential) {
+                // Password credential
+                PasswordCredential passwordCredential = (PasswordCredential) credential;
+                // Send ID and password to your server to validate and authenticate.
+                String username = passwordCredential.getId();
+                String password = passwordCredential.getPassword();
+            } else if (credential instanceof CustomCredential) {
+                // GoogleIdToken credential
+                CustomCredential customCredential = (CustomCredential) credential;
+                if (GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL.equals(customCredential.getType())) {
+                    try {
+                        // Use googleIdTokenCredential and extract the ID to validate and
+                        // authenticate on your server.
+                        GoogleIdTokenCredential googleIdTokenCredential = GoogleIdTokenCredential
+                                .createFrom(customCredential.getData());
+                        // You can use the members of googleIdTokenCredential directly for UX
+                        // purposes, but don't use them to store or control access to user
+                        // data. For that you first need to validate the token:
+                        // pass googleIdTokenCredential.getIdToken() to the backend server.
+                        GoogleIdTokenVerifier verifier = ...; // see validation instructions
+                        GoogleIdToken idToken = verifier.verify(googleIdTokenCredential.getIdToken());
+                        // To get a stable account identifier (e.g. for storing user data),
+                        // use the subject ID:
+                        String subjectId = idToken.getPayload().getSubject();
+                    } catch (GoogleIdTokenParsingException e) {
+                        Log.e(TAG, "Received an invalid google id token response", e);
+                    }
+                } else {
+                    // Catch any unrecognized custom credential type here.
+                    Log.e(TAG, "Unexpected type of credential");
+                }
+            } else {
+                // Catch any unrecognized credential type here.
+                Log.e(TAG, "Unexpected type of credential");
+            }
+        }

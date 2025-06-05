@@ -1,0 +1,153 @@
+package com.example.animor.Utils;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.animor.Model.dto.SpeciesDTO;
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.AnimalListing;
+import com.example.animor.Model.entity.Photo;
+import com.example.animor.R;
+import com.squareup.picasso.Picasso;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingViewHolder> {
+
+    private List<AnimalListing> animalListingList;
+    private OnListingInteractionListener listener;
+    private SimpleDateFormat dateFormat;
+
+    public ListingAdapter(List<AnimalListing> animalListingList, OnListingInteractionListener listener) {
+        this.animalListingList = animalListingList != null ? animalListingList : new ArrayList<>();
+        this.listener = listener;
+        this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+    }
+
+    @NonNull
+    @Override
+    public ListingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_animal, parent, false);
+        return new ListingViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ListingViewHolder holder, int position) {
+        AnimalListing animalListing = animalListingList.get(position);
+        Animal animal = animalListing.getAnimal();
+
+        // ... tu código existente de bind ...
+
+        // Click listeners - CAMBIO AQUÍ
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onListingSelected(animalListing); // Cambio de nombre del método
+            }
+        });
+
+        holder.btnFavorite.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onFavoriteClick(animalListing);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return animalListingList.size();
+    }
+
+    // Métodos auxiliares
+    private String getSpeciesName(int speciesId) {
+        List<SpeciesDTO> speciesDTOS = PreferenceUtils.getSpeciesList();
+        if (speciesDTOS != null) {
+            for (SpeciesDTO s : speciesDTOS) {
+                if (s.getSpeciesId() == speciesId) {
+                    return s.getSpeciesName();
+                }
+            }
+        }
+        return "Especie desconocida";
+    }
+
+    private void loadAnimalImage(Animal animal, ImageView imageView) {
+        String photoUrl = "";
+
+        if (animal.getAnimalPhotoList() != null) {
+            for (Photo photo : animal.getAnimalPhotoList()) {
+                if (photo.getIsCoverPhoto()) {
+                    photoUrl = photo.getPhotoUrl();
+                    break;
+                }
+            }
+        }
+
+        if (!photoUrl.isEmpty()) {
+            Picasso.get()
+                    .load(photoUrl)
+                    .placeholder(R.drawable.gatoinicio)
+                    .error(R.drawable.gatoinicio)
+                    .into(imageView);
+        } else {
+            imageView.setImageResource(R.drawable.gatoinicio);
+        }
+    }
+
+    private void setupFavoriteIcon(AnimalListing animalListing, ImageView btnFavorite) {
+
+    }
+
+    // Métodos públicos para actualizar datos
+    public void updateData(List<AnimalListing> newAnimalListings) {
+        this.animalListingList.clear();
+        if (newAnimalListings != null) {
+            this.animalListingList.addAll(newAnimalListings);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void addListing(AnimalListing animalListing) {
+        if (animalListing != null) {
+            this.animalListingList.add(animalListing);
+            notifyItemInserted(animalListingList.size() - 1);
+        }
+    }
+
+    public void removeListing(int position) {
+        if (position >= 0 && position < animalListingList.size()) {
+            animalListingList.remove(position);
+            notifyItemRemoved(position);
+        }
+    }
+
+    // ViewHolder
+    public static class ListingViewHolder extends RecyclerView.ViewHolder {
+        TextView txtName, txtCity, txtSpecies, txtSex;
+        ImageView imgAnimal, btnFavorite;
+
+        public ListingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtName = itemView.findViewById(R.id.txtName);
+            txtSpecies = itemView.findViewById(R.id.txtSpecies);
+            txtSex = itemView.findViewById(R.id.txtSex);
+            txtCity = itemView.findViewById(R.id.txtCity);
+            imgAnimal = itemView.findViewById(R.id.imgUser);
+            btnFavorite = itemView.findViewById(R.id.btnFavorite);
+        }
+    }
+
+    public interface OnListingInteractionListener {
+        void onListingSelected(AnimalListing animalListing);
+        void onFavoriteClick(AnimalListing animalListing);
+    }
+}
