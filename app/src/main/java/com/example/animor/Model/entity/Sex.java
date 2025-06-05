@@ -1,5 +1,7 @@
 package com.example.animor.Model.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.io.Serializable;
 
 public enum Sex implements Serializable {
@@ -27,5 +29,10 @@ public enum Sex implements Serializable {
             }
         }
         return Unknown; // Valor por defecto si no se encuentra
+    }
+
+    @JsonCreator
+    public static Sex forValue(String value) {
+        return Sex.valueOf(value);
     }
 }

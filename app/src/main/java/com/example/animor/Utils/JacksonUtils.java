@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JacksonUtils {
@@ -16,7 +15,7 @@ public class JacksonUtils {
         try {
             return mapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
-            return null;
+            throw new RuntimeException("Convert json to entity failed. Cause: ",e);
         }
     }
 
@@ -24,7 +23,7 @@ public class JacksonUtils {
         try {
             return mapper.readValue(json, typeReference);
         } catch (JsonProcessingException e) {
-            return new ArrayList<>();
+            throw new RuntimeException("Convert json to entities failed. Cause: ",e);
         }
     }
 

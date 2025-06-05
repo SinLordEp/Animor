@@ -296,7 +296,7 @@ public class ApiRequests {
                 .addHeader("X-User-Token", userToken)
                 .get()
                 .build();
-        List<AnimalDTO> animalDTOList=null;
+        List<AnimalDTO> animalDTOList = new ArrayList<>();
         List<Animal> animalList = new ArrayList<>();
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
@@ -304,14 +304,8 @@ public class ApiRequests {
             Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
-                try {
-                    animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<List<AnimalDTO>>() {});
-                    Log.d(TAG, "AnimalDTOList: "+animalDTOList.toString());
-                    animalDTOList.removeIf(d -> d.getPhotoList() == null || d.getPhotoList().isEmpty());
-                    animalList = Animal.fromDTOList(animalDTOList);
-                } catch (Exception e) {
-                    Log.e(TAG, "Jackson error específico", e);
-                }
+                animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<List<AnimalDTO>>() {});
+                animalList = Animal.fromDTOList(animalDTOList);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting my animals: ", e);
