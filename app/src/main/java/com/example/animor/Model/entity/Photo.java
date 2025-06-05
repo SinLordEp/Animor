@@ -1,10 +1,13 @@
 package com.example.animor.Model.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class Photo implements Serializable {
     private long photoId;
     private String photoUrl;
+    @JsonProperty("isCoverPhoto")
     private boolean isCoverPhoto;
     private int displayOrder;
     private String filePath;

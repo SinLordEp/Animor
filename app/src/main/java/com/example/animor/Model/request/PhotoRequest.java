@@ -1,9 +1,12 @@
 package com.example.animor.Model.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class PhotoRequest {
     private long photoId;
     private String photoUrl;
     private String filePath;
+    @JsonProperty("isCoverPhoto")
     private boolean isCoverPhoto;
     private int displayOrder;
 

@@ -1,10 +1,12 @@
 package com.example.animor.Model.dto;
 
 import com.example.animor.Model.entity.Photo;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PhotoDTO {
     private long photoId;
     private String photoUrl;
+    @JsonProperty("isCoverPhoto")
     private boolean isCoverPhoto;
     private int displayOrder;
 
