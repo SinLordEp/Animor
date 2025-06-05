@@ -338,15 +338,14 @@ public class ApiRequests {
                 .build();
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
             if (response.isSuccessful()) {
-                //Log.d("API", "Animal deleted successfully - Status: " + response.code());
-                String status = getStatusFromResponseBody(responseBody);
                 if("ANIMAL_DELETE_SUCCESS".equals(status)){
                     Log.d("ApiRequest - Delete animal", "Borrado exitoso");
                 }
             } else {
-                Log.e(TAG, "Error assert recibiendo tags: " + getStatusFromResponseBody(responseBody)
-                        + " | Respuesta: " + getResponseBody(response));
+                Log.e(TAG, "Error assert recibiendo tags: " + status
+                        + " | Respuesta: " + responseBody);
                 //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
             }
         } catch (IOException e) {
