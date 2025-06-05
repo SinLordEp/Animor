@@ -257,11 +257,11 @@ public class ApiRequests {
     }
 
     public void addPhotoIntoDatabase(Long receivedAnimalId, PhotoRequest photoRequest) {
-        HttpUrl url = HttpUrl.parse("https://www.animor.es/animalPhoto/add-photo");
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/photo/add-photo");
         if (url == null) {
             throw new IllegalArgumentException("Invalid URL");
         }
-        url.newBuilder()
+        HttpUrl finalurl =url.newBuilder()
                 .addQueryParameter("animalId", String.valueOf(receivedAnimalId))
                 .build();
         try {
@@ -269,7 +269,7 @@ public class ApiRequests {
             Log.d("REQUEST_JSON", json);
             RequestBody requestBody = RequestBody.create(json, mediaType);
             Request request = new Request.Builder()
-                    .url(url)
+                    .url(finalurl)
                     .addHeader("X-Device-Token", deviceToken)
                     .post(requestBody)  // POST con el token como parámetro
                     .build();
@@ -342,7 +342,7 @@ public class ApiRequests {
     }
 
     public void addPhotoIntoDatabase(Photo animalphoto) {
-        String url = "https://www.animor.es/animalPhoto/add-photo";
+        String url = "https://www.animor.es/photo/add-photo";
         RequestBody body;
 
         // 1. Crear el objeto JSON anidado
