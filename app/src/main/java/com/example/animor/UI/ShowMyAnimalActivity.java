@@ -18,18 +18,14 @@ import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.Photo;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
-import com.example.animor.UI.CreateActivity;
-import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyAnimalActivity extends AppCompatActivity {
@@ -109,6 +105,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         for (Photo a : photoList) {
             if (a.getIsCoverPhoto()) {
                 photoUrl = a.getPhotoUrl();
+                break;
             }
         }
         Log.d(TAG, "se ha conseguido la foto: " + photoUrl);

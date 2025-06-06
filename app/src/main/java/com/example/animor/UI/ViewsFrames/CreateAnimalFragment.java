@@ -494,7 +494,7 @@ public class CreateAnimalFragment extends Fragment {
         String animalDescription = etDescripcion.getText().toString().trim();
         boolean isNeutered = cbCastrado.isChecked();
         String microchip = etMicrochip.getText().toString().trim();
-        Boolean isAdopted = false;
+        boolean isAdopted = false;
         int speciesCode = animalSpeciesDTO.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
 
         btnGuardar.setEnabled(true);
