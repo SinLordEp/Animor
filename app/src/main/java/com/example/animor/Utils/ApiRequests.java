@@ -393,6 +393,7 @@ public class ApiRequests {
         }
         url = url.newBuilder()
                 .addQueryParameter("animalId", String.valueOf(animalId))
+                .addQueryParameter("ListingRequest", String.valueOf(listing))
                 .build();
         String json = JacksonUtils.entityToJson(listing);
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
@@ -419,7 +420,7 @@ public class ApiRequests {
             System.out.println("Error de tipo in/out: " + e.getMessage());
         }
     }
-    public List<AnimalListing> getMylisting() {
+    public List<AnimalListing> getMyListings() {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/my-listing");
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
@@ -436,9 +437,13 @@ public class ApiRequests {
         List<AnimalListing>listingList = new ArrayList<>();
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
             System.out.println("responsebody"+responseBody);
             Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
+                if("LISTING_GET_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Get listing", "Get exitoso");
+                }
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
                 listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
                 });
@@ -486,4 +491,39 @@ public class ApiRequests {
         }
         return false;
     }
+    public List<AnimalListing> getListingNearMe() {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/near-me");
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                //.addQueryParameter("animalId", String.valueOf(page))
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .get()
+                .build();
+        List<ListingDTO> listingDTOList;
+        List<AnimalListing>listingList = new ArrayList<>();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            System.out.println("responsebody"+responseBody);
+            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
+            if (response.isSuccessful()) {
+                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
+                });
+                listingList = new ArrayList<>();
+                for(ListingDTO listingDTO : listingDTOList) {
+                    listingList.add(AnimalListing.fromDTO(listingDTO));
+                }
+                return listingList;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting my animals: ", e);
+        }
+        return listingList;
+    }
+
 }

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,14 +22,17 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.CreateListingActivity;
+import com.example.animor.UI.ShowActivity;
+import com.example.animor.UI.ShowMyListingActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class NoseusaCreateListingFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
+public class CreateListingsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView rvAnimalesUsuario;
     private TextView tvEligeAnimal;
@@ -37,7 +41,7 @@ public class NoseusaCreateListingFragment extends Fragment implements AnimalAdap
     private AnimalAdapter animalAdapter;
     private List<Animal> animalList;
     private List<SpeciesDTO> speciesList;
-    private TextView noanimales;
+    private LinearLayout noanimales;
 
     // Interface para comunicación con la Activity (opcional)
     public interface OnAnimalSelectedForListingListener {
@@ -72,7 +76,6 @@ public class NoseusaCreateListingFragment extends Fragment implements AnimalAdap
         rvAnimalesUsuario = view.findViewById(R.id.rvAnimalesUsuario);
         tvEligeAnimal = view.findViewById(R.id.tvEligeAnimal);
         btnCrearNuevoAnimal = view.findViewById(R.id.btnCrearNuevoAnimal);
-        noanimales = view.findViewById(R.id.noanimales);
     }
 
     private void setupRecyclerView() {
@@ -111,8 +114,11 @@ public class NoseusaCreateListingFragment extends Fragment implements AnimalAdap
                         animalAdapter.notifyDataSetChanged();
                     } else {
                         // No tiene animales, mostrar mensaje
-                        noanimales.setText("No tienes animales registrados. Crea uno primero.");
+                        noanimales.findViewById(R.id.noanimales);
                         noanimales.setVisibility(View.VISIBLE);
+                        TextView txtobien = requireView().findViewById(R.id.txtobien);
+                        txtobien.setVisibility(View.INVISIBLE);
+
                     }
                 });
             }

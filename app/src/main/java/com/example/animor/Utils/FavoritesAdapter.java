@@ -1,15 +1,29 @@
 package com.example.animor.Utils;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.request.ListingRequest;
+import com.example.animor.R;
+
+import java.util.List;
+
 public class FavoritesAdapter{
 
-   /* private List<Animal> favoritesList;
+/*   private List<Animal> favoritesList;
 
     public FavoritesAdapter(List<Animal> favoritesList) {
         this.favoritesList = favoritesList;
     }
 
     @NonNull
-    @Override
     public FavViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_animal, parent, false);
@@ -18,7 +32,7 @@ public class FavoritesAdapter{
 
     @Override
     public void onBindViewHolder(@NonNull FavViewHolder holder, int position) {
-        AnimalListingRequest item = favoritesList.get(position);
+        ListingRequest item = favoritesList.get(position);
 
         holder.txtName.setText(item.getAnimal().getAnimalName());
         holder.txtCity.setText(item.getLocationRequest().getCity());

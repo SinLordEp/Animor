@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -39,7 +41,7 @@ public class CreateActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         Animal animal = (Animal) getIntent().getSerializableExtra("animal");
         String mode = getIntent().getStringExtra("mode");
-        if(mode.equals("edit")){
+        if (mode != null && mode.equals("edit")) {
             CreateAnimalFragment fragment = new CreateAnimalFragment();
             Bundle args = new Bundle();
             args.putSerializable("animal", animal);
@@ -49,8 +51,15 @@ public class CreateActivity extends AppCompatActivity {
             // Agregar el fragment
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.viewPager, fragment)
+                    .replace(R.id.detail_container, fragment)
                     .commit();
+
+            FrameLayout frame;
+            frame = findViewById(R.id.detail_container);
+            frame.setVisibility(View.VISIBLE);
+            viewPager.setVisibility(View.GONE);
+        }else{
+            System.out.println("No se ha encontrado mode: "+mode);
         }
         if (viewPager == null || tabLayout == null) {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");

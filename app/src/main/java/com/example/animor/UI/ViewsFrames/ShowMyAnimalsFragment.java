@@ -87,13 +87,12 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             Log.d("DEBUG", "loadAnimals() llamado");
             newAnimalList = api.getMyAnimalsFromServer();
 
-// Debug corregido:
             for(Animal a: newAnimalList) {
                 System.out.println("Animal: " + a.getAnimalName());
                 System.out.println("Animal: " + a.getBirthDate());
 
 
-                List<Photo> photoList = a.getAnimalPhotoList(); // Es una List, no un Photo
+                List<Photo> photoList = a.getAnimalPhotoList();
 
                 if (photoList == null) {
                     System.out.println("  PhotoList es NULL");
@@ -108,7 +107,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
                     }
                 }
             }
-            // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
+            // Cambiar a requireActivity().runOnUiThread() para
             requireActivity().runOnUiThread(() -> {
                 handleAnimalsResult(newAnimalList);
             });

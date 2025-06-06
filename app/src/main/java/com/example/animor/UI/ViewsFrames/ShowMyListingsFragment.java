@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,7 @@ import com.example.animor.Utils.ListingAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ShowMyListingsFragment extends Fragment implements ListingAdapter.OnListingInteractionListener {
 
@@ -85,8 +87,9 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
                     adapter.notifyDataSetChanged();
 
                     if (listingList.isEmpty()) {
-                        Toast.makeText(getContext(),
-                                "No tienes registros", Toast.LENGTH_SHORT).show();
+                        rvListings.setVisibility(View.GONE);
+                        LinearLayout linearLayout = requireView().findViewById(R.id.linnolisting);
+                        linearLayout.setVisibility(View.VISIBLE);
                     }
                 });
             }

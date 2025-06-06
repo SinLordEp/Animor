@@ -30,6 +30,7 @@ import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
+import com.example.animor.Model.entity.Tag;
 import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.LocationRequest;
 import com.example.animor.R;
@@ -117,6 +118,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
             args.putSerializable("listing", listing);
             args.putString("mode", mode);
             fragment.setArguments(args);
+            Log.d(TAG, "ANIMALID: "+animal.getAnimalId());
 
             // Agregar el fragment
             getSupportFragmentManager()
@@ -216,13 +218,13 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         location.setLatitude(latitude);
         ListingRequest listingRequest = new ListingRequest();
         listingRequest.setLocationRequest(location);
-        long animalid = animal.getAnimalId();
+        long animalId = animal.getAnimalId();
         long userId = PreferenceUtils.getUser().getUserId();
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         UserDTO user = PreferenceUtils.getUser();
         ApiRequests api = new ApiRequests();
-        api.addListingIntoDatabase(listingRequest, userId);
+        api.addListingIntoDatabase(listingRequest, animalId);
 
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }
@@ -502,7 +504,17 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         // Datos del animal
         tvName.setText(animal.getAnimalName());
-        tvSex.setText(animal.getSex().toString());
+        switch(animal.getSex()){
+            case Male:
+                tvSex.setText("Macho");
+                break;
+            case Female:
+                tvSex.setText("Hembra");
+                break;
+            case Unknown:
+                tvSex.setText("Desconocido");
+                break;
+        }
         tvSpecies.setText(speciesName);
 
         DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -521,14 +533,14 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
             tvAnimalMicroNumber.setText(animal.getMicrochipNumber());
         }
 
-        if (animal.getAnimalId() == 1 || animal.getAnimalId() == 2) {
+        if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
             tvAnimalNeutered.setText(animal.getIsNeutered() ? "sí" : "no");
         }
 
         // Cargar etiquetas en segundo plano, no hay prisa
         new Thread(() -> {
-            List<TagDTO> animalTags = PreferenceUtils.getTagList();
-            ArrayAdapter<TagDTO> adapter = new ArrayAdapter<>(
+            List<Tag> animalTags = animal.getTagList();
+            ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
                     this,
                     android.R.layout.simple_list_item_1,
                     animalTags

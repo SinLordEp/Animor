@@ -37,6 +37,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     private TextView textViewAnimalDescription;
     private TextView textViewMicroNumber, textViewAnimalMicroNumber;
     private TextView textViewAnimalNeutered;
+    private TextView textViewNeutered;
     private ListView listTags;
 
     //botones
@@ -54,7 +55,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_show_my_animal_buttons);
+        setContentView(R.layout.activity_show_my_animal_buttons);
 
         // Obtener los datos del Intent
         Intent intent = getIntent();
@@ -96,7 +97,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
 
         for (SpeciesDTO s : species) {
-            if (s.getSpeciesId() == animal.getAnimalId()) {
+            if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
             }
         }
@@ -117,6 +118,8 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         imgAnimal = findViewById(R.id.imgUser);
         btndel = findViewById(R.id.btndel);
         btnedit = findViewById(R.id.btnedit);
+        textViewAnimalNeutered = findViewById(R.id.textViewAnimalNeutered);
+
 
         Picasso.get()
                 .load(photoUrl)
@@ -128,7 +131,18 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         txtName.setText(animal.getAnimalName());
 
         txtSex = findViewById(R.id.txtSex);
-        txtSex.setText(animal.getSex().toString());
+        Log.d(TAG, "Tags: "+animal.getSex().toString());
+        switch(animal.getSex()){
+            case Male:
+                txtSex.setText("Macho");
+                break;
+            case Female:
+                txtSex.setText("Hembra");
+                break;
+            case Unknown:
+                txtSex.setText("Desconocido");
+                break;
+        }
 
         textViewSpecies = findViewById(R.id.tvSpecies);
         textViewSpecies.setText(speciesName);
@@ -155,13 +169,16 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
             textViewMicroNumber.setText(animal.getMicrochipNumber());
         }
 
-        if (animal.getAnimalId() == 1 || animal.getAnimalId() == 2) {
-            textViewAnimalNeutered = findViewById(R.id.textViewAnimalNeutered);
+        if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
             if (animal.getIsNeutered()) {
                 textViewAnimalNeutered.setText("sí");
             } else {
                 textViewAnimalNeutered.setText("no");
             }
+        }else{
+            textViewNeutered = findViewById(R.id.textViewNeutered);
+            textViewNeutered.setVisibility(View.GONE);
+            textViewAnimalNeutered.setVisibility(View.GONE);
         }
 
         listTags = findViewById(R.id.listTags);
@@ -192,6 +209,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         btnedit.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateActivity.class);
             intent.putExtra("animal", animal);
+            intent.putExtra("mode", "edit");
             startActivity(intent);
         });
     }
