@@ -1,5 +1,7 @@
 package com.example.animor.Model.entity;
 
+import com.example.animor.Model.dto.UserSimple;
+
 import java.io.Serializable;
 
 public class User implements Serializable {

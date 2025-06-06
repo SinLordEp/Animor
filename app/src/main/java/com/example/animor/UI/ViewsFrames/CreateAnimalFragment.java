@@ -33,6 +33,7 @@ import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.Sex;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.Model.request.AnimalRequest;
@@ -43,6 +44,7 @@ import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -86,7 +88,9 @@ public class CreateAnimalFragment extends Fragment {
     List<TagRequest> selectedTags = new ArrayList<>();
     SpeciesDTO animalSpeciesDTO = new SpeciesDTO();
     String imagePath="";
-
+    private Animal animal;
+    private String speciesName = "";
+    List<TagDTO> receivedTags = PreferenceUtils.getTagList();
 
     @Nullable
     @Override
@@ -112,9 +116,73 @@ public class CreateAnimalFragment extends Fragment {
 
         // Configurar listeners
         setupListeners();
+        checkIfEditingAnimal();
 
         // Configurar Activity Result Launchers
         setupActivityResultLaunchers();
+    }
+
+    private void checkIfEditingAnimal() {
+        if (getArguments() != null) {
+            animal = (Animal) getArguments().getSerializable("animal");
+            Picasso.get()
+                    .load(animal.getImage())
+                    .placeholder(R.drawable.gatoinicio)
+                    .error(R.drawable.gatoinicio)
+                    .into(imgAnimal);
+            etNombre.setText(animal.getAnimalName());
+            List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
+            for (SpeciesDTO s : species) {
+                if (s.getSpeciesId() == animal.getSpeciesId()) {
+                    speciesName = s.getSpeciesName();
+                    break;
+                }
+            }
+            etEspecie.setText(speciesName);
+            etFechaNacimiento.setText(animal.getBirthDate().toString());
+            if(animal.getIsBirthDateEstimated()){
+                cbNacimientoAproximado.setChecked(true);
+            }
+            switch(animal.getSex()){
+                case Male:
+                    rbMacho.setSelected(true);
+                    break;
+                case Female:
+                    rbMacho.setSelected(true);
+                    break;
+                case Unknown:
+                    rbMacho.setSelected(true);
+                    break;
+            }
+            etTamano.setText(animal.getSize());
+            etDescripcion.setText(animal.getAnimalDescription());
+            if(animal.getIsNeutered()){
+                cbCastrado.setChecked(true);
+            }else{
+                cbCastrado.setChecked(false);
+            }
+            if(animal.getMicrochipNumber()!=null) {
+                etMicrochip.setText(animal.getMicrochipNumber());
+            }
+            for (int i = 0; i < receivedTags.size(); i++) {
+                Tag currentTag = Tag.fromDTO(receivedTags.get(i));
+
+                // Verificar si el tag actual está en la lista B
+                for (Tag tagB : animal.getTagList()) {
+                    if (currentTag.getTagId().equals(tagB.getTagId())) {
+                        // Hacer check en la posición i
+                        listTagsView.setItemChecked(i, true);
+
+                        // Agregar a selectedTags (igual que en el click manual)
+                        TagRequest tag = new TagRequest();
+                        tag.setTagName(currentTag.getTagName());
+                        tag.setTagId(currentTag.getTagId());
+                        selectedTags.add(tag);
+                        break; // Salir del loop interno
+                    }
+                }
+            }
+        }
     }
 
     private void initViews(View view) {
@@ -150,11 +218,18 @@ public class CreateAnimalFragment extends Fragment {
                         receivedSpecies);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spSpecies.setAdapter(adapter);
+                if (getArguments() != null) {
+                    for (int i = 0; i < receivedSpecies.size(); i++) {
+                        if (receivedSpecies.get(i).getSpeciesId() == animal.getSpeciesId()) {
+                            spSpecies.setSelection(i);
+                            break;
+                        }
+                    }
+                }
             });
         });
         listTagsView = view.findViewById(R.id.listTags);
         MyApplication.executor.execute(()->{
-            List<TagDTO> receivedTags = PreferenceUtils.getTagList();
             List<Tag> tagsInList = new ArrayList<>();
                 for(TagDTO t: receivedTags){
                     Tag tg = new Tag();
@@ -421,14 +496,7 @@ public class CreateAnimalFragment extends Fragment {
         String microchip = etMicrochip.getText().toString().trim();
         Boolean isAdopted = false;
         int speciesCode = animalSpeciesDTO.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
-        // Ejemplo:
-        // Animal animal = new Animal(nombre, especie, fechaNacimiento, nacimientoAprox,
-        //                           sexo, ciudad, tamaño, descripcion, castrado,
-        //                           microchip, imageDownloadUrl);
-        //
-        // Luego guardar en tu base de datos (Firebase Realtime Database o Firestore)
-        // databaseReference.child("animales").push().setValue(animal);
-        // Restablecer el botón
+
         btnGuardar.setEnabled(true);
         btnGuardar.setText("Guardar");
         AnimalRequest animal = new AnimalRequest();

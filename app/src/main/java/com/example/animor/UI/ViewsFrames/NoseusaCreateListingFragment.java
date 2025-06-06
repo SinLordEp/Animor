@@ -2,12 +2,10 @@ package com.example.animor.UI.ViewsFrames;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,14 +22,13 @@ import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateListingFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
+public class NoseusaCreateListingFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView rvAnimalesUsuario;
     private TextView tvEligeAnimal;

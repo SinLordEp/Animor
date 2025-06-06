@@ -169,7 +169,7 @@ public class ShowMyAnimalFragment extends Fragment {
             btnedit.setOnClickListener(v -> {
                 Intent intent = new Intent(getActivity(), CreateActivity.class);
                 intent.putExtra("animal", animal);
-
+                intent.putExtra("mode", "edit");
                 startActivity(intent);
             });
         }

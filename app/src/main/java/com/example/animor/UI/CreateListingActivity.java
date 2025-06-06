@@ -1,7 +1,7 @@
 package com.example.animor.UI;
 
 import android.Manifest;
-import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -21,22 +21,19 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.dto.UserDTO;
-import com.example.animor.Model.dto.UserSimple;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
-import com.example.animor.Model.entity.Location;
-import com.example.animor.Model.entity.Species;
-import com.example.animor.Model.entity.Tag;
-import com.example.animor.Model.entity.User;
+import com.example.animor.Model.request.ListingRequest;
+import com.example.animor.Model.request.LocationRequest;
 import com.example.animor.R;
+import com.example.animor.UI.ViewsFrames.CreateAnimalFragment;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
@@ -47,7 +44,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -111,8 +107,23 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_create_one_listing);
-        animal = (Animal) getIntent().getSerializableExtra("animal");
+        Animal animal = (Animal) getIntent().getSerializableExtra("animal");
+        AnimalListing listing = (AnimalListing) getIntent().getSerializableExtra("listing");
+        String mode = getIntent().getStringExtra("mode");
+        if(mode.equals("edit")){
+            CreateAnimalFragment fragment = new CreateAnimalFragment();
+            Bundle args = new Bundle();
+            args.putSerializable("animal", animal);
+            args.putSerializable("listing", listing);
+            args.putString("mode", mode);
+            fragment.setArguments(args);
 
+            // Agregar el fragment
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.detail_container, fragment)
+                    .commit();
+        }
         initViews();
         initializeGeolocation();
         setupListeners();
@@ -158,7 +169,10 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     }
     private void setupListeners() {
         btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
-        buttonSave.setOnClickListener(v -> saveListing());
+        buttonSave.setOnClickListener(v -> {
+            saveListing();
+            startActivity(new Intent(CreateListingActivity.this, ShowActivity.class));
+        });
     // listeners para geocodificar cuando el usuario termine de escribir
         setupAddressChangeListeners();
     }
@@ -184,35 +198,31 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         return isValid;
     }
-    // Método para guardar el listing
+    //  guardar el listing
     public void saveListing() {
         if (!validateForm()) {
             Toast.makeText(this, "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
             return;
         }
-        Location location = new Location();
+        LocationRequest location = new LocationRequest();
 
         location.setAddress(etAddress.getText().toString().trim());
         location.setProvince(etProvince.getText().toString().trim());
         location.setPostalCode(etPostalCode.getText().toString().trim());
         location.setCountry(etCountry.getText().toString().trim());
         location.setCity(etCity.getText().toString().trim());
+        Log.d(TAG, "Latitud: "+latitude+"\nlongitud:"+longitude);
         location.setLongitude(longitude);
         location.setLatitude(latitude);
-        AnimalListing animalListing = new AnimalListing();
-        animalListing.setLocationRequest(location);
-        animalListing.setAnimal(animal);
-        animalListing.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
-        animalListing.setContactPhone(editTextPhone.getText().toString().trim());
+        ListingRequest listingRequest = new ListingRequest();
+        listingRequest.setLocationRequest(location);
+        long animalid = animal.getAnimalId();
+        long userId = PreferenceUtils.getUser().getUserId();
+        listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
+        listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         UserDTO user = PreferenceUtils.getUser();
-        UserSimple userSimple = new UserSimple();
-        userSimple.setUserid(user.getUserId());
-        userSimple.setUserName(user.getUserName());
-        userSimple.setUserPhoto(user.getUserPhoto());
-        animalListing.setUser(userSimple);
         ApiRequests api = new ApiRequests();
-        //api.createListing(animalListing);
-
+        api.addListingIntoDatabase(listingRequest, userId);
 
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }

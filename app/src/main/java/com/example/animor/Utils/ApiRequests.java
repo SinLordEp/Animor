@@ -8,13 +8,16 @@ import android.widget.Toast;
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.dto.AnimalDTO;
+import com.example.animor.Model.dto.ListingDTO;
 import com.example.animor.Model.dto.PhotoDTO;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.request.AnimalRequest;
+import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.UI.LoginActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -377,9 +380,110 @@ public class ApiRequests {
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             String status = getStatusFromResponseBody(responseBody);
-            Log.d(TAG, "Respuesta del servidor al enviar animal: " + status);
+            Log.d(TAG, "Respuesta del servidor al añadir foto: " + status);
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
         }
+    }
+    public void addListingIntoDatabase(ListingRequest listing, long animalId) {
+        RequestBody body = null;
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/add-listing");
+        if (url == null) {
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .addQueryParameter("animalId", String.valueOf(animalId))
+                .build();
+        String json = JacksonUtils.entityToJson(listing);
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            if (response.isSuccessful()) {
+                if ("LISTING_POST_SUCCESS".equals(status)) {
+                    Log.d("ApiRequest - Post Listing", "listing exitoso");
+                }
+            } else {
+                Log.e(TAG, "Error assert añadiendo listing: " + status
+                        + " | Respuesta: " + responseBody);
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (IOException e) {
+            System.out.println("Error de tipo in/out: " + e.getMessage());
+        }
+    }
+    public List<AnimalListing> getMylisting() {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/my-listing");
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .get()
+                .build();
+        List<ListingDTO> listingDTOList;
+        List<AnimalListing>listingList = new ArrayList<>();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            System.out.println("responsebody"+responseBody);
+            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
+            if (response.isSuccessful()) {
+                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
+                });
+                listingList = new ArrayList<>();
+                for(ListingDTO listingDTO : listingDTOList) {
+                    listingList.add(AnimalListing.fromDTO(listingDTO));
+                }
+                return listingList;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting my animals: ", e);
+        }
+        return listingList;
+    }
+    public boolean deleteListing(long listingId) {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/delete-listing");
+        Log.d(TAG, "LISTINGID: "+listingId);
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .addQueryParameter("animalId", String.valueOf(listingId))
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .delete()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            if (response.isSuccessful()) {
+                if("LISTING_DELETE_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Delete listing", "Borrado exitoso");
+                    return true;
+                }
+            } else {
+                Log.e(TAG, "Error assert borrando listing: " + status
+                        + " | Respuesta: " + responseBody);
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (IOException e) {
+            System.out.println("Error de tipo in/out: "+ e.getMessage());
+        }
+        return false;
     }
 }

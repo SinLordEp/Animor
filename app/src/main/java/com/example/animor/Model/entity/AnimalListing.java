@@ -1,12 +1,17 @@
 package com.example.animor.Model.entity;
 
 
+import com.example.animor.Model.dto.AnimalDTO;
+import com.example.animor.Model.dto.ListingDTO;
 import com.example.animor.Model.dto.UserSimple;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AnimalListing implements Serializable {
-    private int listingId;
+    private long listingId;
     private Animal animal;
     private UserSimple user;
     private Location location;
@@ -17,8 +22,8 @@ public class AnimalListing implements Serializable {
     public AnimalListing() {}
 
     // Getters and setters
-    public int getListingId() { return listingId; }
-    public void setListingId(int listingId) { this.listingId = listingId; }
+    public long getListingId() { return listingId; }
+    public void setListingId(long listingId) { this.listingId = listingId; }
     public Animal getAnimal() { return animal; }
     public void setAnimal(Animal animal) { this.animal = animal; }
 
@@ -57,5 +62,21 @@ public class AnimalListing implements Serializable {
 
     public void setDistance(int distance) {
         this.distance = distance;
+    }
+
+    @JsonIgnore
+    public static AnimalListing fromDTO(ListingDTO listingDTO) {
+        if (listingDTO == null) return null;
+        AnimalListing animalListing = new AnimalListing();
+        animalListing.setListingId(listingDTO.getListingId());
+        animalListing.setContactPhone(listingDTO.getContactPhone());
+        animalListing.setContactEmail(listingDTO.getContactEmail());
+        animalListing.setUser(listingDTO.getUser());
+        animalListing.setLocation(Location.fromDTOLocation(listingDTO.getLocation()));
+        return animalListing;
+    }
+    @JsonIgnore
+    public static List<Animal> fromDTOList(List<AnimalDTO> animalDTOList){
+        return animalDTOList.stream().map(Animal::fromDTO).collect(Collectors.toList());
     }
 }
