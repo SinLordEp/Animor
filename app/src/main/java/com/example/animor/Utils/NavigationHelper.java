@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.FavActivity;
@@ -210,7 +210,7 @@ public class NavigationHelper {
      */
     private boolean isUserLogged() {
         try {
-            UserDTO user = PreferenceUtils.getUser();
+            User user = PreferenceUtils.getUser();
 
             if (user == null) {
                 Log.d("NavigationHelper", "Usuario es null - NO logueado");

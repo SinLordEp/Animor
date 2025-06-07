@@ -5,11 +5,10 @@ import static com.example.animor.Utils.PreferenceUtils.KEY_SPECIES_LIST;
 import static com.example.animor.Utils.PreferenceUtils.KEY_TAG_LIST;
 
 import android.app.Application;
-import android.content.Context;
 import android.util.Log;
 
 import com.example.animor.Model.StartupResource;
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
 import com.example.animor.Utils.PreferenceUtils;
@@ -120,7 +119,7 @@ public class MyApplication extends Application {
     }
 
     private void checkGoogleSignInState() {
-        UserDTO currentUser = PreferenceUtils.getUser();
+        User currentUser = PreferenceUtils.getUser();
         if (currentUser != null) {
             Log.d(TAG, "Usuario Google ya autenticado: " + currentUser.getEmail());
         } else {

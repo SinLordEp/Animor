@@ -32,10 +32,10 @@ import androidx.fragment.app.Fragment;
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
-import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.Sex;
 import com.example.animor.Model.entity.Tag;
+import com.example.animor.Model.entity.User;
 import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.Model.request.TagRequest;
@@ -396,7 +396,7 @@ public class CreateAnimalFragment extends Fragment {
         }
 
 // Crear referencia única para la imagen
-        UserDTO user = PreferenceUtils.getUser();
+        User user = PreferenceUtils.getUser();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
         StorageReference imageRef = storageReference.child("foto/"+user.getUserId() +"/"+fileName);
         //imagePath = storageReference+imageRef.getPath();
