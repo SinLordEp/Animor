@@ -48,7 +48,7 @@ public class ApiRequests {
     OkHttpClient client;
     static String deviceToken;
     static String deviceFid;
-    static String userToken="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwiaWF0IjoxNzQ4ODgyNDI5LCJleHAiOjE3NDg5Njg4Mjl9.qV0Ow-dnHc3Nn249qQMAaYRyTThu7v8AlV_9db7CsGs";
+    static String userToken;
 
     public ApiRequests() {
         client = new OkHttpClient.Builder()
@@ -167,6 +167,7 @@ public class ApiRequests {
             if (response.isSuccessful()) {
                 JSONObject data = getJsonObjectFromBody(responseBody);
                 UserDTO user = JacksonUtils.readEntity(data.toString(), new TypeReference<>(){});
+                userToken = user.getUserToken();
                 if(user == null){
                     throw new RuntimeException("User is null");
                 }
@@ -390,6 +391,7 @@ public class ApiRequests {
     public void addListingIntoDatabase(ListingRequest listing, long animalId) {
         RequestBody body = null;
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/add-listing");
+        Log.d(TAG, "UserToken = "+userToken);
         if (url == null) {
             throw new IllegalArgumentException("URL is not valid");
         }
@@ -406,6 +408,7 @@ public class ApiRequests {
                 .addHeader("X-User-Token", userToken)
                 .post(body)
                 .build();
+        Log.d(TAG, "Petición de post listing creada");
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             String status = getStatusFromResponseBody(responseBody);
