@@ -1,5 +1,6 @@
 package com.example.animor.UI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
@@ -30,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private UserDTO user;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +112,20 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "Enviando datos del usuario al servidor...");
 
                 ApiRequests api = new ApiRequests();
-                user = api.sendUserToServer(firebaseIdToken);
+                try{
+                    UserDTO userDTO = api.sendUserToServer(firebaseIdToken);
+                    saveUserData(userDTO);
+                }catch(Exception e){
+                    Log.e(TAG, "Error al enviar usuario: ", e);
+                    MyApplication.executor.execute(()->{
+                        runOnUiThread(() -> { Toast.makeText(this, "Servidor no conectado", Toast.LENGTH_LONG).show();
+                            finish();
+                        });
+                    });
+                }
 
                 // Guardar datos del usuario en SharedPreferences
-                saveUserData(user);
+
 
                 // Navegar a la siguiente actividad
                 runOnUiThread(this::navigateToMainActivity);
@@ -127,7 +139,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserData(UserDTO user) {
+    private void saveUserData(UserDTO userDTO) {
+        User user = User.toEntity(userDTO);
         String userJson = JacksonUtils.entityToJson(user);
         PreferenceUtils.saveData(PreferenceUtils.KEY_USER_MODEL, userJson);
         Log.d(TAG, "Datos del usuario guardados en SharedPreferences");

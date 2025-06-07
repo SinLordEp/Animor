@@ -8,7 +8,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.ShowActivity;
 import com.example.animor.UI.ViewsFrames.CreateAnimalFragment;
-import com.example.animor.UI.ViewsFrames.CreateListingFragment;
+import com.example.animor.UI.ViewsFrames.CreateListingsFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyAnimalsFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyListingsFragment;
 import android.util.SparseArray;
@@ -32,7 +32,7 @@ public class TabsAdapter extends FragmentStateAdapter {
             if (position == 0)
                 fragment = new CreateAnimalFragment();
             else
-                fragment = new CreateListingFragment();
+                fragment = new CreateListingsFragment();
         } else if (fragmentActivity instanceof ShowActivity) {
             if (position == 0)
                 fragment = new ShowMyAnimalsFragment();

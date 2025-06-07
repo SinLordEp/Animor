@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.FavActivity;
+import com.example.animor.UI.InicioActivity;
 import com.example.animor.UI.ShowActivity;
 import com.example.animor.UI.UserActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -60,7 +61,6 @@ public class NavigationHelper {
             } else if (id == R.id.nav_user) {
                 return handleUserNavigation();
             }
-
             return false;
         });
     }
@@ -99,9 +99,15 @@ public class NavigationHelper {
         if (currentActivityType == ActivityType.HOME) {
             return true;
         }
+        try {
+            Intent intent = new Intent(activity, InicioActivity.class);
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            Log.e("NavigationHelper", "Error navegando a FavActivity", e);
+            return false;
 
-        // Por ahora, solo retornar true si no tienes activity principal definida
-        return true;
+        }
     }
 
     private boolean handleFavoritesNavigation() {
@@ -204,7 +210,7 @@ public class NavigationHelper {
      */
     private boolean isUserLogged() {
         try {
-            UserDTO user = PreferenceUtils.getUser();
+            User user = PreferenceUtils.getUser();
 
             if (user == null) {
                 Log.d("NavigationHelper", "Usuario es null - NO logueado");

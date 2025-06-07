@@ -68,8 +68,8 @@ public class InicioActivity extends AppCompatActivity implements AnimalAdapter.O
 
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
 
-        Intent intent = new Intent(this, CreateActivity.class);
-        intent.putExtra("ANIMAL_OBJECT", animal);
+        Intent intent = new Intent(this, ShowMyAnimalActivity.class);
+        intent.putExtra("animal", animal);
         startActivity(intent);
     }
 

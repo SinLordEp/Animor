@@ -1,19 +1,19 @@
 package com.example.animor.Model.dto;
 
 public class UserSimple {
-    private long userid;
+    private long userId;
     private String userName;
     private String userPhoto;
 
     public UserSimple() {
     }
 
-    public long getUserid() {
-        return userid;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUserid(long userid) {
-        this.userid = userid;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getUserPhoto() {

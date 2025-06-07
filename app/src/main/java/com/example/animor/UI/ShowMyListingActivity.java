@@ -265,7 +265,13 @@ public class ShowMyListingActivity extends AppCompatActivity {
             ApiRequests api = new ApiRequests();
             MyApplication.executor.execute(() -> {
                 // Llamada para eliminar el listing
-                // boolean success = api.deleteListing(animalListing.getListingId());
+                boolean success = api.deleteListing(animalListing.getListingId());
+                if(success){
+                    Toast.makeText(this, "Registro borrado", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(this, "No se ha podido borrar", Toast.LENGTH_SHORT).show();
+
+                }
 
                 runOnUiThread(() -> {
                     // if (success) {

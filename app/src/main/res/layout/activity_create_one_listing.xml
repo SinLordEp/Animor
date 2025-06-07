@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,36 +7,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
-
-    <!-- 1. CONTENIDO PRINCIPAL -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-    <!-- Barra superior con botón de menú -->
-    <LinearLayout
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:orientation="horizontal"
-        android:padding="8dp">
-
-        <ImageButton
-            android:id="@+id/btn_menu"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/menu"
-            android:src="@android:drawable/ic_menu_sort_by_size"/>
-    </LinearLayout>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintTop_toBottomOf="@+id/layoutmenu">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -365,30 +335,25 @@
                     android:text="Dirección"
                     android:textStyle="bold"
                     app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
-                <!-- Sección de Ubicación -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Ubicación"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp" />
 
                 <!-- Botón para obtener ubicación actual -->
                 <Button
                     android:id="@+id/btnGetLocation"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Obtener Mi Ubicación Actual"
+                    android:layout_margin="16dp"
+                    android:layout_gravity="center"
                     android:backgroundTint="@color/black"
-                    android:textColor="@android:color/white"
-                    android:layout_marginBottom="16dp" />
+                    android:text="Obtener Mi Ubicación Actual"
+                    android:textColor="@android:color/white" />
+
                 <EditText
                     android:id="@+id/etAddress"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:ems="10"
                     android:inputType="text"
-                    android:hint="Calle (sin número)" />
+                    android:hint="Nombre de la calle, plaza..." />
 
                 <EditText
                     android:id="@+id/etCiudad"
@@ -433,13 +398,3 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-    </LinearLayout>
-    <!-- 2. NAVIGATION VIEW (MENÚ LATERAL) -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-    app:menu="@menu/drawer_menu_myanimal"/>
-</androidx.drawerlayout.widget.DrawerLayout>

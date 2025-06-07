@@ -1,5 +1,7 @@
 package com.example.animor.Model.entity;
 
+import com.example.animor.Model.dto.LocationDTO;
+
 import java.io.Serializable;
 
 public class Location implements Serializable {
@@ -22,6 +24,15 @@ public class Location implements Serializable {
         this.address = address;
         this.longitude = longitude;
         this.latitude = latitude;
+    }
+
+    public static Location fromDTOLocation(LocationDTO locationDTO) {
+        if (locationDTO == null) return null;
+        Location location = new Location();
+        location.setCity(locationDTO.getCity());
+        location.setProvince(locationDTO.getProvince());
+        location.setCountry(locationDTO.getCountry());
+        return location;
     }
 
     public String getCountry() {
@@ -79,4 +90,5 @@ public class Location implements Serializable {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
+
 }

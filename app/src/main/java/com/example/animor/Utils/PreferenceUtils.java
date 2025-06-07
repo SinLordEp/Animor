@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class PreferenceUtils {
     private static String deviceToken = null;
     private static List<TagDTO> tagList = null;
     private static List<SpeciesDTO> speciesDTOList = null;
-    private static UserDTO user = null;
+    private static User user = null;
     public static final String PREFS_NAME = "userPrefs";
     public static final String KEY_DEVICE_TOKEN = "device_token";
     public static final String KEY_TAG_LIST = "tag_list";
@@ -79,11 +79,11 @@ public class PreferenceUtils {
         return deviceToken;
     }
 
-    public static UserDTO getUser(){
+    public static User getUser(){
         if(user != null){
             return user;
         }
-        user = getEntity(KEY_USER_MODEL, new TypeReference<UserDTO>() {});
+        user = getEntity(KEY_USER_MODEL, new TypeReference<User>() {});
         return user;
     }
 

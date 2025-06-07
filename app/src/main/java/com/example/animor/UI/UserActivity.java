@@ -1,7 +1,6 @@
 package com.example.animor.UI;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,7 +17,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.animor.App.MyApplication;
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NavigationHelper;
@@ -114,7 +113,7 @@ public class UserActivity extends AppCompatActivity {
 
     private void updateUI() {
         // CORREGIR: Verificar si el usuario existe antes de acceder a sus propiedades
-        UserDTO user = PreferenceUtils.getUser();
+        User user = PreferenceUtils.getUser();
 
         if (user == null) {
             Log.d("UserActivity", "Usuario no encontrado");
@@ -125,7 +124,7 @@ public class UserActivity extends AppCompatActivity {
         // Usuario existe, obtener datos
         nombre = user.getUserName();
         email = user.getEmail();
-        photo = user.getUserPhoto();
+        photo = user.getPhotoUrl();
 
         Log.d("UserActivity", "nombre: " + nombre);
         Log.d("UserActivity", "email: " + email);
