@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
@@ -138,7 +139,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserData(UserDTO user) {
+    private void saveUserData(UserDTO userDTO) {
+        User user = User.toEntity(userDTO);
         String userJson = JacksonUtils.entityToJson(user);
         PreferenceUtils.saveData(PreferenceUtils.KEY_USER_MODEL, userJson);
         Log.d(TAG, "Datos del usuario guardados en SharedPreferences");

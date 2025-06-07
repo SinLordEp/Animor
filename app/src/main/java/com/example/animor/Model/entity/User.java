@@ -1,5 +1,7 @@
 package com.example.animor.Model.entity;
 
+import com.example.animor.Model.dto.UserDTO;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
@@ -43,5 +45,9 @@ public class User implements Serializable {
 
     public void setUserToken(String userToken) {
         this.userToken = userToken;
+    }
+
+    public static User toEntity(UserDTO userDTO){
+        return new User(userDTO.getUserToken(), userDTO.getUserPhoto(), userDTO.getUserId(), userDTO.getUserName(), userDTO.getEmail());
     }
 }
