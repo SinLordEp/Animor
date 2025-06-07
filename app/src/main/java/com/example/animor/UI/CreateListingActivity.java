@@ -109,7 +109,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_create_one_listing);
         animal = (Animal) getIntent().getSerializableExtra("animal");
-        AnimalListing listing = (AnimalListing) getIntent().getSerializableExtra("listing");
+        listing = (AnimalListing) getIntent().getSerializableExtra("listing");
         String mode = getIntent().getStringExtra("mode");
         if(mode!=null && mode.equals("edit")){
 
