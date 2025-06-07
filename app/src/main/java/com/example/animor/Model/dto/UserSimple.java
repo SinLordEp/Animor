@@ -1,11 +1,13 @@
 package com.example.animor.Model.dto;
 
-public class UserSimple {
+import java.io.Serializable;
+
+public class UserSimple implements Serializable {
     private long userId;
     private String userName;
     private String userPhoto;
 
-    public UserSimple() {
+    public UserSimple()  {
     }
 
     public long getUserId() {

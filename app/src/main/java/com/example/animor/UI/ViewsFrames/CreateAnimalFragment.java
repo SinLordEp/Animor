@@ -129,9 +129,9 @@ public class CreateAnimalFragment extends Fragment {
         if (getArguments() != null) {
             animal = (Animal) getArguments().getSerializable("animal");
             if (animal != null) {
-                Log.d(TAG, "Imagen del animal recibido: "+animal.getImage());
+                Log.d(TAG, "Imagen del animal recibido: "+animal.getPhotoList().get(0).getPhotoUrl());
                 Picasso.get()
-                        .load(animal.getImage())
+                        .load(animal.getPhotoList().get(0).getPhotoUrl())
                         .placeholder(R.drawable.gatoinicio)
                         .error(R.drawable.gatoinicio)
                         .into(imgAnimal);

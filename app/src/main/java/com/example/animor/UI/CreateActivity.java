@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.example.animor.UI.ViewsFrames.CreateAnimalFragment;
 import com.example.animor.Utils.NavigationHelper;
@@ -40,6 +41,7 @@ public class CreateActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         Animal animal = (Animal) getIntent().getSerializableExtra("animal");
+
         String mode = getIntent().getStringExtra("mode");
         if (mode != null && mode.equals("edit")) {
             CreateAnimalFragment fragment = new CreateAnimalFragment();

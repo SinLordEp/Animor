@@ -48,7 +48,7 @@ public class ShowActivity extends AppCompatActivity
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
         navigationHelper = new NavigationHelper(this, NavigationHelper.ActivityType.CREATE);
-
+        currentTab = getIntent().getIntExtra("currentTab", 1);
 
         if (viewPager == null || tabLayout == null) {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");
@@ -114,6 +114,7 @@ public class ShowActivity extends AppCompatActivity
         Log.d(TAG, "PHOTOURL ANTES DE MANDARSE: "+animal.getPhotoList());
         intent.putExtra("animal", animal);
         intent.putExtra("tags", (Serializable) animal.getTagList());
+        intent.putExtra("photos", (Serializable) animal.getPhotoList());
         startActivity(intent);
         finish();
     }

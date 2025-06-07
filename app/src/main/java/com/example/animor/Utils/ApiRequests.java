@@ -41,6 +41,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
 public class ApiRequests {
     private static final String TAG = "ApiRequests";
@@ -399,12 +400,20 @@ public class ApiRequests {
                 .build();
         String json = JacksonUtils.entityToJson(listing);
         body = RequestBody.create(json, mediaType);
+        try {
+            Buffer buffer = new Buffer();
+            body.writeTo(buffer);
+            Log.d(TAG, "Body content: " + buffer.readUtf8());
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading body: " + e.getMessage());
+        }
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
                 .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .post(body)
                 .build();
+
         Log.d(TAG, "Petición de post listing creada");
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);

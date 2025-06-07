@@ -290,7 +290,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // });
     }
 
-    // Método para actualizar el estado de adopción (comentado por ahora)
+    // actualizar el estado de adopción (comentado por ahora)
     // private void updateAdoptionStatus(boolean isAdopted) {
     //     ApiRequests api = new ApiRequests();
     //     new Thread(() -> {

@@ -157,7 +157,15 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
         buttonSave.setOnClickListener(v -> {
             saveListing();
-            MyApplication.executor.execute(()-> startActivity(new Intent(CreateListingActivity.this, ShowActivity.class)));
+            MyApplication.executor.execute(()->{
+                Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
+                intent.putExtra("animal", listing.getAnimal());
+                intent.putExtra("location", listing.getLocationRequest());
+                intent.putExtra("animalListing", listing);
+                startActivity(intent);
+
+                startActivity(intent);
+            });
         });
     // listeners para geocodificar cuando el usuario termine de escribir
         setupAddressChangeListeners();

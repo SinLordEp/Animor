@@ -48,6 +48,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     Animal animal = null;
     String speciesName = "";
     List<Tag>tags;
+    List<Photo> photos;
     String photoUrl = "";
     LocalDate birthDate = LocalDate.now();
     private final String TAG = "ShowMyAnimalActivity";
@@ -62,12 +63,8 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra("animal")) {
             animal = (Animal) intent.getSerializableExtra("animal");
 
-            // Recibir la lista de tags
-            @SuppressWarnings("unchecked")
-            List<Tag> tags = (List<Tag>) intent.getSerializableExtra("tags");
-
             if (animal != null) {
-                birthDate = (LocalDate) animal.getBirthDate();
+                birthDate = animal.getBirthDate();
                 Log.d(TAG, "BirthDate: " + birthDate);
                 Log.d("Animal in show_my_animal", animal.getAnimalName() + "\n" + animal.getBirthDate() + "\n" + animal.getTagList().size());
 
@@ -76,7 +73,6 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
                     Log.d(TAG, "Tags recibidas: " + tags.size());
                     // Aquí puedes usar las tags como necesites
                 }
-
                 initializeData();
                 initViews();
                 setupListeners();
