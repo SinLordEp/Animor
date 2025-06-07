@@ -99,9 +99,9 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_create_one_listing);
-
-        animal = (Animal) getIntent().getSerializableExtra("animal");
         listing = (AnimalListing) getIntent().getSerializableExtra("listing");
+        animal = (Animal) getIntent().getSerializableExtra("animal");
+
         initViews();
         initializeGeolocation();
         setupListeners();
@@ -214,12 +214,11 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         location.setLatitude(latitude);
         ListingRequest listingRequest = new ListingRequest();
         listingRequest.setLocation(location);
-        long animalId = animal.getAnimalId();
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         ApiRequests api = new ApiRequests();
         MyApplication.executor.execute(()->{
-            api.addListingIntoDatabase(listingRequest, animalId);
+            api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
         });
 
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
@@ -476,7 +475,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
         String speciesName = "";
         for (SpeciesDTO s : species) {
-            if (s.getSpeciesId() == animal.getAnimalId()) {
+            if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
                 break;
             }

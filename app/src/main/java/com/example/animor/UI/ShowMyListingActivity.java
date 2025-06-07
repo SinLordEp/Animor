@@ -248,6 +248,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // Listener para editar listing
         btnedit.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateListingActivity.class);
+            intent.putExtra("animal", animalListing.getAnimal());
             intent.putExtra("listing", animalListing);
             intent.putExtra("mode", "edit");
             startActivity(intent);
