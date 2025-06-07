@@ -1,11 +1,20 @@
 package com.example.animor.Model.request;
 
 public class ListingRequest {
+    private long listingId;
     private String contactEmail;
     private String contactPhone;
     private LocationRequest locationRequest;
 
     public ListingRequest() {
+    }
+
+    public long getListingId() {
+        return listingId;
+    }
+
+    public void setListingId(long listingId) {
+        this.listingId = listingId;
     }
 
     public String getContactEmail() {
