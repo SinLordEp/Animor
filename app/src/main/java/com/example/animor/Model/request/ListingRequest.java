@@ -4,7 +4,7 @@ public class ListingRequest {
     private long listingId;
     private String contactEmail;
     private String contactPhone;
-    private LocationRequest locationRequest;
+    private LocationRequest location;
 
     public ListingRequest() {
     }
@@ -33,11 +33,11 @@ public class ListingRequest {
         this.contactPhone = contactPhone;
     }
 
-    public LocationRequest getLocationRequest() {
-        return locationRequest;
+    public LocationRequest getLocation() {
+        return location;
     }
 
-    public void setLocationRequest(LocationRequest locationRequest) {
-        this.locationRequest = locationRequest;
+    public void setLocation(LocationRequest location) {
+        this.location = location;
     }
 }
