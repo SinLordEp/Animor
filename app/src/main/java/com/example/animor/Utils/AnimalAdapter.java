@@ -1,6 +1,5 @@
 package com.example.animor.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,7 +26,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     private final String TAG = "AnimalAdapter";
     private Context context;
 
-    public AnimalAdapter(List<Animal> animalList, List<SpeciesDTO> speciesDTOList, OnAnimalClickListener listener, Context context) {
+    public AnimalAdapter(List<Animal> animalList, OnAnimalClickListener listener, Context context) {
         this.animalList = animalList;
         this.speciesDTOList = speciesDTOList;
         this.listener = listener;
@@ -49,6 +48,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         holder.txtName.setText(animal.getAnimalName());
 
         String speciesName = "";
+        List<SpeciesDTO> speciesDTOList=PreferenceUtils.getSpeciesList();
         for (SpeciesDTO s : speciesDTOList) {
             if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();

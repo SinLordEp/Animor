@@ -71,8 +71,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList(); //
-        adapter = new AnimalAdapter(animalList, speciesDTOList, this, getContext());   //
+        adapter = new AnimalAdapter(animalList, this, getContext());   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 

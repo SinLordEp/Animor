@@ -81,9 +81,6 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
             Log.d(TAG, "loadListings() llamado");
             newListingList = api.getMyListings();
 
-            // Para testing - simula respuesta vacía de usuario autenticado
-            newListingList = new ArrayList<>();
-
             for(AnimalListing listing: newListingList) {
                 Log.d(TAG, "Listing: " + listing.getAnimal().getAnimalName());
                 Log.d(TAG, "Location: " + listing.getLocationRequest());

@@ -23,15 +23,12 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.CreateListingActivity;
-import com.example.animor.UI.ShowActivity;
-import com.example.animor.UI.ShowMyListingActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class CreateListingsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
@@ -83,7 +80,7 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
         animalList = new ArrayList<>();
         speciesList = PreferenceUtils.getSpeciesList(); // Obtener lista de especies
 
-        animalAdapter = new AnimalAdapter(animalList, speciesList, this, getContext());
+        animalAdapter = new AnimalAdapter(animalList, this, getContext());
         rvAnimalesUsuario.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvAnimalesUsuario.setAdapter(animalAdapter);
 
