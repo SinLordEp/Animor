@@ -1,6 +1,5 @@
 package com.example.animor.UI;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private UserDTO user;
     Context context;
 
     @Override
@@ -114,7 +112,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 ApiRequests api = new ApiRequests();
                 try{
-                    user = api.sendUserToServer(firebaseIdToken);
+                    UserDTO userDTO = api.sendUserToServer(firebaseIdToken);
+                    saveUserData(userDTO);
                 }catch(Exception e){
                     Log.e(TAG, "Error al enviar usuario: ", e);
                     MyApplication.executor.execute(()->{
@@ -125,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 // Guardar datos del usuario en SharedPreferences
-                saveUserData(user);
+
 
                 // Navegar a la siguiente actividad
                 runOnUiThread(this::navigateToMainActivity);
