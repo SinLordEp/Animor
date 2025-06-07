@@ -7,7 +7,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
-
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,22 +18,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
-import com.example.animor.Model.dto.TagDTO;
-import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Tag;
+import com.example.animor.Model.entity.User;
 import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.LocationRequest;
 import com.example.animor.R;
-import com.example.animor.UI.ViewsFrames.CreateAnimalFragment;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
@@ -212,7 +208,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         long userId = PreferenceUtils.getUser().getUserId();
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
-        UserDTO user = PreferenceUtils.getUser();
+        User user = PreferenceUtils.getUser();
         ApiRequests api = new ApiRequests();
         runOnUiThread(()->{
             api.addListingIntoDatabase(listingRequest, animalId);
