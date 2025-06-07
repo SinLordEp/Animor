@@ -167,7 +167,6 @@ public class ApiRequests {
             if (response.isSuccessful()) {
                 JSONObject data = getJsonObjectFromBody(responseBody);
                 UserDTO user = JacksonUtils.readEntity(data.toString(), new TypeReference<>(){});
-                userToken = user.getUserToken();
                 if(user == null){
                     throw new RuntimeException("User is null");
                 }
@@ -237,7 +236,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .post(body)
                 .build();
         Log.d(TAG, "PETICIÓN ENVIADA: " + request);
@@ -302,7 +301,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .get()
                 .build();
         List<AnimalDTO> animalDTOList = new ArrayList<>();
@@ -375,7 +374,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .post(body)
                 .build();
         Log.d(TAG, "PETICIÓN ENVIADA: " + request);
@@ -391,7 +390,7 @@ public class ApiRequests {
     public void addListingIntoDatabase(ListingRequest listing, long animalId) {
         RequestBody body = null;
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/add-listing");
-        Log.d(TAG, "UserToken = "+userToken);
+        Log.d(TAG, "UserToken = "+PreferenceUtils.getUser().getUserToken());
         if (url == null) {
             throw new IllegalArgumentException("URL is not valid");
         }
@@ -405,7 +404,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .post(body)
                 .build();
         Log.d(TAG, "Petición de post listing creada");
@@ -435,7 +434,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .get()
                 .build();
         List<ListingDTO> listingDTOList;
