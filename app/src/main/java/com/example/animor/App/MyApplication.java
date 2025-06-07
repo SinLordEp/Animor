@@ -49,7 +49,7 @@ public class MyApplication extends Application {
         authenticateDevice();
 
         // Verificar estado de Google Sign In
-        checkGoogleSignInState();
+        // checkGoogleSignInState();
     }
 
     private void authenticateDevice() {

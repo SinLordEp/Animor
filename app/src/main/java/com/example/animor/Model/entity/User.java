@@ -1,20 +1,18 @@
 package com.example.animor.Model.entity;
 
-import com.example.animor.Model.dto.UserSimple;
-
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private String userToken;
     private long userId;
     private String userName;
     private String email;
-    private String photoUrl;
-    private String userToken;
+    private String userPhoto;
     public User() {}
 
     public User(String userToken, String userPhoto, long userId, String userName, String email) {
         this.userToken = userToken;
-        this.photoUrl = userPhoto;
+        this.userPhoto = userPhoto;
         this.userId = userId;
         this.userName = userName;
         this.email = email;
@@ -32,11 +30,11 @@ public class User implements Serializable {
     public void setEmail(String email) { this.email = email; }
 
     public String getPhotoUrl() {
-        return photoUrl;
+        return userPhoto;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setPhotoUrl(String userPhoto) {
+        this.userPhoto = userPhoto;
     }
 
     public String getUserToken() {
