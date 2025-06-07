@@ -1,6 +1,7 @@
 package com.example.animor.Utils;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.UI.LoginActivity;
+import com.example.animor.UI.ShowMyAnimalActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -173,7 +175,7 @@ public class ApiRequests {
             }
                 //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
         } catch (Exception e) {
-            Log.e(TAG, "Error al enviar usuario: ", e);
+            throw new RuntimeException("Error al enviar usuario: ", e);
         }
         return null;
     }
@@ -310,11 +312,13 @@ public class ApiRequests {
             Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
             if (response.isSuccessful()) {
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
-                animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<List<AnimalDTO>>() {});
-                // Entonces tu código se simplifica a:
+                animalDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
+                });
                 animalList = new ArrayList<>();
                 for(AnimalDTO animalDTO : animalDTOList) {
-                    animalList.add(Animal.fromDTO(animalDTO));
+                    Animal animal= Animal.fromDTO(animalDTO);
+                    animalList.add(animal);
+                    Log.d(TAG, "ANIMALID RECIBIDO: "+animal.getAnimalId());
                     Log.d(TAG, "TAGS RECIBIDOS: "+ Animal.fromDTO(animalDTO).getTagList().size());
                 }
                // animalList = Animal.fromDTOList(animalDTOList);
@@ -323,7 +327,6 @@ public class ApiRequests {
         } catch (Exception e) {
             Log.e(TAG, "Error getting my animals: ", e);
         }
-        System.out.println("animalDTOList: "+animalDTOList.size()+"animalList: "+animalList.size());
         return animalList;
     }
     public void deleteAnimal(long animalId) {
@@ -350,7 +353,6 @@ public class ApiRequests {
             } else {
                 Log.e(TAG, "Error assert recibiendo tags: " + status
                         + " | Respuesta: " + responseBody);
-                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
             }
         } catch (IOException e) {
             System.out.println("Error de tipo in/out: "+ e.getMessage());

@@ -111,6 +111,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         Animal animal = (Animal) getIntent().getSerializableExtra("animal");
         AnimalListing listing = (AnimalListing) getIntent().getSerializableExtra("listing");
         String mode = getIntent().getStringExtra("mode");
+        assert mode != null;
         if(mode.equals("edit")){
             CreateAnimalFragment fragment = new CreateAnimalFragment();
             Bundle args = new Bundle();
@@ -118,6 +119,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
             args.putSerializable("listing", listing);
             args.putString("mode", mode);
             fragment.setArguments(args);
+            assert animal != null;
             Log.d(TAG, "ANIMALID: "+animal.getAnimalId());
 
             // Agregar el fragment
@@ -327,9 +329,10 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
     private void updateAddressFields(Address address) {
         // Dirección (calle y número)
-        String addressLine = address.getAddressLine(0);
-        if (addressLine != null) {
-            etAddress.setText(addressLine);
+        String streetName = address.getThoroughfare();
+        //String addressLine = address.getAddressLine(0);
+        if (streetName != null) {
+            etAddress.setText(streetName);
         }
 
         // Ciudad

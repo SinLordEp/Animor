@@ -148,19 +148,6 @@ public class Animal implements Serializable {
     public Sex getSex() {
         return sex;
     }
-//
-//    public String getSexTranslated() {
-//        if (sex.equals("Male")) {
-//            sex = "macho";
-//        }
-//        if (sex.equals("Female")){
-//            sex = "hembra";
-//        }
-//        if(sex.equals("Unkown")){
-//            sex = "desconocido";
-//        }
-//        return sex;
-//    }
 
     public void setSex(Sex sex) {
         this.sex = sex;
@@ -230,7 +217,6 @@ public class Animal implements Serializable {
         animal.setIsNeutered(animalDTO.isNeutered());
         animal.setMicrochipNumber(animalDTO.getMicrochipNumber());
         animal.setIsAdopted(animalDTO.isAdopted());
-        // IMPORTANTE: Convertir las fotos
         animal.setPhotoList(Photo.fromDTOList(animalDTO.getPhotoList()));
         animal.setTagList(Tag.fromDTOList(animalDTO.getTagList()));
         return animal;

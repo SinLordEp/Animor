@@ -103,8 +103,8 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
     private void loadUserAnimals() {
         ApiRequests api = new ApiRequests();
         new Thread(() -> {
-            // Cargar los animales del usuario actual
-            List<Animal> userAnimals = api.getMyAnimalsFromServer(); // Asegúrate de tener este método
+            // animales del usuario actual
+            List<Animal> userAnimals = api.getMyAnimalsFromServer();
 
             if (getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {
@@ -125,13 +125,11 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
         }).start();
     }
 
-    // Implementación de OnAnimalClickListener
     @Override
     public void onAnimalClick(Animal animal) {
         // Cuando selecciona un animal, navegar a CreateListingActivity para crear el listing
         Intent intent = new Intent(getActivity(), CreateListingActivity.class);
-        intent.putExtra("animal", animal);
-        intent.putExtra("mode", "create"); // Modo creación (no edición)
+        intent.putExtra("animal", animal);// Modo creación (no edición)
         startActivity(intent);
 
         // Notificar a la activity padre si implementa el listener

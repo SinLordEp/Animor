@@ -1,5 +1,7 @@
 package com.example.animor.UI;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private UserDTO user;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,7 +113,15 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d(TAG, "Enviando datos del usuario al servidor...");
 
                 ApiRequests api = new ApiRequests();
-                user = api.sendUserToServer(firebaseIdToken);
+                try{
+                    user = api.sendUserToServer(firebaseIdToken);
+                }catch(Exception e){
+                    Log.e(TAG, "Error al enviar usuario: ", e);
+                    MyApplication.executor.execute(()->{
+                        runOnUiThread(() -> { Toast.makeText(this, "Servidor no conectado", Toast.LENGTH_LONG).show();
+                        });
+                    });
+                }
 
                 // Guardar datos del usuario en SharedPreferences
                 saveUserData(user);

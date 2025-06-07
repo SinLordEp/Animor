@@ -5,6 +5,7 @@ import static com.example.animor.Utils.PreferenceUtils.KEY_SPECIES_LIST;
 import static com.example.animor.Utils.PreferenceUtils.KEY_TAG_LIST;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import com.example.animor.Model.StartupResource;
@@ -32,7 +33,6 @@ public class MyApplication extends Application {
     private static String firebaseInstallationId;
     private static String deviceToken;
     private static String notificationToken;
-
     @Override
     public void onCreate() {
         super.onCreate();

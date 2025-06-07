@@ -17,7 +17,7 @@ import java.util.List;
 
 public class FavoritesAdapter{
 
-/*   private List<Animal> favoritesList;
+  /* private List<Animal> favoritesList;
 
     public FavoritesAdapter(List<Animal> favoritesList) {
         this.favoritesList = favoritesList;
@@ -73,6 +73,6 @@ public class FavoritesAdapter{
             txtSex = itemView.findViewById(R.id.txtSex);
             txtSpecies = itemView.findViewById(R.id.txtSpecies);
         }
-    }
-}*/
+    }*/
+
 }

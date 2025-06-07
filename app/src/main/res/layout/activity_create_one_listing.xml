@@ -353,7 +353,7 @@
                     android:layout_height="48dp"
                     android:ems="10"
                     android:inputType="text"
-                    android:hint="Calle (sin número)" />
+                    android:hint="Nombre de la calle, plaza..." />
 
                 <EditText
                     android:id="@+id/etCiudad"
