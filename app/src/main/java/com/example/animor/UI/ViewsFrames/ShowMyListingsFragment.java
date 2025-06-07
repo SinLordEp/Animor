@@ -96,11 +96,11 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         }).start();
     }
 
-    // NUEVO MÉTODO: Manejo centralizado de resultados
+    // Manejo centralizado de resultados
     private void handleListingsResult(List<AnimalListing> newListingList) {
         // Verificar si el fragment aún está adjunto antes de proceder
         if (!isAdded() || getView() == null) {
-            Log.w("DEBUG", "Fragment no está adjunto, saliendo de handleListingsResult");
+            Log.w(TAG, "Fragment no está adjunto, saliendo de handleListingsResult");
             return;
         }
 
@@ -120,7 +120,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         showListingsLayout(newListingList);
     }
 
-    // NUEVO MÉTODO: Mostrar layout cuando no hay login
+    // Mostrar layout cuando no hay login
     private void showNoLoginLayout() {
         Log.d("DEBUG", "Mostrando layout de no login");
 
@@ -167,7 +167,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         Toast.makeText(getContext(), "No tienes anuncios registrados", Toast.LENGTH_LONG).show();
     }
 
-    // NUEVO MÉTODO: Mostrar listings normalmente
+    // Mostrar listings
     private void showListingsLayout(List<AnimalListing> newListingList) {
         Log.d("DEBUG", "Mostrando " + newListingList.size() + " listings");
 
@@ -192,7 +192,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         adapter.notifyDataSetChanged();
     }
 
-    // NUEVO MÉTODO: Navegar a login
+    // Navegar a login
     private void navigateToLogin() {
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
@@ -201,14 +201,14 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         }
     }
 
-    // NUEVO MÉTODO: Navegar a crear listing
+    // Navegar a crear listing
     private void navigateToCreateListing() {
         Intent intent = new Intent(getActivity(), CreateListingActivity.class);
         intent.putExtra("mode", "create");
         startActivity(intent);
     }
 
-    // NUEVO MÉTODO: Fallback por si no hay listener
+    // Fallback por si no hay listener
     private void navigateToDetailFallback(AnimalListing listing) {
         // Mantener la navegación original como fallback
         Intent intent = new Intent(getActivity(), CreateListingActivity.class);
@@ -218,7 +218,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         startActivity(intent);
     }
 
-    // NUEVO MÉTODO: Para establecer el listener desde la Activity
+    // establecer el listener desde la Activity
     public void setListingSelectedListener(OnListingSelectedListener listener) {
         this.listingSelectedListener = listener;
     }
