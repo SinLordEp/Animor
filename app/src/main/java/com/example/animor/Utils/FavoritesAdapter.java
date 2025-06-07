@@ -1,20 +1,5 @@
 package com.example.animor.Utils;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.animor.Model.entity.Animal;
-import com.example.animor.Model.request.ListingRequest;
-import com.example.animor.R;
-
-import java.util.List;
-
 public class FavoritesAdapter{
 
   /* private List<Animal> favoritesList;
@@ -35,7 +20,7 @@ public class FavoritesAdapter{
         ListingRequest item = favoritesList.get(position);
 
         holder.txtName.setText(item.getAnimal().getAnimalName());
-        holder.txtCity.setText(item.getLocationRequest().getCity());
+        holder.txtCity.setText(item.getLocation().getCity());
         holder.txtSex.setText(item.getAnimal().getSex().toString());
         holder.txtSpecies.setText(item.getAnimal().getSpeciesId());
         holder.imgAnimal.setImageResource(item.getAnimal().getImage());

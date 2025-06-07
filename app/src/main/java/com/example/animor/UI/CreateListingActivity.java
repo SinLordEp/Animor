@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -201,7 +200,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         location.setLongitude(longitude);
         location.setLatitude(latitude);
         ListingRequest listingRequest = new ListingRequest();
-        listingRequest.setLocationRequest(location);
+        listingRequest.setLocation(location);
         long animalId = animal.getAnimalId();
         long userId = PreferenceUtils.getUser().getUserId();
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
