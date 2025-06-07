@@ -443,7 +443,7 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             String status = getStatusFromResponseBody(responseBody);
             System.out.println("responsebody"+responseBody);
-            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
+            Log.d(TAG, "Respuesta del servidor a la petición de listings: " + responseBody);
             if (response.isSuccessful()) {
                 if("LISTING_GET_SUCCESS".equals(status)){
                     Log.d("ApiRequest - Get listing", "Get exitoso");
