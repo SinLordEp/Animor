@@ -108,25 +108,13 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_create_one_listing);
-        Animal animal = (Animal) getIntent().getSerializableExtra("animal");
+        animal = (Animal) getIntent().getSerializableExtra("animal");
         AnimalListing listing = (AnimalListing) getIntent().getSerializableExtra("listing");
         String mode = getIntent().getStringExtra("mode");
-        assert mode != null;
-        if(mode.equals("edit")){
-            CreateAnimalFragment fragment = new CreateAnimalFragment();
-            Bundle args = new Bundle();
-            args.putSerializable("animal", animal);
-            args.putSerializable("listing", listing);
-            args.putString("mode", mode);
-            fragment.setArguments(args);
-            assert animal != null;
-            Log.d(TAG, "ANIMALID: "+animal.getAnimalId());
+        if(mode!=null && mode.equals("edit")){
 
-            // Agregar el fragment
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.detail_container, fragment)
-                    .commit();
+        }else{
+
         }
         initViews();
         initializeGeolocation();
@@ -226,7 +214,9 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         UserDTO user = PreferenceUtils.getUser();
         ApiRequests api = new ApiRequests();
-        api.addListingIntoDatabase(listingRequest, animalId);
+        runOnUiThread(()->{
+            api.addListingIntoDatabase(listingRequest, animalId);
+        });
 
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }

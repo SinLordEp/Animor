@@ -119,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e(TAG, "Error al enviar usuario: ", e);
                     MyApplication.executor.execute(()->{
                         runOnUiThread(() -> { Toast.makeText(this, "Servidor no conectado", Toast.LENGTH_LONG).show();
+                            finish();
                         });
                     });
                 }

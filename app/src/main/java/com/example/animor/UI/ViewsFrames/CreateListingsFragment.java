@@ -2,6 +2,7 @@ package com.example.animor.UI.ViewsFrames;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
     private List<Animal> animalList;
     private List<SpeciesDTO> speciesList;
     private LinearLayout noanimales;
-
+    private String TAG="CreateListingsFragment";
     // Interface para comunicación con la Activity (opcional)
     public interface OnAnimalSelectedForListingListener {
         void onAnimalSelectedForListing(Animal animal);
@@ -128,8 +129,9 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
     @Override
     public void onAnimalClick(Animal animal) {
         // Cuando selecciona un animal, navegar a CreateListingActivity para crear el listing
+        Log.d(TAG, "ANIMALid: "+animal.getAnimalId());
         Intent intent = new Intent(getActivity(), CreateListingActivity.class);
-        intent.putExtra("animal", animal);// Modo creación (no edición)
+        intent.putExtra("animal", animal);
         startActivity(intent);
 
         // Notificar a la activity padre si implementa el listener
