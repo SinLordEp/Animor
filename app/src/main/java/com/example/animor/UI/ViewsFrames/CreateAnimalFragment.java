@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -154,13 +156,13 @@ public class CreateAnimalFragment extends Fragment {
             Log.d(TAG, "Sexo: "+animal.getSex().toString());
             switch(animal.getSex()){
                 case Male:
-                    rbMacho.setSelected(true);
+                    rbMacho.setChecked(true);
                     break;
                 case Female:
-                    rbHembra.setSelected(true);
+                    rbHembra.setChecked(true);
                     break;
                 case Unknown:
-                    rbDesconocido.setSelected(true);
+                    rbDesconocido.setChecked(true);
                     break;
             }
             etTamano.setText(animal.getSize());
@@ -173,24 +175,27 @@ public class CreateAnimalFragment extends Fragment {
             if(animal.getMicrochipNumber()!=null) {
                 etMicrochip.setText(animal.getMicrochipNumber());
             }
-            Log.d(TAG, "Tags: "+animal.getTagList().get(0));
-            for (int i = 0; i < receivedTags.size(); i++) {
-                Tag currentTag = Tag.fromDTO(receivedTags.get(i));
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Log.d(TAG, "Tags: "+animal.getTagList().get(0));
+                for (int i = 0; i < receivedTags.size(); i++) {
+                    Tag currentTag = Tag.fromDTO(receivedTags.get(i));
 
-                // Verificar si el tag actual está en la lista B
-                for (Tag tagB : animal.getTagList()) {
-                    if (currentTag.getTagId().equals(tagB.getTagId())) {
-                        // Hacer check en la posición i
-                        listTagsView.setItemChecked(i, true);
+                    // Verificar si el tag actual está en la lista B
+                    for (Tag tagB : animal.getTagList()) {
+                        if (currentTag.getTagId().equals(tagB.getTagId())) {
+                            // Hacer check en la posición i
+                            listTagsView.setItemChecked(i, true);
 
-                        TagRequest tag = new TagRequest();
-                        tag.setTagName(currentTag.getTagName());
-                        tag.setTagId(currentTag.getTagId());
-                        selectedTags.add(tag);
-                        break;
+                            TagRequest tag = new TagRequest();
+                            tag.setTagName(currentTag.getTagName());
+                            tag.setTagId(currentTag.getTagId());
+                            selectedTags.add(tag);
+                            break;
+                        }
                     }
                 }
-            }
+            }, 100); // 100ms de delay
+
         }
     }
 
@@ -458,7 +463,7 @@ public class CreateAnimalFragment extends Fragment {
         }
 
         // VALIDACIÓN OBLIGATORIA DE FOTO
-        if (imagenSeleccionadaUri == null && (animal == null || animal.getImage() == null || animal.getImage().isEmpty())) {
+        if (imagenSeleccionadaUri == null || (animal == null || animal.getPhotoList().get(0) == null)) {
             Toast.makeText(getContext(), "Debe seleccionar una foto para el animal", Toast.LENGTH_SHORT).show();
             isValid = false;
         }

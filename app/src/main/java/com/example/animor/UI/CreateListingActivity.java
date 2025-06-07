@@ -91,9 +91,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
     private static final String TAG = "CreateListingActivity";
 
-    private RecyclerView recyclerView;
-    private Button crearAnimalButton;
-    private AnimalAdapter adapter;
     private Animal animal;
     private AnimalListing listing;
 
@@ -102,20 +99,29 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate started");
         setContentView(R.layout.activity_create_one_listing);
+
         animal = (Animal) getIntent().getSerializableExtra("animal");
         listing = (AnimalListing) getIntent().getSerializableExtra("listing");
-        String mode = getIntent().getStringExtra("mode");
-        if(mode!=null && mode.equals("edit")){
-
-        }else{
-
-        }
         initViews();
         initializeGeolocation();
         setupListeners();
         if (animal != null) {
             loadAnimalData(animal);
         }
+        if(listing != null){
+            editListing();
+        }
+    }
+
+    private void editListing() {
+        // Campos del formulario de contacto/dirección
+        editTextPhone.setText(listing.getContactPhone());
+        editTextTextEmailAddress.setText(listing.getContactEmail());
+        etAddress.setText(listing.getLocation().getAddress());
+        etCity.setText(listing.getLocation().getCity());
+        etProvince.setText(listing.getLocation().getProvince());
+        etPostalCode.setText(listing.getLocation().getPostalCode());
+        etCountry.setText(listing.getLocation().getCountry());
     }
 
     private void initViews() {
@@ -145,7 +151,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         // Botones
         buttonSave = findViewById(R.id.buttonSave);
         btnGetLocation = findViewById(R.id.btnGetLocation);
-
 
         // Cargar datos del animal si existe
         if (animal != null) {
@@ -210,10 +215,8 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         ListingRequest listingRequest = new ListingRequest();
         listingRequest.setLocation(location);
         long animalId = animal.getAnimalId();
-        long userId = PreferenceUtils.getUser().getUserId();
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
-        User user = PreferenceUtils.getUser();
         ApiRequests api = new ApiRequests();
         MyApplication.executor.execute(()->{
             api.addListingIntoDatabase(listingRequest, animalId);

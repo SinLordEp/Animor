@@ -45,7 +45,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
     // Variables para datos del listing
     private TextView tvPhone, tvEmail;
-    private TextView tvAddress, tvCity, tvProvince, tvPostalCode, tvCountry;
+    private TextView tvCity, tvProvince, tvCountry;
     private SwitchCompat switchAdoptado;
 
     // Botones
@@ -67,13 +67,15 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // Obtener datos del Intent
         Intent intent = getIntent();
         if (intent != null) {
-            animal = (Animal) intent.getSerializableExtra("animal");
-            animalListing = (AnimalListing) intent.getSerializableExtra("animalListing");
-            location = (Location) intent.getSerializableExtra("location");
+            animalListing = (AnimalListing) intent.getSerializableExtra("listing");
+            if (animalListing != null) {
+                animal = animalListing.getAnimal();
+                location = animalListing.getLocation();
+            }
         }
 
         // Verificar que tenemos los datos necesarios
-        if (animal == null || animalListing == null) {
+        if (animalListing == null) {
             Log.e("ShowMyListingActivity", "Datos del animal o listing faltantes");
             Toast.makeText(this, "Error: Datos incompletos", Toast.LENGTH_SHORT).show();
             finish();
@@ -123,10 +125,8 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // Inicializar vistas del listing (tabla tableDatos)
         tvPhone = findViewById(R.id.tvPhone);
         tvEmail = findViewById(R.id.tvEmail);
-        tvAddress = findViewById(R.id.tvAddress);
         tvCity = findViewById(R.id.tvCity);
         tvProvince = findViewById(R.id.tvProvince);
-        tvPostalCode = findViewById(R.id.tvPostalCode);
         tvCountry = findViewById(R.id.tvCountry);
         switchAdoptado = findViewById(R.id.switchadop);
 
@@ -227,22 +227,16 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Cargar datos de ubicación
         if (location != null) {
-            tvAddress.setText(location.getAddress() != null ?
-                    location.getAddress() : "Sin especificar");
             tvCity.setText(location.getCity() != null ?
                     location.getCity() : "Sin especificar");
             tvProvince.setText(location.getProvince() != null ?
                     location.getProvince() : "Sin especificar");
-            tvPostalCode.setText(location.getPostalCode() != null ?
-                    location.getPostalCode() : "Sin especificar");
             tvCountry.setText(location.getCountry() != null ?
                     location.getCountry() : "Sin especificar");
         } else {
             // Si no hay ubicación, mostrar valores por defecto
-            tvAddress.setText("Sin especificar");
             tvCity.setText("Sin especificar");
             tvProvince.setText("Sin especificar");
-            tvPostalCode.setText("Sin especificar");
             tvCountry.setText("Sin especificar");
         }
 
@@ -254,7 +248,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // Listener para editar listing
         btnedit.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateListingActivity.class);
-            intent.putExtra("animal", animal);
             intent.putExtra("listing", animalListing);
             intent.putExtra("mode", "edit");
             startActivity(intent);

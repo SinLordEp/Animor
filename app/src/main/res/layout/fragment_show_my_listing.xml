@@ -395,30 +395,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.4"
-                        android:text="Calle:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvAddress"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Calle (sin número)"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
                         android:text="Ciudad:"
                         android:textStyle="normal"
                         android:gravity="start"
@@ -454,30 +430,6 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.6"
                         android:text="Provincia"
-                        android:textStyle="normal"
-                        android:gravity="start" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.4"
-                        android:text="Código Postal:"
-                        android:textStyle="normal"
-                        android:gravity="start"
-                        android:layout_marginEnd="8dp" />
-
-                    <TextView
-                        android:id="@+id/tvPostalCode"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.6"
-                        android:text="Código Postal"
                         android:textStyle="normal"
                         android:gravity="start" />
                 </TableRow>
