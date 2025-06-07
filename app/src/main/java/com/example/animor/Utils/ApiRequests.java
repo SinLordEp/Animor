@@ -396,10 +396,8 @@ public class ApiRequests {
         }
         url = url.newBuilder()
                 .addQueryParameter("animalId", String.valueOf(animalId))
-                .addQueryParameter("ListingRequest", String.valueOf(listing))
                 .build();
         String json = JacksonUtils.entityToJson(listing);
-        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         body = RequestBody.create(json, mediaType);
         Request request = new Request.Builder()
                 .url(url)

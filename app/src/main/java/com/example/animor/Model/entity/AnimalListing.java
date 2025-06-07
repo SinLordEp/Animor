@@ -73,6 +73,7 @@ public class AnimalListing implements Serializable {
         animalListing.setContactEmail(listingDTO.getContactEmail());
         animalListing.setUser(listingDTO.getUser());
         animalListing.setLocation(Location.fromDTOLocation(listingDTO.getLocation()));
+        animalListing.setAnimal(Animal.fromDTO(listingDTO.getAnimal()));
         return animalListing;
     }
     @JsonIgnore

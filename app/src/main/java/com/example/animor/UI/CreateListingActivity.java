@@ -71,7 +71,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     // Botones y otros controles
     private Button buttonSave;
     private Button btnGetLocation;
-    private ImageButton btnMenu;
     private NonScrollListView listTags;
     private NavigationView navigationView;
 
@@ -146,7 +145,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         // Botones
         buttonSave = findViewById(R.id.buttonSave);
-        btnMenu = findViewById(R.id.btn_menu);
         btnGetLocation = findViewById(R.id.btnGetLocation);
 
 
@@ -159,9 +157,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
         buttonSave.setOnClickListener(v -> {
             saveListing();
-            MyApplication.executor.execute(()->{
-                startActivity(new Intent(CreateListingActivity.this, ShowActivity.class));
-            });
+            MyApplication.executor.execute(()-> startActivity(new Intent(CreateListingActivity.this, ShowActivity.class)));
         });
     // listeners para geocodificar cuando el usuario termine de escribir
         setupAddressChangeListeners();
@@ -191,7 +187,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     //  guardar el listing
     public void saveListing() {
         if (!validateForm()) {
-            Toast.makeText(this, "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Por favor, complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
             return;
         }
         LocationRequest location = new LocationRequest();
@@ -316,9 +312,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     }
 
     private void updateAddressFields(Address address) {
-        // Dirección (calle y número)
         String streetName = address.getThoroughfare();
-        //String addressLine = address.getAddressLine(0);
         if (streetName != null) {
             etAddress.setText(streetName);
         }
@@ -526,6 +520,10 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
         if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
             tvAnimalNeutered.setText(animal.getIsNeutered() ? "sí" : "no");
+        }else{
+            TextView textViewNeutered = findViewById(R.id.textViewNeutered);
+            textViewNeutered.setVisibility(View.INVISIBLE);
+            tvAnimalNeutered.setVisibility(View.INVISIBLE);
         }
 
         // Cargar etiquetas en segundo plano, no hay prisa
