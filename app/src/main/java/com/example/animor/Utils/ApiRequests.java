@@ -31,7 +31,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.FormBody;
@@ -476,7 +478,7 @@ public class ApiRequests {
             throw new IllegalArgumentException("URL is not valid");
         }
         url = url.newBuilder()
-                .addQueryParameter("animalId", String.valueOf(listingId))
+                .addQueryParameter("listingId", String.valueOf(listingId))
                 .build();
         Request request = new Request.Builder()
                 .url(url)
@@ -502,7 +504,7 @@ public class ApiRequests {
         }
         return false;
     }
-    public List<AnimalListing> getListingNearMe() {
+    public List<AnimalListing> getListingNearMe(double latitute, double longitude, int page) {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/near-me");
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
@@ -520,7 +522,7 @@ public class ApiRequests {
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             System.out.println("responsebody"+responseBody);
-            Log.d(TAG, "Respuesta del servidor a la petición de animales: " + responseBody);
+            Log.d(TAG, "Respuesta del servidor a petición de listings: " + responseBody);
             if (response.isSuccessful()) {
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
                 listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
@@ -532,9 +534,109 @@ public class ApiRequests {
                 return listingList;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error getting my animals: ", e);
+            Log.e(TAG, "Error getting listings near me: ", e);
         }
         return listingList;
+    }
+    public Set<AnimalListing> getMyFavs() {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/user/get-favorite");
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
+                .get()
+                .build();
+        Set<ListingDTO> listingDTOSet;
+        Set<AnimalListing>listingList = new HashSet<>();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            System.out.println("responsebody"+responseBody);
+            Log.d(TAG, "Respuesta del servidor a la petición de favoritos: " + responseBody);
+            if (response.isSuccessful()) {
+                if("FAVORITE_GET_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Get favorites", "Get exitoso");
+                }
+                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                listingDTOSet = JacksonUtils.readEntitiesSet(jsonArray.toString(), new TypeReference<>() {
+                });
+                for(ListingDTO listingDTO : listingDTOSet) {
+                    listingList.add(AnimalListing.fromDTO(listingDTO));
+                }
+                return listingList;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting my favs: ", e);
+        }
+        return listingList;
+    }
+    public boolean addFav(long listingId) {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/user/add-favorite");
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .addQueryParameter("listingId", String.valueOf(listingId))
+                .build();
+        RequestBody emptyBody = RequestBody.create(null, "");
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
+                .post(emptyBody)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            System.out.println("responsebody"+responseBody);
+            Log.d(TAG, "Respuesta del servidor a la petición de favoritos: " + responseBody);
+            if (response.isSuccessful()) {
+                if("FAVORITE_ADD_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Add favorites", "Add exitoso");
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding fav: ", e);
+        }
+        return false;
+    }
+    public boolean deleteFav(long listingId) {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/delete-favorite");
+        Log.d(TAG, "LISTINGID: "+listingId);
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .addQueryParameter("listingId", String.valueOf(listingId))
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", userToken)
+                .delete()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            if (response.isSuccessful()) {
+                if("FAVORITE_DELETE_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Delete favorite", "Borrado exitoso");
+                    return true;
+                }
+            } else {
+                Log.e(TAG, "Error assert borrando favorito: " + status
+                        + " | Respuesta: " + responseBody);
+            }
+        } catch (IOException e) {
+            System.out.println("Error de tipo in/out: "+ e.getMessage());
+        }
+        return false;
     }
 
 }

@@ -1,10 +1,12 @@
 package com.example.animor.Utils;
 
+import com.example.animor.Model.dto.ListingDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
+import java.util.Set;
 
 public class JacksonUtils {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -33,6 +35,14 @@ public class JacksonUtils {
         } catch (JsonProcessingException e) {
             //implement logger if needed
             throw new RuntimeException("Convert entity to json failed, please check getter setter of this model");
+        }
+    }
+
+    public static <T> Set<T> readEntitiesSet(String json, TypeReference<Set<T>> typeReference) {
+        try {
+            return mapper.readValue(json, typeReference);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Convert json to entities failed. Cause: ",e);
         }
     }
 }

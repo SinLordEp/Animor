@@ -101,20 +101,22 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         setContentView(R.layout.activity_create_one_listing);
         listing = (AnimalListing) getIntent().getSerializableExtra("listing");
         animal = (Animal) getIntent().getSerializableExtra("animal");
-
+        if(listing != null){
+            animal=listing.getAnimal();
+            editListing();
+        }
         initViews();
         initializeGeolocation();
         setupListeners();
         if (animal != null) {
             loadAnimalData(animal);
         }
-        if(listing != null){
-            editListing();
-        }
+
     }
 
     private void editListing() {
         // Campos del formulario de contacto/dirección
+        animal=listing.getAnimal();
         editTextPhone.setText(listing.getContactPhone());
         editTextTextEmailAddress.setText(listing.getContactEmail());
         etAddress.setText(listing.getLocation().getAddress());

@@ -19,17 +19,14 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Location;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
-import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NonScrollListView;
 import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyListingActivity extends AppCompatActivity {
@@ -62,15 +59,22 @@ public class ShowMyListingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_show_my_listing); // Cambiar el nombre del layout si es necesario
-
+        setContentView(R.layout.activity_show_my_listing); // Cambiar el nombre del layout si es necesario
+        initViews();
         // Obtener datos del Intent
         Intent intent = getIntent();
         if (intent != null) {
             animalListing = (AnimalListing) intent.getSerializableExtra("listing");
+            String mode = intent.getStringExtra("mode");
+
             if (animalListing != null) {
                 animal = animalListing.getAnimal();
                 location = animalListing.getLocation();
+            }
+            if(mode!=null && mode.equals("adoptive")){
+                btndel.setVisibility(View.GONE);
+                btnedit.setVisibility(View.GONE);
+                switchAdoptado.setVisibility(View.GONE);
             }
         }
 
@@ -102,7 +106,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
             }
         }
 
-        initViews();
         setupListeners();
         loadAnimalData();
         loadListingData();

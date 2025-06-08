@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
+            android:contentDescription="@string/imagen_del_animal"
             android:src="@color/primarytwo" />
 
     </androidx.cardview.widget.CardView>
@@ -63,19 +64,29 @@
     <!-- Contenedor para el botón de favorito -->
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
         android:padding="10dp">
 
-        <ImageView
+        <ImageButton
             android:id="@+id/btnFavorite"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/heartvacio"
             android:clickable="true"
+            android:layout_marginBottom="10dp"
             android:contentDescription="@string/marcar_como_favorito"
-            android:visibility="gone" />
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/tvNearMe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="0dp"
+            android:text="a 0km de ti" />
+
 
     </LinearLayout>
 

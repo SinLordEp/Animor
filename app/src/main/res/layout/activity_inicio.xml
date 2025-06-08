@@ -48,7 +48,7 @@
             android:layout_marginEnd="8dp"/>
 
         <Button
-            android:id="@+id/buttonLupa"
+            android:id="@+id/btnLupa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
@@ -58,7 +58,7 @@
             app:icon="@android:drawable/ic_menu_search" />
 
         <Button
-            android:id="@+id/buttonFiltros"
+            android:id="@+id/btnFiltros"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Filtros"
@@ -80,6 +80,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchBarLayout" />
+    <TextView
+        android:id="@+id/textViewSubtitulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Obteniendo animales cerca de ti"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAnimals"
@@ -94,7 +106,7 @@
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewSubtitulo" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"

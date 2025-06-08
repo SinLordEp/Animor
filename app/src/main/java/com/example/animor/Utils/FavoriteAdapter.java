@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -24,16 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingViewHolder> {
+public class FavoriteAdapter {/*extends RecyclerView.Adapter<FavoriteAdapter.FavoriteViewHolder> {
 
     private List<AnimalListing> animalListingList;
     private OnListingInteractionListener listener;
     private final String TAG = "ListingAdapter";
     private Context context;
     private SimpleDateFormat dateFormat;
-    private ImageButton btnfav;
 
-    public ListingAdapter(List<AnimalListing> animalListingList, OnListingInteractionListener listener) {
+    public FavoriteAdapter(List<AnimalListing> animalListingList, OnListingInteractionListener listener) {
         this.animalListingList = animalListingList != null ? animalListingList : new ArrayList<>();
         this.listener = listener;
         this.dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -41,14 +39,19 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     @NonNull
     @Override
-    public ListingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public FavoriteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_animal, parent, false);
-        return new ListingViewHolder(view);
+        return new FavoriteViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ListingViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FavoriteAdapter.FavoriteViewHolder holder, int position) {
+
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull FavoriteViewHolder holder, int position) {
         AnimalListing animalListing = animalListingList.get(position);
         Animal animal = animalListing.getAnimal();
 
@@ -64,9 +67,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         }
         holder.txtSpecies.setText(speciesName);
 
+        // CORRECCIÓN: Declarar photoUrl como variable local y resetearla
         String photoUrl = null;
         List<Photo> photoList = animal.getAnimalPhotoList();
 
+        // Agregar logs para debugging
         Log.d(TAG, "Animal: " + animal.getAnimalName() + " - PhotoList size: " +
                 (photoList != null ? photoList.size() : "null"));
 
@@ -173,5 +178,5 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
     public interface OnListingInteractionListener {
         void onListingSelected(AnimalListing animalListing);
         void onFavoriteClick(AnimalListing animalListing);
-    }
+    }*/
 }

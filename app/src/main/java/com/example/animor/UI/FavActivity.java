@@ -1,27 +1,21 @@
 package com.example.animor.UI;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.R;
-import com.example.animor.Utils.FavoritesAdapter;
+import com.example.animor.Utils.FavoriteAdapter;
 import com.example.animor.Utils.NavigationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 //sin terminar
 public class FavActivity extends AppCompatActivity {
 
     private RecyclerView recyclerViewFavorites;
-    private FavoritesAdapter favoritesAdapter;
+    private FavoriteAdapter favoriteAdapter;
     private NavigationHelper navigationHelper;
 
     @Override
