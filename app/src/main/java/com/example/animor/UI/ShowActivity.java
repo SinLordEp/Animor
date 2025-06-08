@@ -62,6 +62,7 @@ public class ShowActivity extends AppCompatActivity
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         navigationHelper.setupBottomNavigation(bottomNavigationView);
         Log.d(TAG, "onCreate completed successfully");
+
     }
 
     private void setupViewPager() {

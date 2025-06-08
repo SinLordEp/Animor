@@ -55,28 +55,39 @@ public class ShowMyListingActivity extends AppCompatActivity {
     private Location location = null;
     private String speciesName = "";
     private String photoUrl = "";
+    private String TAG="ShowMyListingActivity";
+    String mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_my_listing); // Cambiar el nombre del layout si es necesario
-        initViews();
+        setContentView(R.layout.activity_show_my_listing);
+        btnedit = findViewById(R.id.btnedit);
+        switchAdoptado = findViewById(R.id.switchadop);
+        btndel = findViewById(R.id.btndel);// Cambiar el nombre del layout si es necesario
         // Obtener datos del Intent
         Intent intent = getIntent();
         if (intent != null) {
             animalListing = (AnimalListing) intent.getSerializableExtra("listing");
-            String mode = intent.getStringExtra("mode");
+            if (animalListing != null) {
+                Log.d(TAG, "Listing pasado por intent: "+animalListing.getListingId());
+            }else{
+                Log.d(TAG, "Listing pasado por intent: ES NULO");
+            }
+            Log.d(TAG, "Animal del listing: "+animalListing.getAnimal().getAnimalName());
+            mode = intent.getStringExtra("mode");
 
             if (animalListing != null) {
                 animal = animalListing.getAnimal();
                 location = animalListing.getLocation();
             }
             if(mode!=null && mode.equals("adoptive")){
+                switchAdoptado.setVisibility(View.GONE);
                 btndel.setVisibility(View.GONE);
                 btnedit.setVisibility(View.GONE);
-                switchAdoptado.setVisibility(View.GONE);
             }
         }
+        initViews();
 
         // Verificar que tenemos los datos necesarios
         if (animalListing == null) {
@@ -131,11 +142,8 @@ public class ShowMyListingActivity extends AppCompatActivity {
         tvCity = findViewById(R.id.tvCity);
         tvProvince = findViewById(R.id.tvProvince);
         tvCountry = findViewById(R.id.tvCountry);
-        switchAdoptado = findViewById(R.id.switchadop);
+        Log.d(TAG, "Adoptado: "+animal.isAdopted());
 
-        // Inicializar botones
-        btnedit = findViewById(R.id.btnedit);
-        btndel = findViewById(R.id.btndel);
     }
 
     private void loadAnimalData() {

@@ -197,6 +197,10 @@ public class Animal implements Serializable {
         return isAdopted;
     }
 
+    public boolean isAdopted() {
+        return isAdopted;
+    }
+
     public void setIsAdopted(Boolean isAdopted) {
         this.isAdopted = isAdopted;
     }

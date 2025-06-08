@@ -521,12 +521,17 @@ public class ApiRequests {
             System.out.println("responsebody"+responseBody);
             Log.d(TAG, "Respuesta del servidor a petición de listings: " + responseBody);
             if (response.isSuccessful()) {
-                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                JSONObject dataObject = jsonResponse.getJSONObject("data");
+                JSONArray jsonArray = dataObject.getJSONArray("content");
                 listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {
                 });
                 listingList = new ArrayList<>();
+                int cont=0;
                 for(ListingDTO listingDTO : listingDTOList) {
                     listingList.add(AnimalListing.fromDTO(listingDTO));
+                    Log.d(TAG, "listing id: "+listingList.get(cont).getListingId()+" animal: "+listingList.get(cont).getAnimal().toString());
+                    cont++;
                 }
                 return listingList;
             }
@@ -572,7 +577,9 @@ public class ApiRequests {
                 if("NEAR_GET_SUCCESS".equals(status)){
                     Log.d("ApiRequest - Get near me", "Get exitoso");
                 }
-                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                JSONObject dataObject = jsonResponse.getJSONObject("data");
+                JSONArray jsonArray = dataObject.getJSONArray("content");
                 listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
 
                 for(ListingDTO listingDTO : listingDTOList) {

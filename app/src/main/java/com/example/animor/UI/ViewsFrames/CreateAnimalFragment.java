@@ -463,7 +463,7 @@ public class CreateAnimalFragment extends Fragment {
         }
 
         // VALIDACIÓN OBLIGATORIA DE FOTO
-        if (imagenSeleccionadaUri == null || (animal == null || animal.getPhotoList().get(0) == null)) {
+        if (imagenSeleccionadaUri == null && (animal == null || animal.getPhotoList().get(0) == null)) {
             Toast.makeText(getContext(), "Debe seleccionar una foto para el animal", Toast.LENGTH_SHORT).show();
             isValid = false;
         }

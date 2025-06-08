@@ -1,15 +1,17 @@
 package com.example.animor.UI;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
+import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
@@ -28,6 +31,7 @@ import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
 import com.example.animor.Utils.ListingAdapter;
 import com.example.animor.Utils.NavigationHelper;
+import com.example.animor.Utils.PreferenceUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -40,11 +44,10 @@ public class InicioActivity extends AppCompatActivity implements
     private static final String TAG = "InicioActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
 
-    private RecyclerView recyclerView;
+    private RecyclerView rvListings;
     private ListingAdapter adapter;
     private List<AnimalListing> lista;
     AnimalAdapter.OnAnimalClickListener listener;
-    private ImageButton btnFavorite;
 
     // Variables para geolocalización
     private Geolocalization geolocalization;
@@ -75,19 +78,18 @@ public class InicioActivity extends AppCompatActivity implements
         initViews();
         initializeGeolocation();
 
-        // Inicializar lista vacía y adapter
         lista = new ArrayList<>();
         adapter = new ListingAdapter(lista, this, ListingAdapter.ViewType.INICIO_ACTIVITY);
-        recyclerView.setAdapter(adapter);
+        rvListings.setLayoutManager(new LinearLayoutManager(this));
+        rvListings.setAdapter(adapter);
 
-        // Solicitar ubicación para cargar los listings
-        requestLocationAndLoadListings();
+        requestLocation();
     }
 
     private void initViews() {
         // Configurar RecyclerView
-        recyclerView = findViewById(R.id.recyclerViewAnimals);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        rvListings = findViewById(R.id.recyclerViewAnimals);
+        rvListings.setLayoutManager(new LinearLayoutManager(this));
         // Configurar elementos de búsqueda
         searchEditText = findViewById(R.id.searchEditText);
         btnLupa = findViewById(R.id.btnLupa);
@@ -107,42 +109,67 @@ public class InicioActivity extends AppCompatActivity implements
         btnLupa.setOnClickListener(v -> {
             currentSearchText = searchEditText.getText().toString().trim();
             if (!currentSearchText.isEmpty()) {
-                // Si hay texto de búsqueda, usar filtros en lugar de ubicación
                 isUsingLocationFilter = false;
-                obtenerListings();
+                loadNearMeListings(); // Esto ahora cargará con el filtro de búsqueda
+                rvListings.setVisibility(View.VISIBLE);
             } else {
                 Toast.makeText(this, "Ingresa un término de búsqueda", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Listener para el botón de filtros
-        btnFiltros.setOnClickListener(v -> mostrarDialogoFiltros());
+        btnFiltros.setOnClickListener(v -> showFilterDialog());
 
-        // Listener para búsqueda al presionar Enter
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             btnLupa.performClick();
             return true;
         });
     }
-    private void mostrarDialogoFiltros() {
-        // Crear el diálogo de filtros
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+    private void showFilterDialog() {
+        AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
 
-        // Inflar el layout del diálogo (lo crearemos después)
+        // Inflar el layout del diálogo
         android.view.LayoutInflater inflater = getLayoutInflater();
         android.view.View dialogView = inflater.inflate(R.layout.dialog_filtros, null);
 
-        // Obtener referencias a los elementos del diálogo
         EditText etCity = dialogView.findViewById(R.id.etCity);
         EditText etCountry = dialogView.findViewById(R.id.etCountry);
-        android.widget.Spinner spinnerSpecies = dialogView.findViewById(R.id.spinnerSpecies);
+        Spinner spinnerSpecies = dialogView.findViewById(R.id.spinnerSpecies);
+        MyApplication.executor.execute(() -> {
+            List<SpeciesDTO> receivedSpecies = PreferenceUtils.getSpeciesList();
+            ArrayAdapter<SpeciesDTO> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                receivedSpecies);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSpecies.setAdapter(adapter);
+            // Obtener especie seleccionada
+            int selectedPosition = spinnerSpecies.getSelectedItemPosition();
+            currentSpeciesId = getSpeciesIdFromPosition(selectedPosition);
+            try {
+                runOnUiThread(() -> {
+                        // Establecer selección actual si existe
+                        if (currentSpeciesId != null) {
+                            for (int i = 0; i < receivedSpecies.size(); i++) {
+                                if (receivedSpecies.get(i).getSpeciesId() == currentSpeciesId){
+                                    spinnerSpecies.setSelection(i);
+                                    break;
+                                }
+                            }
+                        }
 
-        // Configurar spinner de especies (necesitarás crear este método)
-        setupSpeciesSpinner(spinnerSpecies);
+                });
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    // Manejar error silenciosamente o mostrar mensaje
+                    Log.e("FilterDialog", "Error cargando especies", e);
+                });
+            }
+        });
 
         // Prellenar con valores actuales
         if (currentCity != null) etCity.setText(currentCity);
         if (currentCountry != null) etCountry.setText(currentCountry);
+        String newSpeciesId = spinnerSpecies.toString();
 
         builder.setView(dialogView)
                 .setTitle("Filtros de búsqueda")
@@ -150,14 +177,8 @@ public class InicioActivity extends AppCompatActivity implements
                     // Obtener valores del diálogo
                     currentCity = etCity.getText().toString().trim();
                     currentCountry = etCountry.getText().toString().trim();
+                    currentSpeciesId  = getSelectedSpeciesId(spinnerSpecies);
 
-                    // Obtener especie seleccionada
-                    int selectedPosition = spinnerSpecies.getSelectedItemPosition();
-                    if (selectedPosition > 0) { // 0 sería "Todas las especies"
-                        currentSpeciesId = getSpeciesIdFromPosition(selectedPosition);
-                    } else {
-                        currentSpeciesId = null;
-                    }
 
                     // Si se aplicaron filtros, no usar ubicación
                     if (!currentCity.isEmpty() || !currentCountry.isEmpty() || currentSpeciesId != null) {
@@ -165,7 +186,7 @@ public class InicioActivity extends AppCompatActivity implements
                     }
 
                     // Aplicar filtros
-                    obtenerListings();
+                    loadFilteredListings(); // Usar el método corregido
 
                     // Actualizar UI para mostrar que hay filtros activos
                     updateFilterUI();
@@ -183,13 +204,29 @@ public class InicioActivity extends AppCompatActivity implements
                     searchEditText.setText("");
 
                     // Recargar con ubicación
-                    obtenerListings();
+                    loadNearMeListings();
 
                     // Actualizar UI
                     updateFilterUI();
                 });
 
         builder.create().show();
+    }
+
+    private Integer getSelectedSpeciesId(Spinner spinnerSpecies) {
+        int selectedPosition = spinnerSpecies.getSelectedItemPosition();
+
+        if (selectedPosition <= 0) {
+            return null;
+        }
+
+        ArrayAdapter<SpeciesDTO> adapter = (ArrayAdapter<SpeciesDTO>) spinnerSpecies.getAdapter();
+        if (adapter != null && selectedPosition < adapter.getCount()) {
+            SpeciesDTO selectedSpecies = adapter.getItem(selectedPosition);
+            return selectedSpecies != null ? selectedSpecies.getSpeciesId() : null;
+        }
+
+        return null;
     }
 
     private void updateFilterUI() {
@@ -213,10 +250,11 @@ public class InicioActivity extends AppCompatActivity implements
     }
 
     private void initializeGeolocation() {
+        checkLocationPermissions();
         geolocalization = new Geolocalization(this, this);
     }
 
-    private void requestLocationAndLoadListings() {
+    private void requestLocation() {
         if (checkLocationPermissions()) {
             Log.d(TAG, "Solicitando ubicación para cargar listings...");
             Toast.makeText(this, "Obteniendo ubicación para mostrar animales cercanos...", Toast.LENGTH_SHORT).show();
@@ -249,11 +287,11 @@ public class InicioActivity extends AppCompatActivity implements
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Permisos de ubicación concedidos");
-                requestLocationAndLoadListings();
+                requestLocation();
             } else {
                 Log.d(TAG, "Permisos de ubicación denegados");
                 Toast.makeText(this, "Sin permisos de ubicación. Mostrando todos los animales.", Toast.LENGTH_LONG).show();
-                obtenerListings();
+                loadNearMeListings();
             }
         }
     }
@@ -269,7 +307,7 @@ public class InicioActivity extends AppCompatActivity implements
         Toast.makeText(this, "Ubicación obtenida. Cargando animales cercanos...", Toast.LENGTH_SHORT).show();
 
         // Ahora que tenemos la ubicación, cargar los listings
-        obtenerListings();
+        loadNearMeListings();
     }
 
     @Override
@@ -278,44 +316,94 @@ public class InicioActivity extends AppCompatActivity implements
         Toast.makeText(this, "Error al obtener ubicación: " + error + ". Mostrando todos los animales.", Toast.LENGTH_LONG).show();
 
         // Si hay error, cargar listings sin filtro de ubicación
-        obtenerListings();
+        loadNearMeListings();
     }
+    private void loadFilteredListings() {
+        Log.d(TAG, "Llamando a API con filtros - Ciudad: " + currentCity +
+                ", País: " + currentCountry + ", Especie: " + currentSpeciesId);
 
-    private List<AnimalListing> obtenerListings() {
-        MyApplication.executor.execute(()->{
+        MyApplication.executor.execute(() -> {
             try {
+                // getListing con filtros
+                String city = (currentCity != null && !currentCity.isEmpty()) ? currentCity : null;
+                String country = (currentCountry != null && !currentCountry.isEmpty()) ? currentCountry : null;
+
+                List<AnimalListing> filteredListings = api.getListing(city, country, currentSpeciesId, 0);
+
+                runOnUiThread(() -> {
+                    if (filteredListings != null && !filteredListings.isEmpty()) {
+                        // Filtrar por texto de búsqueda si existe
+                        List<AnimalListing> finalList = filteredListings;
+                        if (currentSearchText != null && !currentSearchText.isEmpty()) {
+                            finalList = filterBySearchText(filteredListings, currentSearchText);
+                        }
+
+                        // Actualizar la lista
+                        actualizarListaAnimales(finalList);
+
+                        // Mostrar RecyclerView
+                        rvListings.setVisibility(View.VISIBLE);
+
+                        // Actualizar subtítulo
+                        updateSubtitle(finalList.size());
+
+                        Log.d(TAG, "Listings filtrados actualizados: " + finalList.size() + " animales encontrados");
+                    } else {
+                        // Lista vacía
+                        actualizarListaAnimales(new ArrayList<>());
+                        rvListings.setVisibility(View.VISIBLE);
+                        updateSubtitle(0);
+                        Toast.makeText(InicioActivity.this, "No se encontraron animales con estos filtros", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error al obtener listings filtrados: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Toast.makeText(InicioActivity.this, "Error al cargar animales", Toast.LENGTH_SHORT).show();
+                    updateSubtitle(0);
+                });
+            }
+        });
+    }
+    private void loadNearMeListings() {
+        MyApplication.executor.execute(() -> {
+            try {
+                List<AnimalListing> loadedListings;
+
                 if (isUsingLocationFilter && locationObtained && latitude != 0.0 && longitude != 0.0) {
                     Log.d(TAG, "Llamando a API con coordenadas: " + latitude + ", " + longitude);
-                    lista = api.getListingNearMe(longitude, latitude, 1);
+                    loadedListings = api.getListingNearMe(latitude, longitude, 1);
                 } else {
-                    Log.d(TAG, "Llamando a API con filtros - Ciudad: " + currentCity +
-                            ", País: " + currentCountry + ", Especie: " + currentSpeciesId);
-
-                    // Usar el método getListing con filtros
-                    String city = (currentCity != null && !currentCity.isEmpty()) ? currentCity : null;
-                    String country = (currentCountry != null && !currentCountry.isEmpty()) ? currentCountry : null;
-
-                    lista = api.getListing(city, country, currentSpeciesId, 0);
+                    Log.d(TAG, "Llamando a API sin filtros de ubicación");
+                    // Si no hay ubicación o no se está usando filtro de ubicación, cargar todos
+                    loadedListings = api.getListing(null, null, null, 0);
                 }
 
                 runOnUiThread(() -> {
-                    if (lista != null && !lista.isEmpty()) {
+                    if (loadedListings != null && !loadedListings.isEmpty()) {
                         // Filtrar por texto de búsqueda si existe
-                        List<AnimalListing> filteredList = lista;
+                        List<AnimalListing> filteredList = loadedListings;
                         if (currentSearchText != null && !currentSearchText.isEmpty()) {
-                            filteredList = filterBySearchText(lista, currentSearchText);
+                            filteredList = filterBySearchText(loadedListings, currentSearchText);
                         }
 
                         // Actualizar la lista
                         actualizarListaAnimales(filteredList);
+
+                        // Mostrar RecyclerView
+                        rvListings.setVisibility(View.VISIBLE);
 
                         // Actualizar subtítulo
                         updateSubtitle(filteredList.size());
 
                         Log.d(TAG, "Listings actualizados: " + filteredList.size() + " animales encontrados");
                     } else {
-                        Toast.makeText(InicioActivity.this, "No se encontraron animales", Toast.LENGTH_SHORT).show();
+                        // Lista vacía
+                        actualizarListaAnimales(new ArrayList<>());
+                        rvListings.setVisibility(View.VISIBLE);
                         updateSubtitle(0);
+                        Toast.makeText(InicioActivity.this, "No se encontraron animales", Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -323,11 +411,10 @@ public class InicioActivity extends AppCompatActivity implements
                 Log.e(TAG, "Error al obtener listings: " + e.getMessage());
                 runOnUiThread(() -> {
                     Toast.makeText(InicioActivity.this, "Error al cargar animales", Toast.LENGTH_SHORT).show();
+                    updateSubtitle(0);
                 });
             }
         });
-
-        return lista;
     }
 
     private List<AnimalListing> filterBySearchText(List<AnimalListing> listings, String searchText) {
@@ -349,7 +436,7 @@ public class InicioActivity extends AppCompatActivity implements
         TextView textViewSubtitulo = findViewById(R.id.textViewSubtitulo);
         if (count == 0) {
             textViewSubtitulo.setText("No se encontraron animales");
-            recyclerView.setVisibility(View.GONE);
+            rvListings.setVisibility(View.GONE);
         } else if (isUsingLocationFilter) {
             textViewSubtitulo.setText("Animales cerca de ti (" + count + ")");
         } else {
@@ -357,16 +444,6 @@ public class InicioActivity extends AppCompatActivity implements
         }
     }
 
-    // Métodos auxiliares para el spinner de especies (implementar según tu modelo de datos)
-    private void setupSpeciesSpinner(android.widget.Spinner spinner) {
-        // Ejemplo básico - deberías obtener estas especies de tu API o base de datos
-        String[] especies = {"Todas las especies", "Perro", "Gato", "Conejo", "Ave", "Otros"};
-
-        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, especies);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
 
     private Integer getSpeciesIdFromPosition(int position) {
         // Mapear la posición del spinner al ID de la especie
@@ -380,7 +457,7 @@ public class InicioActivity extends AppCompatActivity implements
             default: return null;
         }
     }
-    // Método para actualizar la lista desde fuera (si es necesario)
+    // actualizar la lista desde fuera (si es necesario)
     public void actualizarListaAnimales(List<AnimalListing> nuevaLista) {
         if (nuevaLista != null) {
             lista.clear();
@@ -397,7 +474,7 @@ public class InicioActivity extends AppCompatActivity implements
 
     @Override
     public void onListingSelected(AnimalListing listing) {
-        Intent intent = new Intent(this, ShowMyListingActivity.class);
+        Intent intent = new Intent(InicioActivity.this, ShowMyListingActivity.class);
         intent.putExtra("listing", listing);
         intent.putExtra("mode", "adoptive");
         startActivity(intent);

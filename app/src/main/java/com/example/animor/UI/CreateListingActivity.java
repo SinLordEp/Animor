@@ -165,11 +165,10 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
             saveListing();
             MyApplication.executor.execute(()->{
                 Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
+                Log.d(TAG, "Animal en listing: "+animal.toString());
                 intent.putExtra("animal", listing.getAnimal());
                 intent.putExtra("location", listing.getLocationRequest());
                 intent.putExtra("animalListing", listing);
-                startActivity(intent);
-
                 startActivity(intent);
             });
         });
