@@ -19,17 +19,14 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Location;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
-import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NonScrollListView;
 import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyListingActivity extends AppCompatActivity {
@@ -45,7 +42,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
     // Variables para datos del listing
     private TextView tvPhone, tvEmail;
-    private TextView tvAddress, tvCity, tvProvince, tvPostalCode, tvCountry;
+    private TextView tvCity, tvProvince, tvCountry;
     private SwitchCompat switchAdoptado;
 
     // Botones
@@ -62,18 +59,27 @@ public class ShowMyListingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_show_my_listing); // Cambiar el nombre del layout si es necesario
-
+        setContentView(R.layout.activity_show_my_listing); // Cambiar el nombre del layout si es necesario
+        initViews();
         // Obtener datos del Intent
         Intent intent = getIntent();
         if (intent != null) {
-            animal = (Animal) intent.getSerializableExtra("animal");
-            animalListing = (AnimalListing) intent.getSerializableExtra("animalListing");
-            location = (Location) intent.getSerializableExtra("location");
+            animalListing = (AnimalListing) intent.getSerializableExtra("listing");
+            String mode = intent.getStringExtra("mode");
+
+            if (animalListing != null) {
+                animal = animalListing.getAnimal();
+                location = animalListing.getLocation();
+            }
+            if(mode!=null && mode.equals("adoptive")){
+                btndel.setVisibility(View.GONE);
+                btnedit.setVisibility(View.GONE);
+                switchAdoptado.setVisibility(View.GONE);
+            }
         }
 
         // Verificar que tenemos los datos necesarios
-        if (animal == null || animalListing == null) {
+        if (animalListing == null) {
             Log.e("ShowMyListingActivity", "Datos del animal o listing faltantes");
             Toast.makeText(this, "Error: Datos incompletos", Toast.LENGTH_SHORT).show();
             finish();
@@ -100,7 +106,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
             }
         }
 
-        initViews();
         setupListeners();
         loadAnimalData();
         loadListingData();
@@ -123,10 +128,8 @@ public class ShowMyListingActivity extends AppCompatActivity {
         // Inicializar vistas del listing (tabla tableDatos)
         tvPhone = findViewById(R.id.tvPhone);
         tvEmail = findViewById(R.id.tvEmail);
-        tvAddress = findViewById(R.id.tvAddress);
         tvCity = findViewById(R.id.tvCity);
         tvProvince = findViewById(R.id.tvProvince);
-        tvPostalCode = findViewById(R.id.tvPostalCode);
         tvCountry = findViewById(R.id.tvCountry);
         switchAdoptado = findViewById(R.id.switchadop);
 
@@ -227,34 +230,25 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Cargar datos de ubicación
         if (location != null) {
-            tvAddress.setText(location.getAddress() != null ?
-                    location.getAddress() : "Sin especificar");
             tvCity.setText(location.getCity() != null ?
                     location.getCity() : "Sin especificar");
             tvProvince.setText(location.getProvince() != null ?
                     location.getProvince() : "Sin especificar");
-            tvPostalCode.setText(location.getPostalCode() != null ?
-                    location.getPostalCode() : "Sin especificar");
             tvCountry.setText(location.getCountry() != null ?
                     location.getCountry() : "Sin especificar");
         } else {
             // Si no hay ubicación, mostrar valores por defecto
-            tvAddress.setText("Sin especificar");
             tvCity.setText("Sin especificar");
             tvProvince.setText("Sin especificar");
-            tvPostalCode.setText("Sin especificar");
             tvCountry.setText("Sin especificar");
         }
 
-        // Configurar switch de adoptado
-        switchAdoptado.setChecked(false); // Ajusta según tu modelo
     }
-
     private void setupListeners() {
         // Listener para editar listing
         btnedit.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateListingActivity.class);
-            intent.putExtra("animal", animal);
+            intent.putExtra("animal", animalListing.getAnimal());
             intent.putExtra("listing", animalListing);
             intent.putExtra("mode", "edit");
             startActivity(intent);
@@ -265,45 +259,31 @@ public class ShowMyListingActivity extends AppCompatActivity {
             ApiRequests api = new ApiRequests();
             MyApplication.executor.execute(() -> {
                 // Llamada para eliminar el listing
-                // boolean success = api.deleteListing(animalListing.getListingId());
+                boolean success = api.deleteListing(animalListing.getListingId());
+                if(success){
+                    runOnUiThread(()-> Toast.makeText(this, "Registro borrado", Toast.LENGTH_SHORT).show());
+                }else{
+                    runOnUiThread(()-> Toast.makeText(this, "No se ha podido borrar", Toast.LENGTH_SHORT).show());
+                }
 
                 runOnUiThread(() -> {
-                    // if (success) {
-                    //     Toast.makeText(this, "Listing eliminado", Toast.LENGTH_SHORT).show();
-                    //     finish(); // Cerrar la activity
-                    // } else {
-                    //     Toast.makeText(this, "Error al eliminar listing", Toast.LENGTH_SHORT).show();
-                    // }
+                     if (success) {
+                         Toast.makeText(this, "Listing eliminado", Toast.LENGTH_SHORT).show();
+                         finish(); // Cerrar la activity
+                     } else {
+                         Toast.makeText(this, "Error al eliminar listing", Toast.LENGTH_SHORT).show();
+                     }
                 });
             });
         });
 
         // Listener para el switch de adoptado
-        // switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
-        //     updateAdoptionStatus(isChecked);
-        // });
+         switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
+             animal.setIsAdopted(true);
+         });
     }
 
-    // Método para actualizar el estado de adopción (comentado por ahora)
-    // private void updateAdoptionStatus(boolean isAdopted) {
-    //     ApiRequests api = new ApiRequests();
-    //     new Thread(() -> {
-    //         boolean success = api.updateAdoptionStatus(animalListing.getListingId(), isAdopted);
-    //
-    //         runOnUiThread(() -> {
-    //             if (success) {
-    //                 Toast.makeText(this,
-    //                         isAdopted ? "Marcado como adoptado" : "Marcado como disponible",
-    //                         Toast.LENGTH_SHORT).show();
-    //             } else {
-    //                 Toast.makeText(this, "Error actualizando estado", Toast.LENGTH_SHORT).show();
-    //                 switchAdoptado.setChecked(!isAdopted);
-    //             }
-    //         });
-    //     }).start();
-    // }
-
-    // Método estático para crear el Intent desde otras activities
+    //  crear el Intent desde otras activities
     public static Intent createIntent(android.content.Context context, Animal animal,
                                       AnimalListing animalListing, Location location) {
         Intent intent = new Intent(context, ShowMyListingActivity.class);

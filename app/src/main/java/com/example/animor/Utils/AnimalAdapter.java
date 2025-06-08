@@ -1,11 +1,11 @@
 package com.example.animor.Utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,14 +22,12 @@ import java.util.List;
 
 public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalViewHolder> {
     List<Animal> animalList;
-    private List<SpeciesDTO> speciesDTOList;
     OnAnimalClickListener listener;
     private final String TAG = "AnimalAdapter";
     private Context context;
 
-    public AnimalAdapter(List<Animal> animalList, List<SpeciesDTO> speciesDTOList, OnAnimalClickListener listener, Context context) {
+    public AnimalAdapter(List<Animal> animalList, OnAnimalClickListener listener, Context context) {
         this.animalList = animalList;
-        this.speciesDTOList = speciesDTOList;
         this.listener = listener;
         this.context = context;
     }
@@ -46,9 +44,12 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     @Override
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
+        holder.btnFav.setVisibility(View.GONE);
+        holder.tvNearMe.setVisibility(View.GONE);
         holder.txtName.setText(animal.getAnimalName());
 
         String speciesName = "";
+        List<SpeciesDTO> speciesDTOList=PreferenceUtils.getSpeciesList();
         for (SpeciesDTO s : speciesDTOList) {
             if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
@@ -104,14 +105,15 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
         holder.itemView.setOnClickListener(v -> listener.onAnimalClick(animal));
     }
 
+
     @Override
     public int getItemCount() {
         return animalList.size();
     }
 
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
-        TextView txtName, txtCity, txtSpecies, txtSex;
-        ImageView imgAnimal, btnFavorite;
+        TextView txtName, txtSpecies, txtSex, tvNearMe;
+        ImageView imgAnimal, btnFav;
 
         public AnimalViewHolder(View itemView) {
             super(itemView);
@@ -119,7 +121,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
             txtSpecies = itemView.findViewById(R.id.txtSpecies);
             txtSex = itemView.findViewById(R.id.txtSex);
             imgAnimal = itemView.findViewById(R.id.imgUser);
-            btnFavorite = itemView.findViewById(R.id.btnFavorite);
+            btnFav = itemView.findViewById(R.id.btnFavorite);
+            tvNearMe = itemView.findViewById(R.id.tvNearMe);
         }
     }
     public interface OnAnimalClickListener {

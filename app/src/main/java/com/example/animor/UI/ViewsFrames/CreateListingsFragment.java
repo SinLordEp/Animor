@@ -18,20 +18,20 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
 import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.Utils.ApiRequests;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.PreferenceUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateListingFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
+public class CreateListingsFragment extends Fragment implements AnimalAdapter.OnAnimalClickListener {
 
     private RecyclerView rvAnimalesUsuario;
     private TextView tvEligeAnimal;
@@ -40,8 +40,8 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
     private AnimalAdapter animalAdapter;
     private List<Animal> animalList;
     private List<SpeciesDTO> speciesList;
-    private TextView noanimales;
-
+    private LinearLayout noanimales;
+    private String TAG="CreateListingsFragment";
     // Interface para comunicación con la Activity (opcional)
     public interface OnAnimalSelectedForListingListener {
         void onAnimalSelectedForListing(Animal animal);
@@ -75,14 +75,13 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
         rvAnimalesUsuario = view.findViewById(R.id.rvAnimalesUsuario);
         tvEligeAnimal = view.findViewById(R.id.tvEligeAnimal);
         btnCrearNuevoAnimal = view.findViewById(R.id.btnCrearNuevoAnimal);
-        noanimales = view.findViewById(R.id.noanimales);
     }
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
         speciesList = PreferenceUtils.getSpeciesList(); // Obtener lista de especies
 
-        animalAdapter = new AnimalAdapter(animalList, speciesList, this, getContext());
+        animalAdapter = new AnimalAdapter(animalList, this, getContext());
         rvAnimalesUsuario.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvAnimalesUsuario.setAdapter(animalAdapter);
 
@@ -102,9 +101,9 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
 
     private void loadUserAnimals() {
         ApiRequests api = new ApiRequests();
-        new Thread(() -> {
-            // Cargar los animales del usuario actual
-            List<Animal> userAnimals = api.getMyAnimalsFromServer(); // Asegúrate de tener este método
+        MyApplication.executor.execute(() -> {
+            // animales del usuario actual
+            List<Animal> userAnimals = api.getMyAnimalsFromServer();
 
             if (getActivity() != null) {
                 requireActivity().runOnUiThread(() -> {
@@ -114,21 +113,23 @@ public class CreateListingFragment extends Fragment implements AnimalAdapter.OnA
                         animalAdapter.notifyDataSetChanged();
                     } else {
                         // No tiene animales, mostrar mensaje
-                        noanimales.setText("No tienes animales registrados. Crea uno primero.");
+                        noanimales.findViewById(R.id.noanimales);
                         noanimales.setVisibility(View.VISIBLE);
+                        TextView txtobien = requireView().findViewById(R.id.txtobien);
+                        txtobien.setVisibility(View.INVISIBLE);
+
                     }
                 });
             }
-        }).start();
+        });
     }
 
-    // Implementación de OnAnimalClickListener
     @Override
     public void onAnimalClick(Animal animal) {
         // Cuando selecciona un animal, navegar a CreateListingActivity para crear el listing
+        Log.d(TAG, "ANIMALid: "+animal.getAnimalId());
         Intent intent = new Intent(getActivity(), CreateListingActivity.class);
         intent.putExtra("animal", animal);
-        intent.putExtra("mode", "create"); // Modo creación (no edición)
         startActivity(intent);
 
         // Notificar a la activity padre si implementa el listener

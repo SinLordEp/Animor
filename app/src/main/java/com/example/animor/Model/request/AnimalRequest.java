@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class AnimalRequest {
+    private long animalId;
     private String animalName;
     private int speciesId;
     private LocalDate birthDate;
@@ -24,6 +25,14 @@ public class AnimalRequest {
     private List<TagRequest> tagList;
 
     public AnimalRequest() {
+    }
+
+    public long getAnimalId() {
+        return animalId;
+    }
+
+    public void setAnimalId(long animalId) {
+        this.animalId = animalId;
     }
 
     public String getAnimalName() {

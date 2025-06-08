@@ -4,19 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.entity.Animal;
-import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.R;
-import com.example.animor.UI.ViewsFrames.ShowMyAnimalFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyAnimalsFragment;
-import com.example.animor.UI.ViewsFrames.ShowMyListingFragment;
 import com.example.animor.UI.ViewsFrames.ShowMyListingsFragment;
 import com.example.animor.Utils.NavigationHelper;
 import com.example.animor.Utils.TabsAdapter;
@@ -52,7 +48,7 @@ public class ShowActivity extends AppCompatActivity
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
         navigationHelper = new NavigationHelper(this, NavigationHelper.ActivityType.CREATE);
-
+        currentTab = getIntent().getIntExtra("currentTab", 1);
 
         if (viewPager == null || tabLayout == null) {
             Log.e(TAG, "Error: ViewPager or TabLayout is null");
@@ -118,6 +114,7 @@ public class ShowActivity extends AppCompatActivity
         Log.d(TAG, "PHOTOURL ANTES DE MANDARSE: "+animal.getPhotoList());
         intent.putExtra("animal", animal);
         intent.putExtra("tags", (Serializable) animal.getTagList());
+        intent.putExtra("photos", (Serializable) animal.getPhotoList());
         startActivity(intent);
         finish();
     }
@@ -125,7 +122,7 @@ public class ShowActivity extends AppCompatActivity
 
     // Implementación del interface para listings (asumiendo que tienes un modelo Listing)
     @Override
-    public void onListingSelected(AnimalListing listing) { // Cambia Object por tu clase Listing
+    public void onListingSelected(AnimalListing listing) {
         Intent intent = new Intent(ShowActivity.this, ShowMyListingActivity.class);
         intent.putExtra("listing", listing);
         startActivity(intent);

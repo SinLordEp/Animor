@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,9 +34,10 @@ import androidx.fragment.app.Fragment;
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.Sex;
 import com.example.animor.Model.entity.Tag;
+import com.example.animor.Model.entity.User;
 import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.Model.request.TagRequest;
@@ -43,6 +46,7 @@ import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -70,7 +74,7 @@ public class CreateAnimalFragment extends Fragment {
     private boolean imagenPendienteSubir = false; // Flag para saber si hay imagen por subir
 
     // Componentes de la UI
-    private EditText etNombre, etEspecie, etFechaNacimiento, etTamano, etDescripcion, etMicrochip;
+    private EditText etNombre, etFechaNacimiento, etTamano, etDescripcion, etMicrochip;
     private CheckBox cbNacimientoAproximado, cbCastrado;
     private RadioGroup rgSexo;
     private RadioButton rbMacho, rbHembra, rbDesconocido;
@@ -80,12 +84,16 @@ public class CreateAnimalFragment extends Fragment {
     private ListView listTagsView;
     static LocalDate birthDate;
     Spinner spSpecies;
-
+    String TAG = "CreateAnimalFragment";
     static Sex sex = Sex.valueOf("Unknown");
     ApiRequests api = new ApiRequests();
     List<TagRequest> selectedTags = new ArrayList<>();
     SpeciesDTO animalSpeciesDTO = new SpeciesDTO();
     String imagePath="";
+    private String speciesName = "";
+    List<TagDTO> receivedTags = PreferenceUtils.getTagList();
+    Animal animal;
+    AnimalRequest animalRequest = new AnimalRequest();
 
 
     @Nullable
@@ -93,6 +101,7 @@ public class CreateAnimalFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, TAG+" iniciada");
         return inflater.inflate(R.layout.fragment_create_animal, container, false);
     }
 
@@ -112,9 +121,82 @@ public class CreateAnimalFragment extends Fragment {
 
         // Configurar listeners
         setupListeners();
+        checkIfEditingAnimal();
 
         // Configurar Activity Result Launchers
         setupActivityResultLaunchers();
+    }
+
+    private void checkIfEditingAnimal() {
+        if (getArguments() != null) {
+            animal = (Animal) getArguments().getSerializable("animal");
+            if (animal != null) {
+                Log.d(TAG, "Imagen del animal recibido: "+animal.getPhotoList().get(0).getPhotoUrl());
+                Picasso.get()
+                        .load(animal.getPhotoList().get(0).getPhotoUrl())
+                        .placeholder(R.drawable.gatoinicio)
+                        .error(R.drawable.gatoinicio)
+                        .into(imgAnimal);
+            }
+            etNombre.setText(animal.getAnimalName());
+            Log.d(TAG, "Animal recibido: SpeciesID: "+animal.getSpeciesId()+"id: "+animal.getAnimalId());
+            List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
+            for (SpeciesDTO s : species) {
+                if (s.getSpeciesId() == animal.getSpeciesId()) {
+                    speciesName = s.getSpeciesName();
+                    break;
+                }
+            }
+            DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String fechaFormateada = animal.getBirthDate().format(formatoSalida);
+            etFechaNacimiento.setText(fechaFormateada);
+            if(animal.getIsBirthDateEstimated()){
+                cbNacimientoAproximado.setChecked(true);
+            }
+            Log.d(TAG, "Sexo: "+animal.getSex().toString());
+            switch(animal.getSex()){
+                case Male:
+                    rbMacho.setChecked(true);
+                    break;
+                case Female:
+                    rbHembra.setChecked(true);
+                    break;
+                case Unknown:
+                    rbDesconocido.setChecked(true);
+                    break;
+            }
+            etTamano.setText(animal.getSize());
+            etDescripcion.setText(animal.getAnimalDescription());
+            if(animal.getIsNeutered()){
+                cbCastrado.setChecked(true);
+            }else{
+                cbCastrado.setChecked(false);
+            }
+            if(animal.getMicrochipNumber()!=null) {
+                etMicrochip.setText(animal.getMicrochipNumber());
+            }
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                Log.d(TAG, "Tags: "+animal.getTagList().get(0));
+                for (int i = 0; i < receivedTags.size(); i++) {
+                    Tag currentTag = Tag.fromDTO(receivedTags.get(i));
+
+                    // Verificar si el tag actual está en la lista B
+                    for (Tag tagB : animal.getTagList()) {
+                        if (currentTag.getTagId().equals(tagB.getTagId())) {
+                            // Hacer check en la posición i
+                            listTagsView.setItemChecked(i, true);
+
+                            TagRequest tag = new TagRequest();
+                            tag.setTagName(currentTag.getTagName());
+                            tag.setTagId(currentTag.getTagId());
+                            selectedTags.add(tag);
+                            break;
+                        }
+                    }
+                }
+            }, 100); // 100ms de delay
+
+        }
     }
 
     private void initViews(View view) {
@@ -150,11 +232,18 @@ public class CreateAnimalFragment extends Fragment {
                         receivedSpecies);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spSpecies.setAdapter(adapter);
+                if (getArguments() != null) {
+                    for (int i = 0; i < receivedSpecies.size(); i++) {
+                        if (receivedSpecies.get(i).getSpeciesId() == animal.getSpeciesId()) {
+                            spSpecies.setSelection(i);
+                            break;
+                        }
+                    }
+                }
             });
         });
         listTagsView = view.findViewById(R.id.listTags);
         MyApplication.executor.execute(()->{
-            List<TagDTO> receivedTags = PreferenceUtils.getTagList();
             List<Tag> tagsInList = new ArrayList<>();
                 for(TagDTO t: receivedTags){
                     Tag tg = new Tag();
@@ -312,7 +401,7 @@ public class CreateAnimalFragment extends Fragment {
         }
 
 // Crear referencia única para la imagen
-        UserDTO user = PreferenceUtils.getUser();
+        User user = PreferenceUtils.getUser();
         String fileName = "animal_" + System.currentTimeMillis() + ".jpg";
         StorageReference imageRef = storageReference.child("foto/"+user.getUserId() +"/"+fileName);
         //imagePath = storageReference+imageRef.getPath();
@@ -358,11 +447,6 @@ public class CreateAnimalFragment extends Fragment {
             isValid = false;
         }
 
-//        if (etEspecie.getText().toString().trim().isEmpty()) {
-//            etEspecie.setError("Especie requerida");
-//            isValid = false;
-//        }
-
         if (etFechaNacimiento.getText().toString().trim().isEmpty()) {
             etFechaNacimiento.setError("Fecha de nacimiento requerida");
             isValid = false;
@@ -378,104 +462,130 @@ public class CreateAnimalFragment extends Fragment {
             isValid = false;
         }
 
+        // VALIDACIÓN OBLIGATORIA DE FOTO
+        if (imagenSeleccionadaUri == null || (animal == null || animal.getPhotoList().get(0) == null)) {
+            Toast.makeText(getContext(), "Debe seleccionar una foto para el animal", Toast.LENGTH_SHORT).show();
+            isValid = false;
+        }
+
         return isValid;
     }
 
     // Method para guardar el animal
     public void saveAnimal() {
         if (!validateForm()) {
-            Toast.makeText(getContext(), "Por favor complete todos los campos requeridos", Toast.LENGTH_SHORT).show();
-            return;
+            return; // El mensaje de error ya se muestra en validateForm()
         }
 
-        // Mostrar mensaje de que se está guardando
+        // Deshabilitar botón para evitar doble envío
         btnGuardar.setEnabled(false);
         btnGuardar.setText("Guardando...");
-        if (imagenPendienteSubir && imagenSeleccionadaUri != null) {
-            subirImagenAFirebase(imagenSeleccionadaUri, this::guardarDatosAnimal);
 
+        // FLUJO OBLIGATORIO: Primero foto, luego animal
+        if (imagenSeleccionadaUri != null) {
+            // Hay nueva imagen seleccionada - subirla primero
+            subirImagenAFirebase(imagenSeleccionadaUri, this::guardarDatosAnimal);
+        } else if (animal != null && animal.getImage() != null && !animal.getImage().isEmpty()) {
+            // Estamos editando y ya hay imagen existente - usar la existente
+            imageDownloadUrl = animal.getImage();
+            imagePath = ""; // O mantener el path existente si lo tienes
+            guardarDatosAnimal();
+        } else {
+            // No debería llegar aquí si validateForm() funciona correctamente
+            restaurarEstadoBoton();
+            Toast.makeText(getContext(), "Error: No hay imagen disponible", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Method separado para guardar los datos del animal
+    // Method separado para guardar los datos del animal (VERSIÓN FINAL)
     private void guardarDatosAnimal() {
-        // Obtener datos del formulario
+        if (imageDownloadUrl == null || imageDownloadUrl.isEmpty()) {
+            restaurarEstadoBoton();
+            Toast.makeText(getContext(), "Error: No se pudo obtener la URL de la imagen", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Preparar datos del formulario
         String name = etNombre.getText().toString().trim();
-        //String speciesId = etEspecie.getText().toString().trim();
-        //LocalDate birthDate = LocalDate.parse(etFechaNacimiento.getText().toString().trim());
         boolean isBirthDateEstimated = cbNacimientoAproximado.isChecked();
 
         int selectedId = rgSexo.getCheckedRadioButtonId();
         if (selectedId == R.id.rbMacho) {
             sex = Sex.fromString("Male");
         } else if (selectedId == R.id.rbHembra) {
-            sex =Sex.fromString("Female");
+            sex = Sex.fromString("Female");
         } else if (selectedId == R.id.rbDesconocido) {
-            sex =Sex.fromString("Unknown");
+            sex = Sex.fromString("Unknown");
         }
-        Log.d("sexo del animal", sex.getDisplayName());
-
         String size = etTamano.getText().toString().trim();
         String animalDescription = etDescripcion.getText().toString().trim();
         boolean isNeutered = cbCastrado.isChecked();
         String microchip = etMicrochip.getText().toString().trim();
         Boolean isAdopted = false;
-        int speciesCode = animalSpeciesDTO.getSpeciesId();        // Aquí puedes crear tu objeto Animal con todos los datos incluyendo imageDownloadUrl
-        // Ejemplo:
-        // Animal animal = new Animal(nombre, especie, fechaNacimiento, nacimientoAprox,
-        //                           sexo, ciudad, tamaño, descripcion, castrado,
-        //                           microchip, imageDownloadUrl);
-        //
-        // Luego guardar en tu base de datos (Firebase Realtime Database o Firestore)
-        // databaseReference.child("animales").push().setValue(animal);
-        // Restablecer el botón
-        btnGuardar.setEnabled(true);
-        btnGuardar.setText("Guardar");
-        AnimalRequest animal = new AnimalRequest();
-        animal.setAnimalName(name);
-        animal.setSpeciesId(speciesCode);
-        animal.setBirthDate(birthDate);
-        animal.setBirthDateEstimated(isBirthDateEstimated);
-        animal.setSex(sex);
-        animal.setSize(size);
-        animal.setAnimalDescription(animalDescription);
-        animal.setNeutered(isNeutered);
-        animal.setMicrochipNumber(microchip);
-        animal.setAdopted(isAdopted);
-        animal.setTagList(selectedTags);
-        Thread thread = getThread(animal);
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            System.out.println("Problema de ejecución del hilo de guardado de animal:"+e.getMessage());
+        int speciesCode = animalSpeciesDTO.getSpeciesId();
+
+        // Crear AnimalRequest
+        if (getArguments() != null){
+            animalRequest.setAnimalId(animal.getAnimalId());
         }
-        Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
-        clearForm();
-    }
+        animalRequest.setAnimalName(name);
+        animalRequest.setSpeciesId(speciesCode);
+        animalRequest.setBirthDate(birthDate);
+        animalRequest.setBirthDateEstimated(isBirthDateEstimated);
+        animalRequest.setSex(sex);
+        animalRequest.setSize(size);
+        animalRequest.setAnimalDescription(animalDescription);
+        animalRequest.setNeutered(isNeutered);
+        animalRequest.setMicrochipNumber(microchip.isEmpty() ? null : microchip);
+        animalRequest.setAdopted(isAdopted);
+        animalRequest.setTagList(selectedTags);
 
-    @NonNull
-    private Thread getThread(AnimalRequest animal) {
-        PhotoRequest photo = new PhotoRequest();
-        photo.setPhotoUrl(imageDownloadUrl);
-        photo.setCoverPhoto(true);
-        photo.setDisplayOrder(0);
-        photo.setFilePath(imagePath);
-        List<PhotoRequest> animalPhotos = new ArrayList<>();
-        animalPhotos.add(photo);
-        animal.setPhotoList(animalPhotos);
+        // GUARDADO EN BACKGROUND
+        MyApplication.executor.execute(() -> {
+            try {
+                // Preparar foto
+                PhotoRequest photo = new PhotoRequest();
+                photo.setPhotoUrl(imageDownloadUrl);
+                photo.setCoverPhoto(true);
+                photo.setDisplayOrder(0);
+                photo.setFilePath(imagePath);
 
-        Thread thread = new Thread(() -> {
-            Long receivedAnimalId = api.addAnimalIntoDatabase(animal);
-            if (receivedAnimalId != null) {
-                api.addPhotoIntoDatabase(receivedAnimalId, photo);
-            }else{
-                System.out.println("No se ha podido recibir el animal id del servidor");
+                List<PhotoRequest> animalPhotos = new ArrayList<>();
+                animalPhotos.add(photo);
+                animalRequest.setPhotoList(animalPhotos);
+
+                // Guardar animal
+                Long receivedAnimalId = api.addAnimalIntoDatabase(animalRequest);
+
+                // Volver al hilo principal para actualizar UI
+                requireActivity().runOnUiThread(() -> {
+                    if (receivedAnimalId != null && receivedAnimalId > 0) {
+                        // ÉXITO - guardar foto asociada en background
+                        MyApplication.executor.execute(() -> {
+                            api.addPhotoIntoDatabase(receivedAnimalId, photo);
+                        });
+
+                        // Actualizar UI una sola vez
+                        Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
+                        clearForm();
+                        restaurarEstadoBoton();
+                    } else {
+                        // Error al guardar
+                        restaurarEstadoBoton();
+                        Toast.makeText(getContext(), "Error al guardar el animal", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (Exception e) {
+                // Error inesperado
+                Log.e("CreateAnimalFragment", "Error al guardar animal", e);
+                requireActivity().runOnUiThread(() -> {
+                    restaurarEstadoBoton();
+                    Toast.makeText(getContext(), "Error inesperado: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
             }
         });
-        thread.start();
-        return thread;
     }
-
     // Method para limpiar el formulario
     // limpiar el formulario, aunque no se usa
     public void clearForm() {
@@ -493,11 +603,20 @@ public class CreateAnimalFragment extends Fragment {
         btnSeleccionarImagen.setEnabled(true);
         btnGuardar.setText("Guardar");
         btnGuardar.setEnabled(true);
+        imgAnimal.setImageResource(R.drawable.gatoinicio);
+        btnSeleccionarImagen.setText("Seleccionar Imagen");
+        btnSeleccionarImagen.setEnabled(true);
 
         // Limpiar variables de imagen
         imagenSeleccionadaUri = null;
         imageDownloadUrl = null;
         imagenPendienteSubir = false;
+        selectedTags.clear();
+        listTagsView.clearChoices();
+    }
+    private void restaurarEstadoBoton() {
+        btnGuardar.setEnabled(true);
+        btnGuardar.setText("Guardar");
     }
 
 }

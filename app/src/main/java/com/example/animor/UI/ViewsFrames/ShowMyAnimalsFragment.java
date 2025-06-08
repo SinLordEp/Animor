@@ -71,8 +71,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
     private void setupRecyclerView() {
         animalList = new ArrayList<>();
-        List<SpeciesDTO> speciesDTOList = PreferenceUtils.getSpeciesList(); //
-        adapter = new AnimalAdapter(animalList, speciesDTOList, this, getContext());   //
+        adapter = new AnimalAdapter(animalList, this, getContext());   //
         rvAnimals.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAnimals.setAdapter(adapter);
 
@@ -87,13 +86,12 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             Log.d("DEBUG", "loadAnimals() llamado");
             newAnimalList = api.getMyAnimalsFromServer();
 
-// Debug corregido:
             for(Animal a: newAnimalList) {
                 System.out.println("Animal: " + a.getAnimalName());
                 System.out.println("Animal: " + a.getBirthDate());
 
 
-                List<Photo> photoList = a.getAnimalPhotoList(); // Es una List, no un Photo
+                List<Photo> photoList = a.getAnimalPhotoList();
 
                 if (photoList == null) {
                     System.out.println("  PhotoList es NULL");
@@ -108,7 +106,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
                     }
                 }
             }
-            // Cambiar a requireActivity().runOnUiThread() para todo el manejo de UI
+            // Cambiar a requireActivity().runOnUiThread() para
             requireActivity().runOnUiThread(() -> {
                 handleAnimalsResult(newAnimalList);
             });
@@ -242,23 +240,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     }
 
     @Override
-    public void onFavoriteClick(Animal animal) {
-        // Implementa tu lógica para favoritos
-        ApiRequests api = new ApiRequests();
-        new Thread(() -> {
-            // llamada para actualizar favoritos
-            // boolean success = api.updateFavoriteStatus(animal);
-
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(),
-                            "Favorito actualizado", Toast.LENGTH_SHORT).show();
-                    // Actualizar el adapter si es necesario
-                    adapter.notifyDataSetChanged();
-                });
-            }
-        }).start();
-    }
+    public void onFavoriteClick(Animal animal) {}
 
     @Override
     public void onAttach(@NonNull Context context) {

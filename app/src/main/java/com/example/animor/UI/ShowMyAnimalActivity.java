@@ -18,18 +18,14 @@ import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.Photo;
-import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.R;
-import com.example.animor.UI.CreateActivity;
-import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyAnimalActivity extends AppCompatActivity {
@@ -41,6 +37,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     private TextView textViewAnimalDescription;
     private TextView textViewMicroNumber, textViewAnimalMicroNumber;
     private TextView textViewAnimalNeutered;
+    private TextView textViewNeutered;
     private ListView listTags;
 
     //botones
@@ -51,6 +48,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     Animal animal = null;
     String speciesName = "";
     List<Tag>tags;
+    List<Photo> photos;
     String photoUrl = "";
     LocalDate birthDate = LocalDate.now();
     private final String TAG = "ShowMyAnimalActivity";
@@ -58,19 +56,15 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_show_my_animal_buttons);
+        setContentView(R.layout.activity_show_my_animal_buttons);
 
         // Obtener los datos del Intent
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra("animal")) {
             animal = (Animal) intent.getSerializableExtra("animal");
 
-            // Recibir la lista de tags
-            @SuppressWarnings("unchecked")
-            List<Tag> tags = (List<Tag>) intent.getSerializableExtra("tags");
-
             if (animal != null) {
-                birthDate = (LocalDate) animal.getBirthDate();
+                birthDate = animal.getBirthDate();
                 Log.d(TAG, "BirthDate: " + birthDate);
                 Log.d("Animal in show_my_animal", animal.getAnimalName() + "\n" + animal.getBirthDate() + "\n" + animal.getTagList().size());
 
@@ -79,7 +73,6 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
                     Log.d(TAG, "Tags recibidas: " + tags.size());
                     // Aquí puedes usar las tags como necesites
                 }
-
                 initializeData();
                 initViews();
                 setupListeners();
@@ -100,7 +93,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         List<SpeciesDTO> species = PreferenceUtils.getSpeciesList();
 
         for (SpeciesDTO s : species) {
-            if (s.getSpeciesId() == animal.getAnimalId()) {
+            if (s.getSpeciesId() == animal.getSpeciesId()) {
                 speciesName = s.getSpeciesName();
             }
         }
@@ -109,6 +102,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         for (Photo a : photoList) {
             if (a.getIsCoverPhoto()) {
                 photoUrl = a.getPhotoUrl();
+                break;
             }
         }
         Log.d(TAG, "se ha conseguido la foto: " + photoUrl);
@@ -120,6 +114,8 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         imgAnimal = findViewById(R.id.imgUser);
         btndel = findViewById(R.id.btndel);
         btnedit = findViewById(R.id.btnedit);
+        textViewAnimalNeutered = findViewById(R.id.textViewAnimalNeutered);
+
 
         Picasso.get()
                 .load(photoUrl)
@@ -131,7 +127,18 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         txtName.setText(animal.getAnimalName());
 
         txtSex = findViewById(R.id.txtSex);
-        txtSex.setText(animal.getSex().toString());
+        Log.d(TAG, "Tags: "+animal.getSex().toString());
+        switch(animal.getSex()){
+            case Male:
+                txtSex.setText("Macho");
+                break;
+            case Female:
+                txtSex.setText("Hembra");
+                break;
+            case Unknown:
+                txtSex.setText("Desconocido");
+                break;
+        }
 
         textViewSpecies = findViewById(R.id.tvSpecies);
         textViewSpecies.setText(speciesName);
@@ -158,13 +165,16 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
             textViewMicroNumber.setText(animal.getMicrochipNumber());
         }
 
-        if (animal.getAnimalId() == 1 || animal.getAnimalId() == 2) {
-            textViewAnimalNeutered = findViewById(R.id.textViewAnimalNeutered);
+        if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
             if (animal.getIsNeutered()) {
                 textViewAnimalNeutered.setText("sí");
             } else {
                 textViewAnimalNeutered.setText("no");
             }
+        }else{
+            textViewNeutered = findViewById(R.id.textViewNeutered);
+            textViewNeutered.setVisibility(View.GONE);
+            textViewAnimalNeutered.setVisibility(View.GONE);
         }
 
         listTags = findViewById(R.id.listTags);
@@ -195,6 +205,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         btnedit.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateActivity.class);
             intent.putExtra("animal", animal);
+            intent.putExtra("mode", "edit");
             startActivity(intent);
         });
     }

@@ -1,5 +1,6 @@
 package com.example.animor.UI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
@@ -30,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private UserDTO user;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,29 +107,43 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendUserDataToServer(String firebaseIdToken, FirebaseUser firebaseUser) {
-        MyApplication.executor.execute(()->{
+        MyApplication.executor.execute(() -> {
             try {
                 Log.d(TAG, "Enviando datos del usuario al servidor...");
 
                 ApiRequests api = new ApiRequests();
-                user = api.sendUserToServer(firebaseIdToken);
+                try {
+                    UserDTO userDTO = api.sendUserToServer(firebaseIdToken);
+                    saveUserData(userDTO);
 
-                // Guardar datos del usuario en SharedPreferences
-                saveUserData(user);
+                    // Navegar a la siguiente actividad
+                    runOnUiThread(this::navigateToMainActivity);
 
-                // Navegar a la siguiente actividad
-                runOnUiThread(this::navigateToMainActivity);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error al enviar usuario: ", e);
+
+                    // Mostrar toast y cerrar app en el hilo principal
+                    runOnUiThread(() -> {
+                        Toast.makeText(LoginActivity.this, "Servidor no conectado.\n No se recibirán datos.", Toast.LENGTH_LONG).show();
+
+//                        // Da tiempo a que se muestre el toast antes de cerrar
+//                        new android.os.Handler().postDelayed(() -> {
+//                            finishAndRemoveTask(); // Mejor que System.exit(0)
+//                        }, 2000); // 2 segundos delay
+                    });
+                }
 
             } catch (Exception e) {
-                Log.e(TAG, "Error al enviar datos del usuario al servidor", e);
+                Log.e(TAG, "Error general al enviar datos del usuario al servidor", e);
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
                 });
             }
         });
     }
 
-    private void saveUserData(UserDTO user) {
+    private void saveUserData(UserDTO userDTO) {
+        User user = User.toEntity(userDTO);
         String userJson = JacksonUtils.entityToJson(user);
         PreferenceUtils.saveData(PreferenceUtils.KEY_USER_MODEL, userJson);
         Log.d(TAG, "Datos del usuario guardados en SharedPreferences");

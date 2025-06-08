@@ -8,7 +8,7 @@ import android.app.Application;
 import android.util.Log;
 
 import com.example.animor.Model.StartupResource;
-import com.example.animor.Model.dto.UserDTO;
+import com.example.animor.Model.entity.User;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.JacksonUtils;
 import com.example.animor.Utils.PreferenceUtils;
@@ -32,7 +32,6 @@ public class MyApplication extends Application {
     private static String firebaseInstallationId;
     private static String deviceToken;
     private static String notificationToken;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -50,7 +49,7 @@ public class MyApplication extends Application {
         authenticateDevice();
 
         // Verificar estado de Google Sign In
-        checkGoogleSignInState();
+        // checkGoogleSignInState();
     }
 
     private void authenticateDevice() {
@@ -120,7 +119,7 @@ public class MyApplication extends Application {
     }
 
     private void checkGoogleSignInState() {
-        UserDTO currentUser = PreferenceUtils.getUser();
+        User currentUser = PreferenceUtils.getUser();
         if (currentUser != null) {
             Log.d(TAG, "Usuario Google ya autenticado: " + currentUser.getEmail());
         } else {
