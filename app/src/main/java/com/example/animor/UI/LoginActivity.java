@@ -124,12 +124,12 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Mostrar toast y cerrar app en el hilo principal
                     runOnUiThread(() -> {
-                        Toast.makeText(LoginActivity.this, "Servidor no conectado", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Servidor no conectado.\n No se recibirán datos.", Toast.LENGTH_LONG).show();
 
-                        // Dar tiempo para que se muestre el toast antes de cerrar
-                        new android.os.Handler().postDelayed(() -> {
-                            finishAndRemoveTask(); // Mejor que System.exit(0)
-                        }, 2000); // 2 segundos delay
+//                        // Da tiempo a que se muestre el toast antes de cerrar
+//                        new android.os.Handler().postDelayed(() -> {
+//                            finishAndRemoveTask(); // Mejor que System.exit(0)
+//                        }, 2000); // 2 segundos delay
                     });
                 }
 

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -252,7 +253,6 @@ public class InicioActivity extends AppCompatActivity implements
             } else {
                 Log.d(TAG, "Permisos de ubicación denegados");
                 Toast.makeText(this, "Sin permisos de ubicación. Mostrando todos los animales.", Toast.LENGTH_LONG).show();
-                // Cargar listings sin filtro de ubicación
                 obtenerListings();
             }
         }
@@ -282,11 +282,11 @@ public class InicioActivity extends AppCompatActivity implements
     }
 
     private List<AnimalListing> obtenerListings() {
-        new Thread(() -> {
+        MyApplication.executor.execute(()->{
             try {
                 if (isUsingLocationFilter && locationObtained && latitude != 0.0 && longitude != 0.0) {
                     Log.d(TAG, "Llamando a API con coordenadas: " + latitude + ", " + longitude);
-                    lista = api.getListingNearMe(longitude, latitude, 0);
+                    lista = api.getListingNearMe(longitude, latitude, 1);
                 } else {
                     Log.d(TAG, "Llamando a API con filtros - Ciudad: " + currentCity +
                             ", País: " + currentCountry + ", Especie: " + currentSpeciesId);
@@ -325,7 +325,7 @@ public class InicioActivity extends AppCompatActivity implements
                     Toast.makeText(InicioActivity.this, "Error al cargar animales", Toast.LENGTH_SHORT).show();
                 });
             }
-        }).start();
+        });
 
         return lista;
     }
@@ -349,6 +349,7 @@ public class InicioActivity extends AppCompatActivity implements
         TextView textViewSubtitulo = findViewById(R.id.textViewSubtitulo);
         if (count == 0) {
             textViewSubtitulo.setText("No se encontraron animales");
+            recyclerView.setVisibility(View.GONE);
         } else if (isUsingLocationFilter) {
             textViewSubtitulo.setText("Animales cerca de ti (" + count + ")");
         } else {

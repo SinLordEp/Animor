@@ -243,10 +243,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
             tvCountry.setText("Sin especificar");
         }
 
-        // Configurar switch de adoptado
-        switchAdoptado.setChecked(false); // Ajusta según tu modelo
     }
-
     private void setupListeners() {
         // Listener para editar listing
         btnedit.setOnClickListener(v -> {
@@ -264,49 +261,29 @@ public class ShowMyListingActivity extends AppCompatActivity {
                 // Llamada para eliminar el listing
                 boolean success = api.deleteListing(animalListing.getListingId());
                 if(success){
-                    Toast.makeText(this, "Registro borrado", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(()-> Toast.makeText(this, "Registro borrado", Toast.LENGTH_SHORT).show());
                 }else{
-                    Toast.makeText(this, "No se ha podido borrar", Toast.LENGTH_SHORT).show();
-
+                    runOnUiThread(()-> Toast.makeText(this, "No se ha podido borrar", Toast.LENGTH_SHORT).show());
                 }
 
                 runOnUiThread(() -> {
-                    // if (success) {
-                    //     Toast.makeText(this, "Listing eliminado", Toast.LENGTH_SHORT).show();
-                    //     finish(); // Cerrar la activity
-                    // } else {
-                    //     Toast.makeText(this, "Error al eliminar listing", Toast.LENGTH_SHORT).show();
-                    // }
+                     if (success) {
+                         Toast.makeText(this, "Listing eliminado", Toast.LENGTH_SHORT).show();
+                         finish(); // Cerrar la activity
+                     } else {
+                         Toast.makeText(this, "Error al eliminar listing", Toast.LENGTH_SHORT).show();
+                     }
                 });
             });
         });
 
         // Listener para el switch de adoptado
-        // switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
-        //     updateAdoptionStatus(isChecked);
-        // });
+         switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
+             animal.setIsAdopted(true);
+         });
     }
 
-    // actualizar el estado de adopción (comentado por ahora)
-    // private void updateAdoptionStatus(boolean isAdopted) {
-    //     ApiRequests api = new ApiRequests();
-    //     new Thread(() -> {
-    //         boolean success = api.updateAdoptionStatus(animalListing.getListingId(), isAdopted);
-    //
-    //         runOnUiThread(() -> {
-    //             if (success) {
-    //                 Toast.makeText(this,
-    //                         isAdopted ? "Marcado como adoptado" : "Marcado como disponible",
-    //                         Toast.LENGTH_SHORT).show();
-    //             } else {
-    //                 Toast.makeText(this, "Error actualizando estado", Toast.LENGTH_SHORT).show();
-    //                 switchAdoptado.setChecked(!isAdopted);
-    //             }
-    //         });
-    //     }).start();
-    // }
-
-    // Método estático para crear el Intent desde otras activities
+    //  crear el Intent desde otras activities
     public static Intent createIntent(android.content.Context context, Animal animal,
                                       AnimalListing animalListing, Location location) {
         Intent intent = new Intent(context, ShowMyListingActivity.class);

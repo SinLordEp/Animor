@@ -498,9 +498,9 @@ public class ApiRequests {
         }
         return false;
     }
-    public List<AnimalListing> getListingNearMe(double latitude, double longitude, int page) {
+    public List<AnimalListing> getListingNearMe(double latitude, double longitude, Integer page) {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/near-me");
-        page = 0;
+        page = 1;
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
         }
@@ -564,10 +564,14 @@ public class ApiRequests {
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
             System.out.println("responsebody: " + responseBody);
             Log.d(TAG, "Respuesta del servidor a petición de listings filtrados: " + responseBody);
 
             if (response.isSuccessful()) {
+                if("NEAR_GET_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Get near me", "Get exitoso");
+                }
                 JSONArray jsonArray = getJsonArrayFromBody(responseBody);
                 listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
 

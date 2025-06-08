@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.R;
@@ -100,7 +101,7 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
 
     private void loadUserAnimals() {
         ApiRequests api = new ApiRequests();
-        new Thread(() -> {
+        MyApplication.executor.execute(() -> {
             // animales del usuario actual
             List<Animal> userAnimals = api.getMyAnimalsFromServer();
 
@@ -120,7 +121,7 @@ public class CreateListingsFragment extends Fragment implements AnimalAdapter.On
                     }
                 });
             }
-        }).start();
+        });
     }
 
     @Override

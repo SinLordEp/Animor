@@ -44,6 +44,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     @Override
     public void onBindViewHolder(AnimalViewHolder holder, int position) {
         Animal animal = animalList.get(position);
+        holder.btnFav.setVisibility(View.GONE);
+        holder.tvNearMe.setVisibility(View.GONE);
         holder.txtName.setText(animal.getAnimalName());
 
         String speciesName = "";
@@ -110,8 +112,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
     }
 
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
-        TextView txtName, txtSpecies, txtSex;
-        ImageView imgAnimal;
+        TextView txtName, txtSpecies, txtSex, tvNearMe;
+        ImageView imgAnimal, btnFav;
 
         public AnimalViewHolder(View itemView) {
             super(itemView);
@@ -119,6 +121,8 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
             txtSpecies = itemView.findViewById(R.id.txtSpecies);
             txtSex = itemView.findViewById(R.id.txtSex);
             imgAnimal = itemView.findViewById(R.id.imgUser);
+            btnFav = itemView.findViewById(R.id.btnFavorite);
+            tvNearMe = itemView.findViewById(R.id.tvNearMe);
         }
     }
     public interface OnAnimalClickListener {

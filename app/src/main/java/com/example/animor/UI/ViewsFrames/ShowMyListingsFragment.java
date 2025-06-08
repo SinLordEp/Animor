@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -63,8 +64,6 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
 
     private void initializeViews(View view) {
         rvListings = view.findViewById(R.id.recyclerViewMyListings);
-        ImageButton btnfav = view.findViewById(R.id.btnFavorite);
-        btnfav.setVisibility(View.GONE);
     }
 
     private void setupRecyclerView() {
