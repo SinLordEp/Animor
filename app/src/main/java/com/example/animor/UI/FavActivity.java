@@ -1,5 +1,6 @@
 package com.example.animor.UI;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -63,7 +64,7 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
         recyclerViewFavorites.setLayoutManager(new LinearLayoutManager(this));
 
         // Inicializar adapter con ViewType.INICIO_ACTIVITY para mostrar botones de favoritos
-        adapter = new ListingAdapter(favoritesList, this, ListingAdapter.ViewType.INICIO_ACTIVITY);
+        adapter = new ListingAdapter(favoritesList, this, ListingAdapter.ViewType.FAVORITES_ACTIVITY);
         recyclerViewFavorites.setAdapter(adapter);
     }
 
@@ -127,9 +128,9 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
         Log.d(TAG, "Listing seleccionado: " + animalListing.getAnimal().getAnimalName());
 
         // Aquí puedes implementar la navegación al detalle
-        // Intent intent = new Intent(this, AnimalDetailActivity.class);
-        // intent.putExtra("animalListing", animalListing);
-        // startActivity(intent);
+         Intent intent = new Intent(this, ShowMyListingActivity.class);
+         intent.putExtra("animalListing", animalListing);
+         startActivity(intent);
 
         Toast.makeText(this, "Ver detalle de: " + animalListing.getAnimal().getAnimalName(),
                 Toast.LENGTH_SHORT).show();
