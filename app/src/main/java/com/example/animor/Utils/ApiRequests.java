@@ -187,16 +187,10 @@ public class ApiRequests {
 
         Log.d(TAG, "Tokens que se enviarán al servidor: \n Device-token:" + deviceToken + "\n User token: "+ userToken);
 
-        userToken = PreferenceUtils.getUser().getUserToken();
-        if (userToken == null || userToken.trim().isEmpty()){
-            Log.e(TAG, "tokenId y/o userToken es nulo o vacío");
-            return;
-        }
-
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .delete()
                 .build();
         Log.d("PETICIÓN ENVIADA", request.toString());
@@ -483,7 +477,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .delete()
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -618,7 +612,7 @@ public class ApiRequests {
         Request request = new Request.Builder()
                 .url(url)
                 .addHeader("X-Device-Token", deviceToken)
-                .addHeader("X-User-Token", userToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
                 .delete()
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -638,5 +632,4 @@ public class ApiRequests {
         }
         return false;
     }
-
 }

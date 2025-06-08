@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.animor.App.MyApplication;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.R;
 import com.example.animor.Utils.AnimalAdapter;
@@ -63,7 +64,7 @@ public class InicioActivity extends AppCompatActivity implements
 
         // Inicializar lista vacía y adapter
         lista = new ArrayList<>();
-        adapter = new ListingAdapter(lista, this);
+        adapter = new ListingAdapter(lista, this, ListingAdapter.ViewType.INICIO_ACTIVITY);
         recyclerView.setAdapter(adapter);
 
         // Solicitar ubicación para cargar los listings
@@ -200,7 +201,6 @@ public class InicioActivity extends AppCompatActivity implements
         return lista;
     }
 
-
     // Método para actualizar la lista desde fuera (si es necesario)
     public void actualizarListaAnimales(List<AnimalListing> nuevaLista) {
         if (nuevaLista != null) {
@@ -226,10 +226,34 @@ public class InicioActivity extends AppCompatActivity implements
 
     @Override
     public void onFavoriteClick(AnimalListing animalListing) {
-        boolean success = api.addFav(animalListing.getListingId());
-        if(success){
-            Toast.makeText(this, "Añadido a favoritos", Toast.LENGTH_SHORT).show();
-        }
+        MyApplication.executor.execute(() -> {
+            try {
+                boolean success = api.addFav(animalListing.getListingId());
+
+                runOnUiThread(() -> {
+                    if (success) {
+                        Toast.makeText(this, "Añadido a favoritos: " +
+                                        animalListing.getAnimal().getAnimalName(),
+                                Toast.LENGTH_SHORT).show();
+
+                        Log.d(TAG, "Favorito añadido exitosamente: " + animalListing.getListingId());
+                    } else {
+                        Toast.makeText(this, "Error al añadir a favoritos",
+                                Toast.LENGTH_SHORT).show();
+
+                        // Opcional: revertir el icono a corazón vacío si falló
+                        // Tendrías que encontrar el ViewHolder y cambiar el icono
+                        Log.e(TAG, "Error al añadir favorito para listing: " + animalListing.getListingId());
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error al añadir favorito: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Toast.makeText(this, "Error al añadir a favoritos",
+                            Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     @Override

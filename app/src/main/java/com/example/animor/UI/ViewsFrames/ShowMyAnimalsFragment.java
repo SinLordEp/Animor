@@ -240,23 +240,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     }
 
     @Override
-    public void onFavoriteClick(Animal animal) {
-        // Implementa tu lógica para favoritos
-        ApiRequests api = new ApiRequests();
-        new Thread(() -> {
-            // llamada para actualizar favoritos
-            // boolean success = api.updateFavoriteStatus(animal);
-
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(),
-                            "Favorito actualizado", Toast.LENGTH_SHORT).show();
-                    // Actualizar el adapter si es necesario
-                    adapter.notifyDataSetChanged();
-                });
-            }
-        }).start();
-    }
+    public void onFavoriteClick(Animal animal) {}
 
     @Override
     public void onAttach(@NonNull Context context) {

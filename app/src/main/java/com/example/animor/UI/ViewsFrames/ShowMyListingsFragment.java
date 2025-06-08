@@ -69,7 +69,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
 
     private void setupRecyclerView() {
         listingList = new ArrayList<>();
-        adapter = new ListingAdapter(listingList, this);
+        adapter = new ListingAdapter(listingList, this, ListingAdapter.ViewType.SHOW_MY_LISTINGS);
         rvListings.setLayoutManager(new LinearLayoutManager(getContext()));
         rvListings.setAdapter(adapter);
 
