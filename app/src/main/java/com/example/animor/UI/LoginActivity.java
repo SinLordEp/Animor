@@ -107,33 +107,36 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendUserDataToServer(String firebaseIdToken, FirebaseUser firebaseUser) {
-        MyApplication.executor.execute(()->{
+        MyApplication.executor.execute(() -> {
             try {
                 Log.d(TAG, "Enviando datos del usuario al servidor...");
 
                 ApiRequests api = new ApiRequests();
-                try{
+                try {
                     UserDTO userDTO = api.sendUserToServer(firebaseIdToken);
                     saveUserData(userDTO);
-                }catch(Exception e){
+
+                    // Navegar a la siguiente actividad
+                    runOnUiThread(this::navigateToMainActivity);
+
+                } catch (Exception e) {
                     Log.e(TAG, "Error al enviar usuario: ", e);
-                    MyApplication.executor.execute(()->{
-                        runOnUiThread(() -> { Toast.makeText(this, "Servidor no conectado", Toast.LENGTH_LONG).show();
-                            System.exit(0);
-                        });
+
+                    // Mostrar toast y cerrar app en el hilo principal
+                    runOnUiThread(() -> {
+                        Toast.makeText(LoginActivity.this, "Servidor no conectado", Toast.LENGTH_LONG).show();
+
+                        // Dar tiempo para que se muestre el toast antes de cerrar
+                        new android.os.Handler().postDelayed(() -> {
+                            finishAndRemoveTask(); // Mejor que System.exit(0)
+                        }, 2000); // 2 segundos delay
                     });
                 }
 
-                // Guardar datos del usuario en SharedPreferences
-
-
-                // Navegar a la siguiente actividad
-                runOnUiThread(this::navigateToMainActivity);
-
             } catch (Exception e) {
-                Log.e(TAG, "Error al enviar datos del usuario al servidor", e);
+                Log.e(TAG, "Error general al enviar datos del usuario al servidor", e);
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Error al guardar datos del usuario", Toast.LENGTH_SHORT).show();
                 });
             }
         });

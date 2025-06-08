@@ -498,13 +498,16 @@ public class ApiRequests {
         }
         return false;
     }
-    public List<AnimalListing> getListingNearMe(double latitute, double longitude, int page) {
+    public List<AnimalListing> getListingNearMe(double latitude, double longitude, int page) {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/near-me");
+        page = 0;
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");
         }
         url = url.newBuilder()
-                //.addQueryParameter("animalId", String.valueOf(page))
+                .addQueryParameter("longitude", String.valueOf(longitude))
+                .addQueryParameter("latitude", String.valueOf(latitude))
+                .addQueryParameter("page", String.valueOf(page))
                 .build();
         Request request = new Request.Builder()
                 .url(url)
@@ -532,6 +535,54 @@ public class ApiRequests {
         }
         return listingList;
     }
+    public List<AnimalListing> getListing(String city, String country, Integer speciesId, int page) {
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/get-listing");
+        if(url == null){
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        HttpUrl.Builder urlBuilder = url.newBuilder();
+        if(city != null && !city.isEmpty()) {
+            urlBuilder.addQueryParameter("city", city);
+        }
+        if(country != null && !country.isEmpty()) {
+            urlBuilder.addQueryParameter("country", country);
+        }
+        if(speciesId!=null) {
+            urlBuilder.addQueryParameter("speciesId", String.valueOf(speciesId));
+        }
+        // El page siempre se envía (por defecto es 0 según tu controller)
+        urlBuilder.addQueryParameter("page", String.valueOf(page));
+        url = urlBuilder.build();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .get()
+                .build();
+
+        List<ListingDTO> listingDTOList;
+        List<AnimalListing> listingList = new ArrayList<>();
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            System.out.println("responsebody: " + responseBody);
+            Log.d(TAG, "Respuesta del servidor a petición de listings filtrados: " + responseBody);
+
+            if (response.isSuccessful()) {
+                JSONArray jsonArray = getJsonArrayFromBody(responseBody);
+                listingDTOList = JacksonUtils.readEntities(jsonArray.toString(), new TypeReference<>() {});
+
+                for(ListingDTO listingDTO : listingDTOList) {
+                    listingList.add(AnimalListing.fromDTO(listingDTO));
+                }
+                return listingList;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting filtered listings: ", e);
+        }
+
+        return listingList;
+    }
+
     public Set<AnimalListing> getMyFavs() {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/user/get-favorite");
         if(url == null){
