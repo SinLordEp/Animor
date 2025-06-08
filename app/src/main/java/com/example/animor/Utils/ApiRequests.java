@@ -546,7 +546,7 @@ public class ApiRequests {
                 .get()
                 .build();
         Set<ListingDTO> listingDTOSet;
-        Set<AnimalListing>listingList = new HashSet<>();
+        Set<AnimalListing>listingSet = new HashSet<>();
         try (Response response = client.newCall(request).execute()) {
             String responseBody = getResponseBody(response);
             String status = getStatusFromResponseBody(responseBody);
@@ -560,14 +560,14 @@ public class ApiRequests {
                 listingDTOSet = JacksonUtils.readEntitiesSet(jsonArray.toString(), new TypeReference<>() {
                 });
                 for(ListingDTO listingDTO : listingDTOSet) {
-                    listingList.add(AnimalListing.fromDTO(listingDTO));
+                    listingSet.add(AnimalListing.fromDTO(listingDTO));
                 }
-                return listingList;
+                return listingSet;
             }
         } catch (Exception e) {
             Log.e(TAG, "Error getting my favs: ", e);
         }
-        return listingList;
+        return listingSet;
     }
     public boolean addFav(long listingId) {
         HttpUrl url = HttpUrl.parse("https://www.animor.es/user/add-favorite");
@@ -601,7 +601,7 @@ public class ApiRequests {
         return false;
     }
     public boolean deleteFav(long listingId) {
-        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/delete-favorite");
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/user/delete-favorite");
         Log.d(TAG, "LISTINGID: "+listingId);
         if(url == null){
             throw new IllegalArgumentException("URL is not valid");

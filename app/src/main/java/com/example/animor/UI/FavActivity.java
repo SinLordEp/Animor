@@ -22,8 +22,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class FavActivity extends AppCompatActivity implements ListingAdapter.OnListingInteractionListener {
 
@@ -33,10 +31,8 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
     private ListingAdapter adapter;
     private NavigationHelper navigationHelper;
     private TextView tvEmptyState;
-
     private List<AnimalListing> favoritesList;
     private ApiRequests api;
-    private ExecutorService executorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +45,6 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
 
         // Inicializar API y executor
         api = new ApiRequests();
-        executorService = Executors.newSingleThreadExecutor();
         favoritesList = new ArrayList<>();
 
         // Cargar favoritos
@@ -59,9 +54,6 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
     private void initializeViews() {
         recyclerViewFavorites = findViewById(R.id.recyclerViewFavorites);
         tvEmptyState = findViewById(R.id.tvEmptyState);
-
-        // Si no tienes estos views en el layout, puedes comentar estas líneas
-        // o agregarlos al layout
         if (tvEmptyState == null) {
             Log.w(TAG, "Empty state TextView not found in layout");
         }
@@ -155,7 +147,7 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
         // Mostrar feedback inmediato
         Toast.makeText(this, "Eliminando de favoritos...", Toast.LENGTH_SHORT).show();
 
-        executorService.execute(() -> {
+        MyApplication.executor.execute(() -> {
             try {
                 boolean success = api.deleteFav(animalListing.getListingId());
 
@@ -202,12 +194,9 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
     }
 
-    // Método para refrescar favoritos si es necesario (opcional)
+    //refrescar favoritos si es necesario (no implementado aún)
     public void refreshFavorites() {
         loadFavorites();
     }
