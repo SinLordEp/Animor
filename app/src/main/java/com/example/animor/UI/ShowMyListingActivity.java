@@ -114,12 +114,14 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Obtener URL de la foto de portada
         List<Photo> photoList = animal.getAnimalPhotoList();
+        Log.d(TAG, "tamaño lista de fotos: "+photoList.size());
         if (photoList != null) {
             for (Photo a : photoList) {
-                if (a.getIsCoverPhoto()) {
+                Log.d(TAG, "¿La foto es cover?: "+a.getIsCoverPhoto());
+                //if (a.getIsCoverPhoto()) {
                     photoUrl = a.getPhotoUrl();
                     break;
-                }
+                //}
             }
         }
 

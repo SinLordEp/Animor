@@ -91,7 +91,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
     private static final String TAG = "CreateListingActivity";
 
-    private Animal animal;
+    private Animal animal=null;
     private AnimalListing listing;
     long id=-1;
 
@@ -168,7 +168,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
             MyApplication.executor.execute(()->{
                 Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
                 Log.d(TAG, "Animal en listing: "+animal.toString());
-                intent.putExtra("animal", listing.getAnimal());
+                intent.putExtra("animal", animal);
                 intent.putExtra("location", listing.getLocationRequest());
                 intent.putExtra("animalListing", listing);
                 startActivity(intent);
@@ -493,10 +493,10 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         // Foto de portada
         String photoUrl = "";
         for (Photo photo : animal.getAnimalPhotoList()) {
-            if (photo.getIsCoverPhoto()) {
+            //if (photo.getIsCoverPhoto()) {
                 photoUrl = photo.getPhotoUrl();
                 break;
-            }
+           // }
         }
 
         Picasso.get()

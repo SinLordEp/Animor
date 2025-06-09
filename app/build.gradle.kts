@@ -77,5 +77,8 @@ dependencies {
 // Message
     implementation(libs.stompprotocolandroid)
     implementation(libs.recyclerview)
+//chat
+    implementation(libs.rxandroid)
+    implementation(libs.rxjava)
 
 }

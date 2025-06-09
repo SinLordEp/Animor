@@ -97,8 +97,6 @@ public class CreateAnimalFragment extends Fragment {
     Animal animal;
     AnimalRequest animalRequest = new AnimalRequest();
 
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -490,7 +488,6 @@ public class CreateAnimalFragment extends Fragment {
         } else if (animal != null && animal.getPhotoList().get(0).getPhotoUrl() != null && !animal.getPhotoList().get(0).getPhotoUrl().isEmpty()) {
             // Estamos editando y ya hay imagen existente - usar la existente
             imageDownloadUrl = animal.getPhotoList().get(0).getPhotoUrl();
-            imagePath = ""; // O mantener el path existente si lo tienes
             guardarDatosAnimal();
         } else {
             // No debería llegar aquí si validateForm() funciona correctamente
@@ -583,7 +580,7 @@ public class CreateAnimalFragment extends Fragment {
                         if (receivedAnimalId != null && receivedAnimalId > 0) {
                             // ÉXITO - guardar foto asociada en background
                             MyApplication.executor.execute(() -> {
-                                api.addPhotoIntoDatabase(receivedAnimalId, photo);
+                           //     api.addPhotoIntoDatabase(receivedAnimalId, photo);
                             });
 
                             // Actualizar UI una sola vez
@@ -650,7 +647,7 @@ public class CreateAnimalFragment extends Fragment {
             pr.setPhotoId(p.getPhotoId());
             pr.setPhotoUrl(p.getPhotoUrl());
             pr.setFilePath(p.getFilePath());
-            pr.setCoverPhoto(p.getIsCoverPhoto());
+            pr.setCoverPhoto(true);
             pr.setDisplayOrder(p.getDisplayOrder());
             photoRequests.add(pr);
         }

@@ -225,6 +225,7 @@ public class ApiRequests {
         //objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // Opcional: no incluir campos null
         Log.d("apirequest", "animal que se va a enviar:"+ animal.getAnimalName()+","+animal.getAnimalDescription()+","+animal.getSex());
         String json = JacksonUtils.entityToJson(animal);
+        Log.d(TAG, "JSON ENVIADO PARA GUARDAR: "+ json);
         // 3. Crear el RequestBody en formato JSON
         MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
         body = RequestBody.create(json, mediaType);

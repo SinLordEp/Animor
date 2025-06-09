@@ -100,10 +100,11 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
         List<Photo> photoList = animal.getAnimalPhotoList();
         for (Photo a : photoList) {
-            if (a.getIsCoverPhoto()) {
+            //if (a.getIsCoverPhoto()) {
+                Log.d(TAG, "¿La foto es cover?: "+a.getIsCoverPhoto());
                 photoUrl = a.getPhotoUrl();
                 break;
-            }
+            //}
         }
         Log.d(TAG, "se ha conseguido la foto: " + photoUrl);
         tags = animal.getTagList();
