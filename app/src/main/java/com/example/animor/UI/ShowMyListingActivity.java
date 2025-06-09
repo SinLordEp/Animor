@@ -124,7 +124,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
                 //}
             }
         }
-
         setupListeners();
         loadAnimalData();
         loadListingData();

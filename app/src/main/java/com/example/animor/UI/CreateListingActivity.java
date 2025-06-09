@@ -18,7 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
@@ -26,11 +25,9 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Tag;
-import com.example.animor.Model.entity.User;
 import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.LocationRequest;
 import com.example.animor.R;
-import com.example.animor.Utils.AnimalAdapter;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.Geolocalization;
 import com.example.animor.Utils.NonScrollListView;
@@ -92,8 +89,8 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     private static final String TAG = "CreateListingActivity";
 
     private Animal animal=null;
-    private AnimalListing listing;
-    long id=-1;
+    private AnimalListing listing=null;
+    long listingId =-1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,6 +101,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         animal = (Animal) getIntent().getSerializableExtra("animal");
         if(listing != null){
             animal=listing.getAnimal();
+            listingId=listing.getListingId();
             editListing();
         }
         initViews();
@@ -125,7 +123,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         etProvince.setText(listing.getLocation().getProvince());
         etPostalCode.setText(listing.getLocation().getPostalCode());
         etCountry.setText(listing.getLocation().getCountry());
-        id = listing.getListingId();
     }
 
     private void initViews() {
@@ -155,11 +152,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         // Botones
         buttonSave = findViewById(R.id.buttonSave);
         btnGetLocation = findViewById(R.id.btnGetLocation);
-
-        // Cargar datos del animal si existe
-        if (animal != null) {
-            loadAnimalData(animal);
-        }
     }
     private void setupListeners() {
         btnGetLocation.setOnClickListener(v -> requestCurrentLocation());
@@ -169,7 +161,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
                 Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
                 Log.d(TAG, "Animal en listing: "+animal.toString());
                 intent.putExtra("animal", animal);
-                intent.putExtra("location", listing.getLocationRequest());
                 intent.putExtra("animalListing", listing);
                 startActivity(intent);
             });
@@ -220,7 +211,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         ApiRequests api = new ApiRequests();
-        if(id!=-1){
+        if(listingId !=-1){
             MyApplication.executor.execute(()->{
                 listingRequest.setListingId(listing.getListingId());
                 api.editListing(listingRequest, animal.getAnimalId());
