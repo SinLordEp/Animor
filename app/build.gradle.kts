@@ -74,5 +74,8 @@ dependencies {
 
     // Java language implementation
     implementation(libs.fragment)
+// Message
+    implementation(libs.stompprotocolandroid)
+    implementation(libs.recyclerview)
 
 }
