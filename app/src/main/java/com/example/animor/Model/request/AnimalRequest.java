@@ -11,16 +11,16 @@ public class AnimalRequest {
     private String animalName;
     private int speciesId;
     private LocalDate birthDate;
-    @JsonProperty("isBirthDateEstimated")
-    private boolean isBirthDateEstimated;
+    @JsonProperty("birthDateEstimated")
+    private boolean birthDateEstimated;
     private Sex sex;
     private String size;
     private String animalDescription;
-    @JsonProperty("isNeutered")
-    private boolean isNeutered;
+    @JsonProperty("neutered")
+    private boolean neutered;
     private String microchipNumber;
-    @JsonProperty("isAdopted")
-    private boolean isAdopted;
+    @JsonProperty("adopted")
+    private boolean adopted;
     private List<PhotoRequest> photoList;
     private List<TagRequest> tagList;
 
@@ -60,11 +60,11 @@ public class AnimalRequest {
     }
 
     public boolean isBirthDateEstimated() {
-        return isBirthDateEstimated;
+        return birthDateEstimated;
     }
 
     public void setBirthDateEstimated(boolean birthDateEstimated) {
-        isBirthDateEstimated = birthDateEstimated;
+        this.birthDateEstimated = birthDateEstimated;
     }
 
     public Sex getSex() {
@@ -92,11 +92,11 @@ public class AnimalRequest {
     }
 
     public boolean isNeutered() {
-        return isNeutered;
+        return neutered;
     }
 
     public void setNeutered(boolean neutered) {
-        isNeutered = neutered;
+        this.neutered = neutered;
     }
 
     public String getMicrochipNumber() {
@@ -108,11 +108,11 @@ public class AnimalRequest {
     }
 
     public boolean isAdopted() {
-        return isAdopted;
+        return adopted;
     }
 
     public void setAdopted(boolean adopted) {
-        isAdopted = adopted;
+        this.adopted = adopted;
     }
 
     public List<PhotoRequest> getPhotoList() {

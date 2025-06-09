@@ -93,6 +93,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
 
     private Animal animal;
     private AnimalListing listing;
+    long id=-1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,6 +125,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         etProvince.setText(listing.getLocation().getProvince());
         etPostalCode.setText(listing.getLocation().getPostalCode());
         etCountry.setText(listing.getLocation().getCountry());
+        id = listing.getListingId();
     }
 
     private void initViews() {
@@ -218,10 +220,16 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
         ApiRequests api = new ApiRequests();
-        MyApplication.executor.execute(()->{
-            api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
-        });
-
+        if(id!=-1){
+            MyApplication.executor.execute(()->{
+                listingRequest.setListingId(listing.getListingId());
+                api.editListing(listingRequest, animal.getAnimalId());
+            });
+        }else{
+            MyApplication.executor.execute(()->{
+                api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
+            });
+        }
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }
 

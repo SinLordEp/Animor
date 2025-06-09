@@ -6,8 +6,8 @@ public class PhotoRequest {
     private long photoId;
     private String photoUrl;
     private String filePath;
-    @JsonProperty("isCoverPhoto")
-    private boolean isCoverPhoto;
+    @JsonProperty("coverPhoto")
+    private boolean coverPhoto;
     private int displayOrder;
 
     public PhotoRequest() {
@@ -38,11 +38,11 @@ public class PhotoRequest {
     }
 
     public boolean isCoverPhoto() {
-        return isCoverPhoto;
+        return coverPhoto;
     }
 
     public void setCoverPhoto(boolean coverPhoto) {
-        isCoverPhoto = coverPhoto;
+        this.coverPhoto = coverPhoto;
     }
 
     public int getDisplayOrder() {

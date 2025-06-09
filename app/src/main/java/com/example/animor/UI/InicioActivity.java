@@ -186,7 +186,7 @@ public class InicioActivity extends AppCompatActivity implements
                     }
 
                     // Aplicar filtros
-                    loadFilteredListings(); // Usar el método corregido
+                    loadFilteredListings();
 
                     // Actualizar UI para mostrar que hay filtros activos
                     updateFilterUI();
@@ -306,7 +306,7 @@ public class InicioActivity extends AppCompatActivity implements
         Log.d(TAG, "Ubicación obtenida - Lat: " + latitude + ", Lng: " + longitude);
         Toast.makeText(this, "Ubicación obtenida. Cargando animales cercanos...", Toast.LENGTH_SHORT).show();
 
-        // Ahora que tenemos la ubicación, cargar los listings
+        // Con la ubicación, cargar los listings
         loadNearMeListings();
     }
 
@@ -438,16 +438,13 @@ public class InicioActivity extends AppCompatActivity implements
             textViewSubtitulo.setText("No se encontraron animales");
             rvListings.setVisibility(View.GONE);
         } else if (isUsingLocationFilter) {
-            textViewSubtitulo.setText("Animales cerca de ti (" + count + ")");
-        } else {
-            textViewSubtitulo.setText("Resultados encontrados (" + count + ")");
+            textViewSubtitulo.setText("Animales cerca de ti");
         }
     }
 
 
     private Integer getSpeciesIdFromPosition(int position) {
         // Mapear la posición del spinner al ID de la especie
-        // Esto depende de cómo tengas organizadas tus especies
         switch (position) {
             case 1: return 1; // Perro
             case 2: return 2; // Gato

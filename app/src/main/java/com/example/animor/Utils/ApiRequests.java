@@ -1,7 +1,6 @@
 package com.example.animor.Utils;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
@@ -21,7 +20,6 @@ import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.ListingRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.UI.LoginActivity;
-import com.example.animor.UI.ShowMyAnimalActivity;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -258,6 +256,43 @@ public class ApiRequests {
             Log.e(TAG, "Error al guardar animal: ", e);
         }
         return null;
+    }
+    public void editAnimal(AnimalRequest animal) {
+        String url = "https://www.animor.es/animal/update-animal";
+        RequestBody body = null;
+        // 1. Crear el objeto JSON anidado
+        Log.d("apirequest", "animal que se va a enviar:"+ animal.getAnimalName()+","+animal.getAnimalDescription()+","+animal.getSex());
+        String json = JacksonUtils.entityToJson(animal);
+        Log.d(TAG, "JSON ENVIADO PARA EDITAR: "+ json);
+        // 3. Crear el RequestBody en formato JSON
+        MediaType mediaType = MediaType.parse("application/json; charset=utf-8");
+        body = RequestBody.create(json, mediaType);
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
+                .post(body)
+                .build();
+        Log.d(TAG, "PETICIÓN ENVIADA: " + request);
+
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            Log.d(TAG, "=== RESPUESTA COMPLETA DEL SERVIDOR ===");
+            Log.d(TAG, "Status Code: " + response.code());
+            Log.d(TAG, "Response Body: " + responseBody);
+            Log.d(TAG, "Is Successful: " + response.isSuccessful());
+            if (response.isSuccessful()) {
+                Log.d(TAG, "Respuesta del servidor al enviar animal: " + responseBody);
+                JSONObject jsonResponse = new JSONObject(responseBody);
+                long idAnimal = jsonResponse.getLong("data");
+                Log.d(TAG, "ID del animal editado: " + idAnimal);
+            } else {
+                Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(responseBody)
+                        + " | Respuesta: " + getJsonObjectFromBody(responseBody));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error al guardar animal: ", e);
+        }
 
     }
 
@@ -387,6 +422,49 @@ public class ApiRequests {
     public void addListingIntoDatabase(ListingRequest listing, long animalId) {
         RequestBody body = null;
         HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/add-listing");
+        Log.d(TAG, "UserToken = "+PreferenceUtils.getUser().getUserToken());
+        if (url == null) {
+            throw new IllegalArgumentException("URL is not valid");
+        }
+        url = url.newBuilder()
+                .addQueryParameter("animalId", String.valueOf(animalId))
+                .build();
+        String json = JacksonUtils.entityToJson(listing);
+        body = RequestBody.create(json, mediaType);
+        try {
+            Buffer buffer = new Buffer();
+            body.writeTo(buffer);
+            Log.d(TAG, "Body content: " + buffer.readUtf8());
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading body: " + e.getMessage());
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("X-Device-Token", deviceToken)
+                .addHeader("X-User-Token", PreferenceUtils.getUser().getUserToken())
+                .post(body)
+                .build();
+
+        Log.d(TAG, "Petición de post listing creada");
+        try (Response response = client.newCall(request).execute()) {
+            String responseBody = getResponseBody(response);
+            String status = getStatusFromResponseBody(responseBody);
+            if (response.isSuccessful()) {
+                if ("LISTING_POST_SUCCESS".equals(status)) {
+                    Log.d("ApiRequest - Post Listing", "listing exitoso");
+                }
+            } else {
+                Log.e(TAG, "Error assert añadiendo listing: " + status
+                        + " | Respuesta: " + responseBody);
+                //{"status":2002,"data":{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ4MzcyOTQ0LCJleHAiOjE3NDg0NTkzNDR9.Kdqk_L15TH2PqbLCi0qOoBh__e3UAei0cVfoPfGCMvg","userName":"Zelawola","email":"mixolida36@gmail.com","photoUrl":"https://lh3.googleusercontent.com/a/ACg8ocK5rMgBRRnY4JxR9m0fOdqAdHWzJjr31gPgJmJvO7juru0c_HTE=s96-c","phone":null}}
+            }
+        } catch (IOException e) {
+            System.out.println("Error de tipo in/out: " + e.getMessage());
+        }
+    }
+    public void editListing(ListingRequest listing, long animalId) {
+        RequestBody body = null;
+        HttpUrl url = HttpUrl.parse("https://www.animor.es/listing/update-listing");
         Log.d(TAG, "UserToken = "+PreferenceUtils.getUser().getUserToken());
         if (url == null) {
             throw new IllegalArgumentException("URL is not valid");

@@ -35,6 +35,7 @@ import com.example.animor.App.MyApplication;
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.entity.Animal;
+import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Sex;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.Model.entity.User;
@@ -42,6 +43,7 @@ import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.Model.request.TagRequest;
 import com.example.animor.R;
+import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
 import com.google.firebase.storage.FirebaseStorage;
@@ -96,6 +98,7 @@ public class CreateAnimalFragment extends Fragment {
     AnimalRequest animalRequest = new AnimalRequest();
 
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -148,6 +151,7 @@ public class CreateAnimalFragment extends Fragment {
                 }
             }
             DateTimeFormatter formatoSalida = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
             String fechaFormateada = animal.getBirthDate().format(formatoSalida);
             etFechaNacimiento.setText(fechaFormateada);
             if(animal.getIsBirthDateEstimated()){
@@ -253,7 +257,7 @@ public class CreateAnimalFragment extends Fragment {
                 }
             requireActivity().runOnUiThread(() -> {
                 ArrayAdapter<Tag> adapter = new ArrayAdapter<>(
-                        requireContext(),
+                        getActivity().getBaseContext(),
                         android.R.layout.simple_list_item_multiple_choice,
                         tagsInList);
                 listTagsView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
@@ -355,7 +359,6 @@ public class CreateAnimalFragment extends Fragment {
                 (view, selectedYear, selectedMonth, selectedDay) -> {
                     // LocalDate
                     LocalDate fechaNacimiento = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay);
-                    // formato en España
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     etFechaNacimiento.setText(formatter.format(fechaNacimiento));
                     birthDate = fechaNacimiento;
@@ -481,13 +484,12 @@ public class CreateAnimalFragment extends Fragment {
         btnGuardar.setEnabled(false);
         btnGuardar.setText("Guardando...");
 
-        // FLUJO OBLIGATORIO: Primero foto, luego animal
+        // Primero foto, luego animal
         if (imagenSeleccionadaUri != null) {
-            // Hay nueva imagen seleccionada - subirla primero
             subirImagenAFirebase(imagenSeleccionadaUri, this::guardarDatosAnimal);
-        } else if (animal != null && animal.getImage() != null && !animal.getImage().isEmpty()) {
+        } else if (animal != null && animal.getPhotoList().get(0).getPhotoUrl() != null && !animal.getPhotoList().get(0).getPhotoUrl().isEmpty()) {
             // Estamos editando y ya hay imagen existente - usar la existente
-            imageDownloadUrl = animal.getImage();
+            imageDownloadUrl = animal.getPhotoList().get(0).getPhotoUrl();
             imagePath = ""; // O mantener el path existente si lo tienes
             guardarDatosAnimal();
         } else {
@@ -525,9 +527,6 @@ public class CreateAnimalFragment extends Fragment {
         int speciesCode = animalSpeciesDTO.getSpeciesId();
 
         // Crear AnimalRequest
-        if (getArguments() != null){
-            animalRequest.setAnimalId(animal.getAnimalId());
-        }
         animalRequest.setAnimalName(name);
         animalRequest.setSpeciesId(speciesCode);
         animalRequest.setBirthDate(birthDate);
@@ -539,52 +538,76 @@ public class CreateAnimalFragment extends Fragment {
         animalRequest.setMicrochipNumber(microchip.isEmpty() ? null : microchip);
         animalRequest.setAdopted(isAdopted);
         animalRequest.setTagList(selectedTags);
-
-        // GUARDADO EN BACKGROUND
-        MyApplication.executor.execute(() -> {
-            try {
-                // Preparar foto
-                PhotoRequest photo = new PhotoRequest();
-                photo.setPhotoUrl(imageDownloadUrl);
-                photo.setCoverPhoto(true);
-                photo.setDisplayOrder(0);
-                photo.setFilePath(imagePath);
-
-                List<PhotoRequest> animalPhotos = new ArrayList<>();
-                animalPhotos.add(photo);
-                animalRequest.setPhotoList(animalPhotos);
-
-                // Guardar animal
-                Long receivedAnimalId = api.addAnimalIntoDatabase(animalRequest);
-
-                // Volver al hilo principal para actualizar UI
-                requireActivity().runOnUiThread(() -> {
-                    if (receivedAnimalId != null && receivedAnimalId > 0) {
-                        // ÉXITO - guardar foto asociada en background
-                        MyApplication.executor.execute(() -> {
-                            api.addPhotoIntoDatabase(receivedAnimalId, photo);
-                        });
-
-                        // Actualizar UI una sola vez
-                        Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
-                        clearForm();
-                        restaurarEstadoBoton();
-                    } else {
-                        // Error al guardar
-                        restaurarEstadoBoton();
-                        Toast.makeText(getContext(), "Error al guardar el animal", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-            } catch (Exception e) {
-                // Error inesperado
-                Log.e("CreateAnimalFragment", "Error al guardar animal", e);
-                requireActivity().runOnUiThread(() -> {
-                    restaurarEstadoBoton();
-                    Toast.makeText(getContext(), "Error inesperado: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        if (getArguments() != null) {
+            animalRequest.setAnimalId(animal.getAnimalId());
+            List<TagRequest>tagRequestList=new ArrayList<>();
+            if(birthDate==null){
+                animalRequest.setBirthDate(animal.getBirthDate());
             }
-        });
+            for(Tag t: animal.getTagList()){
+                TagRequest tr = new TagRequest();
+                tr.setTagId(t.getTagId());
+                tr.setTagName(t.getTagName());
+                tagRequestList.add(tr);
+            }
+            List<PhotoRequest> photoRequests = getPhotoRequests();
+            animalRequest.setPhotoList(photoRequests);
+            animalRequest.setTagList(tagRequestList);
+            MyApplication.executor.execute(() -> api.editAnimal(animalRequest));
+            Log.d(TAG, "Animal editado");
+            Intent intent = new Intent(getActivity(), ShowActivity.class);
+            startActivity(intent);
+            restaurarEstadoBoton();
+            clearForm();
+            onDestroy();
+        }else {
+            // GUARDADO EN BACKGROUND
+            MyApplication.executor.execute(() -> {
+                try {
+                    // Preparar foto
+                    PhotoRequest photo = new PhotoRequest();
+                    photo.setPhotoUrl(imageDownloadUrl);
+                    photo.setCoverPhoto(true);
+                    photo.setDisplayOrder(0);
+                    photo.setFilePath(imagePath);
+
+                    List<PhotoRequest> animalPhotos = new ArrayList<>();
+                    animalPhotos.add(photo);
+                    animalRequest.setPhotoList(animalPhotos);
+
+                    // Guardar animal
+                    Long receivedAnimalId = api.addAnimalIntoDatabase(animalRequest);
+
+                    // Volver al hilo principal para actualizar UI
+                    requireActivity().runOnUiThread(() -> {
+                        if (receivedAnimalId != null && receivedAnimalId > 0) {
+                            // ÉXITO - guardar foto asociada en background
+                            MyApplication.executor.execute(() -> {
+                                api.addPhotoIntoDatabase(receivedAnimalId, photo);
+                            });
+
+                            // Actualizar UI una sola vez
+                            Toast.makeText(getContext(), "Animal guardado correctamente", Toast.LENGTH_SHORT).show();
+                            clearForm();
+                            restaurarEstadoBoton();
+                            onDestroy();
+                        } else {
+                            // Error al guardar
+                            restaurarEstadoBoton();
+                            Toast.makeText(getContext(), "Error al guardar el animal", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                } catch (Exception e) {
+                    // Error inesperado
+                    Log.e("CreateAnimalFragment", "Error al guardar animal", e);
+                    requireActivity().runOnUiThread(() -> {
+                        restaurarEstadoBoton();
+                        Toast.makeText(getContext(), "Error inesperado: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            });
+        }
     }
     // Method para limpiar el formulario
     // limpiar el formulario, aunque no se usa
@@ -617,6 +640,21 @@ public class CreateAnimalFragment extends Fragment {
     private void restaurarEstadoBoton() {
         btnGuardar.setEnabled(true);
         btnGuardar.setText("Guardar");
+    }
+    @NonNull
+    private List<PhotoRequest> getPhotoRequests() {
+        List<Photo>photoList = animal.getPhotoList();
+        List<PhotoRequest>photoRequests= new ArrayList<>();
+        for(Photo p: photoList){
+            PhotoRequest pr=new PhotoRequest();
+            pr.setPhotoId(p.getPhotoId());
+            pr.setPhotoUrl(p.getPhotoUrl());
+            pr.setFilePath(p.getFilePath());
+            pr.setCoverPhoto(p.getIsCoverPhoto());
+            pr.setDisplayOrder(p.getDisplayOrder());
+            photoRequests.add(pr);
+        }
+        return photoRequests;
     }
 
 }

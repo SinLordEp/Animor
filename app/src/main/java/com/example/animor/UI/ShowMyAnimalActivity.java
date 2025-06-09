@@ -70,7 +70,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
                 // Usar las tags si las necesitas
                 if (tags != null) {
-                    Log.d(TAG, "Tags recibidas: " + tags.size());
+                    Log.d(TAG, "Tags recibidos: " + tags.size());
                     // Aquí puedes usar las tags como necesites
                 }
                 initializeData();
@@ -127,7 +127,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
         txtName.setText(animal.getAnimalName());
 
         txtSex = findViewById(R.id.txtSex);
-        Log.d(TAG, "Tags: "+animal.getSex().toString());
+        Log.d(TAG, "Sexo: "+animal.getSex().toString());
         switch(animal.getSex()){
             case Male:
                 txtSex.setText("Macho");

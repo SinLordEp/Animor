@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +21,9 @@ import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Location;
 import com.example.animor.Model.entity.Tag;
+import com.example.animor.Model.request.AnimalRequest;
+import com.example.animor.Model.request.PhotoRequest;
+import com.example.animor.Model.request.TagRequest;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NonScrollListView;
@@ -27,6 +31,7 @@ import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyListingActivity extends AppCompatActivity {
@@ -57,6 +62,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
     private String photoUrl = "";
     private String TAG="ShowMyListingActivity";
     String mode;
+    ApiRequests api = new ApiRequests();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,7 +270,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Listener para eliminar listing
         btndel.setOnClickListener(v -> {
-            ApiRequests api = new ApiRequests();
             MyApplication.executor.execute(() -> {
                 // Llamada para eliminar el listing
                 boolean success = api.deleteListing(animalListing.getListingId());
@@ -286,12 +291,50 @@ public class ShowMyListingActivity extends AppCompatActivity {
         });
 
         // Listener para el switch de adoptado
+        switchAdoptado.setChecked(animal.isAdopted());
          switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
              animal.setIsAdopted(true);
+             AnimalRequest animalRequest = new AnimalRequest();
+             animalRequest.setAnimalId(animal.getAnimalId());
+             animalRequest.setAnimalName(animal.getAnimalName());
+             animalRequest.setBirthDate(animal.getBirthDate());
+             animalRequest.setBirthDateEstimated(animal.getIsBirthDateEstimated());
+             animalRequest.setSex(animal.getSex());
+             animalRequest.setSize(animal.getSize());
+             animalRequest.setAnimalDescription(animal.getAnimalDescription());
+             animalRequest.setNeutered(animal.getIsNeutered());
+             animalRequest.setMicrochipNumber(animal.getMicrochipNumber());
+             animalRequest.setAdopted(animal.isAdopted());
+             List<PhotoRequest> photoRequests = getPhotoRequests();
+             List<TagRequest>tagRequestList=new ArrayList<>();
+             for(Tag t: animal.getTagList()){
+                 TagRequest tr = new TagRequest();
+                 tr.setTagId(t.getTagId());
+                 tr.setTagName(t.getTagName());
+                 tagRequestList.add(tr);
+             }
+             animalRequest.setPhotoList(photoRequests);
+             animalRequest.setTagList(tagRequestList);
+             MyApplication.executor.execute(()-> api.editAnimal(animalRequest));
          });
     }
 
-    //  crear el Intent desde otras activities
+    @NonNull
+    private List<PhotoRequest> getPhotoRequests() {
+        List<Photo>photoList = animal.getPhotoList();
+        List<PhotoRequest>photoRequests= new ArrayList<>();
+        for(Photo p: photoList){
+            PhotoRequest pr=new PhotoRequest();
+            pr.setPhotoId(p.getPhotoId());
+            pr.setPhotoUrl(p.getPhotoUrl());
+            pr.setFilePath(p.getFilePath());
+            pr.setCoverPhoto(p.getIsCoverPhoto());
+            pr.setDisplayOrder(p.getDisplayOrder());
+            photoRequests.add(pr);
+        }
+        return photoRequests;
+    }
+
     public static Intent createIntent(android.content.Context context, Animal animal,
                                       AnimalListing animalListing, Location location) {
         Intent intent = new Intent(context, ShowMyListingActivity.class);
