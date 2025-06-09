@@ -136,18 +136,25 @@ public class InicioActivity extends AppCompatActivity implements
         Spinner spinnerSpecies = dialogView.findViewById(R.id.spinnerSpecies);
         MyApplication.executor.execute(() -> {
             List<SpeciesDTO> receivedSpecies = PreferenceUtils.getSpeciesList();
+            List<SpeciesDTO> speciesWithAll = new ArrayList<>();
+            SpeciesDTO allSpecies = new SpeciesDTO();
+            allSpecies.setSpeciesId(-1); // ID especial para "todos"
+            allSpecies.setSpeciesName("Todos los animales");
+            speciesWithAll.add(allSpecies);
+            speciesWithAll.addAll(receivedSpecies);
+
             ArrayAdapter<SpeciesDTO> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                receivedSpecies);
+                    speciesWithAll);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerSpecies.setAdapter(adapter);
+            spinnerSpecies.setSelection(0);
             // Obtener especie seleccionada
             int selectedPosition = spinnerSpecies.getSelectedItemPosition();
             currentSpeciesId = getSpeciesIdFromPosition(selectedPosition);
             try {
                 runOnUiThread(() -> {
-                        // Establecer selección actual si existe
                         if (currentSpeciesId != null) {
                             for (int i = 0; i < receivedSpecies.size(); i++) {
                                 if (receivedSpecies.get(i).getSpeciesId() == currentSpeciesId){
@@ -216,8 +223,8 @@ public class InicioActivity extends AppCompatActivity implements
     private Integer getSelectedSpeciesId(Spinner spinnerSpecies) {
         int selectedPosition = spinnerSpecies.getSelectedItemPosition();
 
-        if (selectedPosition <= 0) {
-            return null;
+        if (selectedPosition == 0) {
+            return -1;
         }
 
         ArrayAdapter<SpeciesDTO> adapter = (ArrayAdapter<SpeciesDTO>) spinnerSpecies.getAdapter();
@@ -328,7 +335,11 @@ public class InicioActivity extends AppCompatActivity implements
                 String city = (currentCity != null && !currentCity.isEmpty()) ? currentCity : null;
                 String country = (currentCountry != null && !currentCountry.isEmpty()) ? currentCountry : null;
 
-                List<AnimalListing> filteredListings = api.getListing(city, country, currentSpeciesId, 0);
+                Integer speciesIdForApi = (currentSpeciesId != null && currentSpeciesId != -1)
+                        ? currentSpeciesId
+                        : null;
+
+                List<AnimalListing> filteredListings = api.getListing(city, country, speciesIdForApi, 0);
 
                 runOnUiThread(() -> {
                     if (filteredListings != null && !filteredListings.isEmpty()) {
@@ -444,13 +455,14 @@ public class InicioActivity extends AppCompatActivity implements
 
 
     private Integer getSpeciesIdFromPosition(int position) {
-        // Mapear la posición del spinner al ID de la especie
+        if (position == 0) {
+            return null;
+        }
         switch (position) {
-            case 1: return 1; // Perro
-            case 2: return 2; // Gato
-            case 3: return 3; // Conejo
-            case 4: return 4; // Ave
-            case 5: return 5; // Otros
+            case 1: return 1;
+            case 2: return 2;
+            case 3: return 3;
+            case 4: return 4;
             default: return null;
         }
     }

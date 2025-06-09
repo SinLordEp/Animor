@@ -95,6 +95,7 @@ public class AnimalAdapter extends RecyclerView.Adapter<AnimalAdapter.AnimalView
                     .load(photoUrl)
                     .placeholder(R.drawable.gatoinicio)
                     .error(R.drawable.gatoinicio)
+                    .fit()
                     .into(holder.imgAnimal);
         } else {
             Log.d(TAG, "No valid photo URL available, using default image");

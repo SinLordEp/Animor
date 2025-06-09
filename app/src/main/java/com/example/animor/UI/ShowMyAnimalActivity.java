@@ -122,6 +122,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
                 .error(R.drawable.gatoinicio)
+                .fit()
                 .into(imgAnimal);
 
         txtName = findViewById(R.id.txtName);

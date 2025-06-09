@@ -5,123 +5,180 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/subtle_gradient_background"
+    android:fitsSystemWindows="true"
     tools:context=".UI.UserActivity">
 
     <!-- CONTENIDO PRINCIPAL -->
-
-    <!-- MENÚ LATERAL -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Barra superior con logo y menú hamburguesa -->
+        <!-- Header con efecto glass -->
         <LinearLayout
             android:id="@+id/linearLayoutTop"
-            android:layout_width="409dp"
+            android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:background="@null"
-            android:elevation="10dp"
+            android:background="@drawable/header_glass_effect"
+            android:elevation="8dp"
             android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
                 android:layout_weight="1"
+                android:contentDescription="@string/app_logo"
+                android:scaleType="centerInside"
+                android:elevation="2dp"
                 app:srcCompat="@drawable/logoanimor" />
         </LinearLayout>
 
+        <!-- Barra de título con menú hamburguesa moderna -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutmenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/menu_bar_background"
+            android:elevation="6dp"
+            android:padding="16dp"
             app:layout_constraintTop_toBottomOf="@id/linearLayoutTop">
 
             <ImageButton
                 android:id="@+id/btn_menu"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/menu_button_background"
                 android:contentDescription="@string/menu"
+                android:elevation="2dp"
+                android:padding="12dp"
                 android:src="@android:drawable/ic_menu_sort_by_size"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/primarytwo"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:padding="8dp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textViewTitulo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/title_badge_background"
+                android:elevation="4dp"
+                android:paddingStart="24dp"
+                android:paddingTop="12dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="12dp"
                 android:text="MI CUENTA"
-                android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Layout para usuario no logueado - Moderno -->
         <LinearLayout
             android:id="@+id/layoutNoLogin"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/login_card_background"
+            android:elevation="8dp"
             android:gravity="center"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutmenu"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/layoutmenu">
+
+            <!-- Ícono de usuario no logueado -->
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/empty_state_icon_background"
+                android:elevation="2dp"
+                android:gravity="center"
+                android:text="👤"
+                android:textSize="36sp" />
 
             <TextView
                 android:id="@+id/textViewNoLogin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:gravity="center"
                 android:text="Usuario no logueado.\nIntroduce tu usuario"
-                android:textSize="15sp"
-                android:textColor="@color/black" />
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="normal" />
 
             <Button
                 android:id="@+id/btnIniciarSesion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/black"
-                android:gravity="center"
-                android:layout_marginTop="30dp"
-                android:text="Iniciar sesión" />
+                style="@style/ModernPrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/primary_button_background"
+                android:elevation="4dp"
+                android:text="Iniciar sesión"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <TableLayout
+        <!-- Contenedor de datos del usuario - Moderno -->
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/data"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_margin="40dp"
-            android:shrinkColumns="1"
-            android:stretchColumns="1"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/content_card_background"
+            android:elevation="4dp"
+            android:padding="24dp"
             app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layoutmenu">
 
-            <TableRow
-                android:id="@+id/tableanimal"
+            <!-- Card de perfil de usuario moderno -->
+            <LinearLayout
+                android:id="@+id/userProfileCard"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
+                android:layout_height="wrap_content"
+                android:background="@drawable/user_profile_card_background"
+                android:elevation="2dp"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
+                <!-- Avatar con contenedor moderno -->
                 <androidx.cardview.widget.CardView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginEnd="16dp"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="0dp">
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginEnd="20dp"
+                    app:cardCornerRadius="40dp"
+                    app:cardElevation="4dp">
 
                     <ImageView
                         android:id="@+id/imgUser"
@@ -131,48 +188,95 @@
                         android:src="@color/primarytwo" />
                 </androidx.cardview.widget.CardView>
 
+                <!-- Información del usuario -->
                 <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/textViewNombreUsuario"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
                         android:text="Nombre de Usuario"
+                        android:textColor="@color/text_primary"
+                        android:textSize="18sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textViewEmailUsuario"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="start"
-                        android:text="\@email" />
+                        android:text="mixolida36@gmail.com"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:scrollHorizontally="true" />
 
                 </LinearLayout>
 
-            </TableRow>
+                <!-- Badge de estado online -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="@drawable/status_badge_background"
+                    android:elevation="2dp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="6dp"
+                    android:text="🟢 Online"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
-        </TableLayout>
+            </LinearLayout>
 
+            <!-- Contenido adicional placeholder -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Configuración de cuenta y preferencias aparecerán aquí"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/userProfileCard"
+                android:visibility="gone"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Bottom Navigation moderno -->
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigation"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:background="@color/primarytwo"
-            android:orientation="horizontal"
+            android:layout_height="80dp"
+            android:background="@drawable/bottom_nav_elevated_background"
+            android:elevation="12dp"
+            app:itemIconTint="@color/bottom_nav_selector"
+            app:itemTextColor="@color/bottom_nav_selector"
+            app:labelVisibilityMode="labeled"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:menu="@menu/bottom_nav_menu" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- MENÚ LATERAL MODERNO -->
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@drawable/drawer_background"
+        android:elevation="16dp"
+        app:itemIconTint="@color/drawer_item_color"
+        app:itemTextColor="@color/drawer_item_color"
         app:menu="@menu/drawer_menu_user" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

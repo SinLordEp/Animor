@@ -143,6 +143,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
             Picasso.get()
                     .load(photoUrl)
                     .placeholder(R.drawable.gatoinicio)
+                    .fit()
                     .error(R.drawable.gatoinicio)
                     .into(holder.imgAnimal);
         } else {
@@ -162,6 +163,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
                 setupForFavActivity(animalListing, holder);
                 holder.btnFavorite.setImageResource(R.drawable.heart);
                 holder.btnFavorite.setVisibility(View.VISIBLE);
+                holder.tvNearMe.setVisibility(View.GONE);
                 break;
 
             case SHOW_MY_LISTINGS:

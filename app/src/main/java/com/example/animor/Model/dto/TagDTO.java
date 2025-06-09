@@ -3,6 +3,8 @@ package com.example.animor.Model.dto;
 import java.io.Serializable;
 
 public class TagDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Integer tagId;
     private String tagName;
 

@@ -20,6 +20,7 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Location;
+import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
 import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
@@ -70,17 +71,16 @@ public class ShowMyListingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_my_listing);
         btnedit = findViewById(R.id.btnedit);
         switchAdoptado = findViewById(R.id.switchadop);
-        btndel = findViewById(R.id.btndel);// Cambiar el nombre del layout si es necesario
-        // Obtener datos del Intent
+        btndel = findViewById(R.id.btndel);
         Intent intent = getIntent();
         if (intent != null) {
             animalListing = (AnimalListing) intent.getSerializableExtra("listing");
             if (animalListing != null) {
                 Log.d(TAG, "Listing pasado por intent: "+animalListing.getListingId());
+                Log.d(TAG, "Animal del listing: "+animalListing.getAnimal().getAnimalName());
             }else{
                 Log.d(TAG, "Listing pasado por intent: ES NULO");
             }
-            Log.d(TAG, "Animal del listing: "+animalListing.getAnimal().getAnimalName());
             mode = intent.getStringExtra("mode");
 
             if (animalListing != null) {
@@ -149,8 +149,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
         tvCity = findViewById(R.id.tvCity);
         tvProvince = findViewById(R.id.tvProvince);
         tvCountry = findViewById(R.id.tvCountry);
-        Log.d(TAG, "Adoptado: "+animal.isAdopted());
-
     }
 
     private void loadAnimalData() {
@@ -159,6 +157,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
                 .error(R.drawable.gatoinicio)
+                .fit()
                 .into(imgAnimal);
 
         // Cargar datos básicos del animal
@@ -172,7 +171,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
             String fechaFormateada = animal.getBirthDate().format(formatoSalida);
             textViewAnimalBirthdate.setText(fechaFormateada);
         }
-
         // Mostrar si la fecha es estimada
         if (animal.getIsBirthDateEstimated()) {
             textViewEstimatedBirthdate.setVisibility(View.VISIBLE);
@@ -184,6 +182,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
         textViewAnimalSize.setText(animal.getSize() != null ? animal.getSize() : "Sin especificar");
         textViewAnimalDescription.setText(animal.getAnimalDescription() != null ?
                 animal.getAnimalDescription() : "Sin descripción");
+        Log.d(TAG, "Adoptado: "+animal.isAdopted());
 
         // Cargar número de microchip si existe
         if (animal.getMicrochipNumber() != null && !animal.getMicrochipNumber().isEmpty()) {
@@ -291,12 +290,12 @@ public class ShowMyListingActivity extends AppCompatActivity {
             });
         });
 
-        // Listener para el switch de adoptado
         switchAdoptado.setChecked(animal.isAdopted());
-         switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
-             animal.setIsAdopted(true);
+        switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
+             animal.setIsAdopted(isChecked);
              AnimalRequest animalRequest = new AnimalRequest();
              animalRequest.setAnimalId(animal.getAnimalId());
+             animalRequest.setSpeciesId(animal.getSpeciesId());
              animalRequest.setAnimalName(animal.getAnimalName());
              animalRequest.setBirthDate(animal.getBirthDate());
              animalRequest.setBirthDateEstimated(animal.getIsBirthDateEstimated());
@@ -316,7 +315,17 @@ public class ShowMyListingActivity extends AppCompatActivity {
              }
              animalRequest.setPhotoList(photoRequests);
              animalRequest.setTagList(tagRequestList);
-             MyApplication.executor.execute(()-> api.editAnimal(animalRequest));
+             MyApplication.executor.execute(()-> {
+                 boolean success= api.editAnimal(animalRequest);
+                 if(success){
+                     Log.d(TAG, "ANIMAL ACTUALIZADO: ADOPTADO");
+                 }else{
+                     runOnUiThread(()->{
+                         animal.setIsAdopted(!isChecked);
+                         switchAdoptado.setChecked(!isChecked);
+                     });
+                 }
+             });
          });
     }
 

@@ -128,12 +128,10 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
         Log.d(TAG, "Listing seleccionado: " + animalListing.getAnimal().getAnimalName());
 
         // Aquí puedes implementar la navegación al detalle
-         Intent intent = new Intent(this, ShowMyListingActivity.class);
-         intent.putExtra("animalListing", animalListing);
-         startActivity(intent);
-
-        Toast.makeText(this, "Ver detalle de: " + animalListing.getAnimal().getAnimalName(),
-                Toast.LENGTH_SHORT).show();
+         Intent intent = new Intent(FavActivity.this, ShowMyListingActivity.class);
+         intent.putExtra("listing", animalListing);
+        intent.putExtra("mode", "adoptive");
+        startActivity(intent);
     }
 
     @Override

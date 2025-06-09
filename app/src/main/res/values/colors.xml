@@ -8,4 +8,30 @@
     <color name="primarytwo">#48806C</color>
     <color name="primarytwovariant">#E9EDC9</color>
     <color name="links">#100AC8</color>
+
+    <color name="tab_text_unselected">#666666</color>
+    <color name="bottom_nav_item_color">@color/bottom_nav_selector</color>
+    <!-- Colores de texto adicionales -->
+    <color name="text_white_80">#ccffffff</color>
+    <color name="text_primary">#2d3748</color>
+    <color name="text_secondary">#718096</color>
+
+    <!-- Colores de efectos glass -->
+    <color name="glass_black_10">#1a000000</color>
+    <color name="glass_white_15">#26ffffff</color>
+    <color name="glass_white_20">#33ffffff</color>
+
+    <!-- Colores secundarios -->
+    <color name="secondary_light">#e2e8f0</color>
+    <color name="secondary_dark">#4a5568</color>
+
+    <!-- Colores de fondo -->
+    <color name="background_light">#f7fafc</color>
+    <color name="background_white">#ffffff</color>
+    <color name="background_glass">#f0ffffff</color>
+
+    <!-- Colores de estado -->
+    <color name="success">#48bb78</color>
+    <color name="warning">#ed8936</color>
+    <color name="error">#f56565</color>
 </resources>

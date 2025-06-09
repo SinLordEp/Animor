@@ -1,36 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@drawable/subtle_gradient_background"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true"
+    android:padding="16dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Card principal del animal -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/animalMainCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/linearLayoutCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/animal_card_background"
                 android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-                <!-- Contenedor CardView para imagen redonda -->
+                android:padding="20dp">
+
+                <!-- Avatar del animal -->
                 <androidx.cardview.widget.CardView
                     android:id="@+id/card"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_margin="10dp"
+                    android:layout_marginEnd="16dp"
                     app:cardCornerRadius="50dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">  <!-- Margen para separar del texto -->
+                    app:cardElevation="6dp">
 
                     <ImageView
                         android:id="@+id/imgUser"
@@ -38,363 +49,548 @@
                         android:layout_height="match_parent"
                         android:contentDescription="@string/imagen_del_animal_que_se_da_en_adopci_n"
                         android:scaleType="centerCrop"
-                        android:src="@color/primarytwo" />  <!-- imagen -->
-
+                        android:src="@color/primarytwo" />
                 </androidx.cardview.widget.CardView>
 
+                <!-- Información básica del animal -->
                 <LinearLayout
                     android:id="@+id/NameCard"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:padding="10dp"
-                    app:layout_constraintStart_toEndOf="@+id/card"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
+                    android:paddingStart="10dp">
 
                     <TextView
                         android:id="@+id/txtName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
                         android:text="@string/nombre_animal"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtSex"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sexo"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
 
                     <TextView
                         android:id="@+id/txtCity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ciudad"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
                         android:visibility="gone" />
-
-                    <TextView
-                        android:id="@+id/txtSex"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sexo" />
                 </LinearLayout>
 
+                <!-- Badge de especie -->
                 <LinearLayout
                     android:id="@+id/linearLayoutSpecies"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/NameCard"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
+                    android:layout_gravity="center_vertical"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tvSpecies"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="20dp"
-                        android:gravity="end"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="0dp"
-                        android:text="@string/especie" />
+                        android:background="@drawable/species_badge_background"
+                        android:elevation="2dp"
+                        android:paddingStart="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="6dp"
+                        android:text="@string/especie"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-            <TableLayout
-                android:id="@+id/tableanimal"
+        <!-- Card de información detallada del animal -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/detailsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/animalMainCard">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="35dp"
-                android:shrinkColumns="*"
-                android:stretchColumns="*"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayoutCard">
+                android:background="@drawable/details_card_background"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-                <TableRow
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="Información del animal"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <!-- Información en formato moderno -->
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/textViewBirthdate"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:paddingStart="30dp"
-                        android:paddingEnd="0dp"
+                        android:layout_weight="0.4"
                         android:text="@string/a_o_de_nacimiento"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
-
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="0.6"
                         android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/textViewAnimalBirthdate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginTop="0dp"
-                            android:gravity="start"
-                            android:text="01-02-2020" />
+                            android:text="01-02-2020"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/textViewEstimatedBirthdate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:gravity="start"
                             android:text="@string/aproximadamente"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
                             android:visibility="gone" />
                     </LinearLayout>
+                </LinearLayout>
 
-                </TableRow>
-
-                <TableRow
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/glass_black_10" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/textViewSize"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
+                        android:layout_weight="0.4"
                         android:text="@string/tama_o"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textViewAnimalSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/cm" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/textViewDescription"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="@string/descripci_n"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewAnimalDescription"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:maxLines="10"
-                        android:paddingTop="30dp"
-                        android:paddingBottom="20dp"
-                        android:singleLine="false"
-                        android:text="@string/es_un_animal_muy_bueno" />
-                </TableRow>
+                        android:layout_weight="0.6"
+                        android:text="@string/cm"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-                <TableRow
-                    android:id="@+id/tableRowAnimalMicroNumber"
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/glass_black_10" />
 
-                    <TextView
-                        android:id="@+id/textViewMicroNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="Número de microchip"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewAnimalMicroNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="000000000" />
-                </TableRow>
-
-                <TableRow
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/textViewNeutered"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
+                        android:layout_weight="0.4"
                         android:text="@string/esterilizado"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textViewAnimalNeutered"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/s_no" />
-                </TableRow>
+                        android:layout_weight="0.6"
+                        android:text="@string/s_no"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-            </TableLayout>
+                <!-- Microchip (condicional) -->
+                <LinearLayout
+                    android:id="@+id/microchipLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/glass_black_10" />
+
+                    <LinearLayout
+                        android:id="@+id/tableRowAnimalMicroNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textViewMicroNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:text="Número de microchip"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewAnimalMicroNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:text="000000000"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/glass_black_10" />
+
+                <TextView
+                    android:id="@+id/textViewDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/descripci_n"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textViewAnimalDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/es_un_animal_muy_bueno"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:lineSpacingExtra="2dp"
+                    android:maxLines="10" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card de etiquetas -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/tagsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/detailsCard">
 
             <LinearLayout
                 android:id="@+id/linTags"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:background="@drawable/details_card_background"
                 android:orientation="vertical"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tableanimal">
+                android:padding="20dp">
 
                 <TextView
                     android:id="@+id/tvTags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="start"
+                    android:layout_marginBottom="12dp"
                     android:text="Etiquetas"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/listTags"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textViewNeutered" />
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <com.example.animor.Utils.NonScrollListView
                     android:id="@+id/listTags"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/border"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvTags"
-                    tools:layout_editor_absoluteY="60dp" />
-
+                    android:background="@drawable/tags_list_background"
+                    android:elevation="2dp"
+                    android:padding="8dp" />
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card de información de contacto -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/contactCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tagsCard">
 
             <LinearLayout
-                android:id="@+id/lindatos"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/form_card_background"
                 android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@+id/linTags"
-                app:layout_constraintStart_toStartOf="parent">
+                android:padding="20dp">
+
                 <TextView
                     android:id="@+id/tvContacto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="start"
+                    android:layout_marginBottom="16dp"
                     android:text="Contacto"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toTopOf="@+id/lindatos" />
-                <EditText
-                    android:id="@+id/editTextPhone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:hint="@string/tel_fono"
-                    android:inputType="phone" />
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/editTextTextEmailAddress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:hint="email"
-                    android:inputType="textEmailAddress" />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/tel_fono"
+                        android:inputType="phone"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTextTextEmailAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="email"
+                        android:inputType="textEmailAddress"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Card de ubicación -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/locationCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/contactCard">
+
+            <LinearLayout
+                android:id="@+id/lindatos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/form_card_background"
+                android:orientation="vertical"
+                android:padding="20dp">
+
                 <TextView
                     android:id="@+id/tvdireccion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="start"
+                    android:layout_marginBottom="16dp"
                     android:text="Dirección"
-                    android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <!-- Botón para obtener ubicación actual -->
                 <Button
                     android:id="@+id/btnGetLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@color/black"
+                    style="@style/ModernSecondaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/secondary_button_background"
+                    android:elevation="4dp"
                     android:text="Obtener Mi Ubicación Actual"
-                    android:textColor="@android:color/white" />
+                    android:textColor="@color/primarytwo"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/etAddress"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:hint="Nombre de la calle, plaza..." />
-
-                <EditText
-                    android:id="@+id/etCiudad"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:hint="Ciudad" />
-                <EditText
-                    android:id="@+id/etProvincia"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:hint="Provincia" />
-                <EditText
-                    android:id="@+id/etPostalCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:hint="Código Postal" />
-                <EditText
-                    android:id="@+id/etCountry"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:ems="10"
-                    android:inputType="text"
-                    android:hint="País" />
-                <Button
-                    android:id="@+id/buttonSave"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/black"
-                    android:text="Registrar animal"
-                    android:layout_marginBottom="100dp"
-                    android:layout_marginTop="10dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/listTags"/>
+                    android:layout_marginBottom="12dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Nombre de la calle, plaza..."
+                        android:inputType="text"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCiudad"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Ciudad"
+                        android:inputType="text"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etProvincia"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Provincia"
+                        android:inputType="text"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPostalCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Código Postal"
+                        android:inputType="text"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="outline"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/primarytwo">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="País"
+                        android:inputType="text"
+                        android:textSize="16sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+        <!-- Botón guardar -->
+        <Button
+            android:id="@+id/buttonSave"
+            style="@style/ModernPrimaryButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/primary_button_background"
+            android:elevation="6dp"
+            android:text="Registrar animal"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/locationCard" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

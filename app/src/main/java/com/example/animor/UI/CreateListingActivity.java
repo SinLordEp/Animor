@@ -82,7 +82,6 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
     double longitude;
 
     //otras variables
-    PreferenceUtils pu;
     private String lastGeocodedAddress = "";
     boolean isUserTyping = false;
 
@@ -99,12 +98,13 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         setContentView(R.layout.activity_create_one_listing);
         listing = (AnimalListing) getIntent().getSerializableExtra("listing");
         animal = (Animal) getIntent().getSerializableExtra("animal");
+        initViews();
+
         if(listing != null){
             animal=listing.getAnimal();
             listingId=listing.getListingId();
             editListing();
         }
-        initViews();
         initializeGeolocation();
         setupListeners();
         if (animal != null) {
@@ -161,7 +161,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
                 Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
                 Log.d(TAG, "Animal en listing: "+animal.toString());
                 intent.putExtra("animal", animal);
-                intent.putExtra("animalListing", listing);
+                intent.putExtra("listing", listing);
                 startActivity(intent);
             });
         });
@@ -210,17 +210,17 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         listingRequest.setLocation(location);
         listingRequest.setContactEmail(editTextTextEmailAddress.getText().toString().trim());
         listingRequest.setContactPhone(editTextPhone.getText().toString().trim());
-        ApiRequests api = new ApiRequests();
-        if(listingId !=-1){
-            MyApplication.executor.execute(()->{
-                listingRequest.setListingId(listing.getListingId());
-                api.editListing(listingRequest, animal.getAnimalId());
-            });
-        }else{
-            MyApplication.executor.execute(()->{
-                api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
-            });
-        }
+        MyApplication.executor.execute(()->{
+                ApiRequests api = new ApiRequests();
+            if(listingId !=-1){
+                    listingRequest.setListingId(listingId);
+                    api.editListing(listingRequest, animal.getAnimalId());
+                    Log.d(TAG, "ID DEL LISTING EDITADO: "+listingRequest.getListingId());
+            }else{
+                    api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
+            }
+        });
+
         Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
     }
 
@@ -494,6 +494,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
                 .error(R.drawable.gatoinicio)
+                .fit()
                 .into(imgAnimal);
 
         // Datos del animal

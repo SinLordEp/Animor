@@ -137,6 +137,7 @@ public class CreateAnimalFragment extends Fragment {
                         .load(animal.getPhotoList().get(0).getPhotoUrl())
                         .placeholder(R.drawable.gatoinicio)
                         .error(R.drawable.gatoinicio)
+                        .fit()
                         .into(imgAnimal);
             }
             etNombre.setText(animal.getAnimalName());

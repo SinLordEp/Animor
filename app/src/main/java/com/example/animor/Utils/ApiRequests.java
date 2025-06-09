@@ -258,7 +258,7 @@ public class ApiRequests {
         }
         return null;
     }
-    public void editAnimal(AnimalRequest animal) {
+    public boolean editAnimal(AnimalRequest animal) {
         String url = "https://www.animor.es/animal/update-animal";
         RequestBody body = null;
         // 1. Crear el objeto JSON anidado
@@ -282,11 +282,13 @@ public class ApiRequests {
             Log.d(TAG, "Status Code: " + response.code());
             Log.d(TAG, "Response Body: " + responseBody);
             Log.d(TAG, "Is Successful: " + response.isSuccessful());
+            String status = getStatusFromResponseBody(responseBody);
             if (response.isSuccessful()) {
                 Log.d(TAG, "Respuesta del servidor al enviar animal: " + responseBody);
-                JSONObject jsonResponse = new JSONObject(responseBody);
-                long idAnimal = jsonResponse.getLong("data");
-                Log.d(TAG, "ID del animal editado: " + idAnimal);
+                if("ANIMAL_DELETE_SUCCESS".equals(status)){
+                    Log.d("ApiRequest - Delete animal", "Borrado exitoso");
+                }
+                return true;
             } else {
                 Log.e(TAG, "Error guardando animal en el servidor: " + getStatusFromResponseBody(responseBody)
                         + " | Respuesta: " + getJsonObjectFromBody(responseBody));
@@ -294,7 +296,7 @@ public class ApiRequests {
         } catch (Exception e) {
             Log.e(TAG, "Error al guardar animal: ", e);
         }
-
+        return false;
     }
 
     public void addPhotoIntoDatabase(Long receivedAnimalId, PhotoRequest photoRequest) {

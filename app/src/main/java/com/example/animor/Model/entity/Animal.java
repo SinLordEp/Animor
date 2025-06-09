@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Animal implements Serializable {
+    private static final long serialVersionUID = 1L;
+
 
     @JsonProperty("animalId")
     private Long animalId;

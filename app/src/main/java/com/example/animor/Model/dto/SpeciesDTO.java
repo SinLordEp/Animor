@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class SpeciesDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int speciesId;
     private String speciesName;
 

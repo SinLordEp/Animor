@@ -6,7 +6,7 @@
         android:contentDescription="inicio"
         android:icon="@drawable/gatoinicio"
         android:scaleType="centerCrop"
-        android:title="inicio"
+        android:title="Inicio"
         android:titleCondensed="Inicio"/>
     <item
         android:id="@+id/nav_favs"
@@ -21,20 +21,20 @@
     android:contentDescription="@string/boton_para_registrar_un_animal_para_adoptar"
     android:icon="@android:drawable/ic_input_add"
     android:scaleType="centerCrop"
-    android:title="Dar en adopción" />
+    android:title="Registrar" />
     <item
         android:id="@+id/nav_animals"
         android:contentDescription="mis animales"
         android:icon="@drawable/pawprint"
         android:scaleType="centerCrop"
         android:titleCondensed="registros"
-        android:title="Mis animales"/>
+        android:title="Mascotas"/>
     <item
         android:id="@+id/nav_user"
         android:contentDescription="botón para ir a tu cuenta de usuario"
         android:icon="@drawable/user"
         android:scaleType="centerCrop"
-        android:title="usuario"
+        android:title="Perfil"
         android:titleCondensed="Mi cuenta" />
 
 </menu>

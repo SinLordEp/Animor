@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AnimalListing implements Serializable {
+    private static final long serialVersionUID = 1L;
     private long listingId;
     private Animal animal;
     private UserSimple user;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import java.io.Serializable;
 
 public enum Sex implements Serializable {
+
     Male("Male"),
     Female("Female"),
     Unknown("Unknown");

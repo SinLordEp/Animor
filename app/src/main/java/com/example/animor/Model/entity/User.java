@@ -5,6 +5,8 @@ import com.example.animor.Model.dto.UserDTO;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private String userToken;
     private long userId;
     private String userName;
