@@ -62,6 +62,7 @@ public class ShowActivity extends AppCompatActivity
         bottomNavigationView = findViewById(R.id.bottomNavigation);
         navigationHelper.setupBottomNavigation(bottomNavigationView);
         Log.d(TAG, "onCreate completed successfully");
+
     }
 
     private void setupViewPager() {
@@ -82,30 +83,37 @@ public class ShowActivity extends AppCompatActivity
             public void onPageSelected(int position) {
                 currentTab = position;
 
-                // Configurar el listener cuando se cargue el fragment de animales
-                if (position == 0) {
-                    // Esperar un poco para que el fragment se cargue completamente
-                    viewPager.post(() -> {
-                        Fragment currentFragment = getSupportFragmentManager()
-                                .findFragmentByTag("f" + position);
-                        if (currentFragment instanceof ShowMyAnimalsFragment) {
-                            ((ShowMyAnimalsFragment) currentFragment).setAnimalSelectedListener(ShowActivity.this);
-                        }
-                    });
-                }
+                // Configurar listeners cuando se carguen los fragments
+                viewPager.post(() -> {
+                    Fragment currentFragment = getSupportFragmentManager()
+                            .findFragmentByTag("f" + position);
+
+                    if (position == 0 && currentFragment instanceof ShowMyAnimalsFragment) {
+                        // Configurar listener para animales
+                        ((ShowMyAnimalsFragment) currentFragment).setAnimalSelectedListener(ShowActivity.this);
+                    } else if (position == 1 && currentFragment instanceof ShowMyListingsFragment) {
+                        // Configurar listener para listings
+                        ((ShowMyListingsFragment) currentFragment).setListingSelectedListener(ShowActivity.this);
+                    }
+                });
             }
         });
 
-        // También configurar el listener para el fragment inicial (posición 0)
+        // Configurar listeners para fragments iniciales
         viewPager.post(() -> {
-            Fragment initialFragment = getSupportFragmentManager()
-                    .findFragmentByTag("f0");
-            if (initialFragment instanceof ShowMyAnimalsFragment) {
-                ((ShowMyAnimalsFragment) initialFragment).setAnimalSelectedListener(this);
+            // Fragment de animales (posición 0)
+            Fragment animalsFragment = getSupportFragmentManager().findFragmentByTag("f0");
+            if (animalsFragment instanceof ShowMyAnimalsFragment) {
+                ((ShowMyAnimalsFragment) animalsFragment).setAnimalSelectedListener(this);
+            }
+
+            // Fragment de listings (posición 1)
+            Fragment listingsFragment = getSupportFragmentManager().findFragmentByTag("f1");
+            if (listingsFragment instanceof ShowMyListingsFragment) {
+                ((ShowMyListingsFragment) listingsFragment).setListingSelectedListener(this);
             }
         });
     }
-
 
 
     @Override
@@ -116,7 +124,6 @@ public class ShowActivity extends AppCompatActivity
         intent.putExtra("tags", (Serializable) animal.getTagList());
         intent.putExtra("photos", (Serializable) animal.getPhotoList());
         startActivity(intent);
-        finish();
     }
 
 
@@ -126,7 +133,6 @@ public class ShowActivity extends AppCompatActivity
         Intent intent = new Intent(ShowActivity.this, ShowMyListingActivity.class);
         intent.putExtra("listing", listing);
         startActivity(intent);
-        finish();
     }
 
     private void showListingDetail(AnimalListing listing) {

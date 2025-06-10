@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Tag implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private Integer tagId;
     private String tagName;
 

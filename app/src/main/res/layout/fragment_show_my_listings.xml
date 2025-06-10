@@ -3,86 +3,153 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <!-- Título -->
+    <!-- Título fijo en la parte superior -->
     <TextView
         android:id="@+id/textViewTitulo"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@drawable/fragment_title_background"
+        android:elevation="2dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:text="MIS REGISTROS DE ADOPCIÓN"
-        android:layout_marginTop="20dp"
-        android:textColor="@color/black"
-        android:layout_margin="20dp"
-        android:textSize="20sp"
+        android:textColor="@color/primarytwo"
+        android:textSize="16sp"
         android:textStyle="bold"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/layoutNoLogin"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="16dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewTitulo"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Lista de animales del usuario -->
+    <!-- RecyclerView que ocupa todo el espacio disponible -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMyListings"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:padding="8dp"
-        android:background="@drawable/border"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/fragment_recycler_background"
+        android:clipToPadding="false"
         android:contentDescription="lista de mis registros"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo"
+        android:elevation="2dp"
+        android:paddingStart="12dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
 
-    <!-- Layout para cuando no hay registros -->
+    <!-- Layout para usuario no logueado -->
+    <LinearLayout
+        android:id="@+id/layoutNoLogin"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/empty_state_background"
+        android:elevation="4dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitulo">
+
+        <!-- Ícono de estado no logueado -->
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/empty_state_icon_background"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:text="🔒"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/textViewNoLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="Usuario no logueado.\nIntroduce tu usuario"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="normal" />
+
+        <Button
+            android:id="@+id/btnIniciarSesion"
+            style="@style/ModernPrimaryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:background="@drawable/primary_button_background"
+            android:elevation="4dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="Iniciar sesión"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Layout para cuando no hay registros - Estado vacío mejorado -->
     <LinearLayout
         android:id="@+id/linnolisting"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="30dp"
-        android:orientation="vertical"
+        android:background="@drawable/empty_state_background"
+        android:elevation="4dp"
         android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
         android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo">
+
+        <!-- Ícono de estado vacío -->
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/empty_state_icon_background"
+            android:elevation="2dp"
+            android:gravity="center"
+            android:text="📝"
+            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
             android:gravity="center"
             android:text="Aún no tienes registros.\n¡Crea uno!"
             android:textAlignment="center"
-            android:textStyle="bold" />
+            android:textColor="@color/text_primary"
+            android:textSize="16sp"
+            android:textStyle="normal" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btncrear"
+            style="@style/ModernPrimaryButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="@color/black"
-            android:text="Registrar animal" />
+            android:layout_height="56dp"
+            android:background="@drawable/primary_button_background"
+            android:elevation="4dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="Registrar animal"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

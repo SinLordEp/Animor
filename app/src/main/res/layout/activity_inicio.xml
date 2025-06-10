@@ -2,121 +2,142 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/subtle_gradient_background"
+    android:fitsSystemWindows="true">
 
+    <!-- Header con efecto glass -->
     <LinearLayout
         android:id="@+id/linearLayoutTop"
-        android:layout_width="409dp"
-        android:layout_height="100dp"
-        android:elevation="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@drawable/header_glass_effect"
+        android:elevation="8dp"
         android:orientation="horizontal"
-        android:background="@null"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:contentDescription="@string/app_logo"
+            android:scaleType="centerInside"
+            android:elevation="2dp"
             app:srcCompat="@drawable/logoanimor" />
     </LinearLayout>
 
-    <!-- NUEVO LinearLayout debajo del logo -->
+    <!-- Barra de búsqueda moderna -->
     <LinearLayout
         android:id="@+id/searchBarLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/search_bar_background"
+        android:elevation="6dp"
         android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
 
         <EditText
             android:id="@+id/searchEditText"
             android:layout_width="0dp"
             android:layout_height="48dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
+            android:background="@drawable/search_input_background"
             android:hint="Buscar..."
             android:inputType="text"
-            android:background="@drawable/border"
-            android:padding="8dp"
-            android:layout_marginEnd="8dp"/>
+            android:padding="12dp"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/btnLupa"
+            style="@style/ModernActionButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginEnd="4dp"
-            android:textSize="12sp"
-            android:backgroundTint="@color/black"
+            android:backgroundTint="@color/primarytwo"
             android:text="@string/buscar"
+            android:textSize="12sp"
             app:icon="@android:drawable/ic_menu_search" />
 
         <Button
             android:id="@+id/btnFiltros"
+            style="@style/ModernActionButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/primarytwo"
             android:text="Filtros"
             android:textSize="12sp"
-            android:backgroundTint="@color/black"
             app:icon="@android:drawable/ic_menu_sort_by_size" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewTitulo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="INICIO"
-        android:textColor="@color/black"
-        android:layout_margin="20dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBarLayout" />
+
+    <!-- Subtítulo moderno -->
     <TextView
         android:id="@+id/textViewSubtitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/subtitle_background"
+        android:elevation="2dp"
         android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:text="Obteniendo animales cerca de ti"
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:textSize="14sp"
+        android:textStyle="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTitulo" />
+        app:layout_constraintTop_toBottomOf="@+id/searchBarLayout" />
 
+    <!-- Lista con contenedor moderno -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewAnimals"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/border"
-        android:layout_marginBottom="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/content_card_background"
         android:contentDescription="@string/lista_de_animales"
-        android:padding="8dp"
+        android:elevation="4dp"
+        android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewSubtitulo" />
 
+    <!-- Bottom Navigation moderno -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:background="@color/primarytwo"
-        android:orientation="horizontal"
+        android:layout_height="80dp"
+        android:background="@drawable/bottom_nav_elevated_background"
+        android:elevation="12dp"
+        app:itemIconTint="@color/bottom_nav_selector"
+        app:itemTextColor="@color/bottom_nav_selector"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

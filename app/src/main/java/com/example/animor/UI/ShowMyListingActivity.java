@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +20,11 @@ import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Model.entity.Photo;
 import com.example.animor.Model.entity.Location;
+import com.example.animor.Model.entity.Species;
 import com.example.animor.Model.entity.Tag;
+import com.example.animor.Model.request.AnimalRequest;
+import com.example.animor.Model.request.PhotoRequest;
+import com.example.animor.Model.request.TagRequest;
 import com.example.animor.R;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.NonScrollListView;
@@ -27,6 +32,7 @@ import com.example.animor.Utils.PreferenceUtils;
 import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowMyListingActivity extends AppCompatActivity {
@@ -55,28 +61,39 @@ public class ShowMyListingActivity extends AppCompatActivity {
     private Location location = null;
     private String speciesName = "";
     private String photoUrl = "";
+    private String TAG="ShowMyListingActivity";
+    String mode;
+    ApiRequests api = new ApiRequests();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_my_listing); // Cambiar el nombre del layout si es necesario
-        initViews();
-        // Obtener datos del Intent
+        setContentView(R.layout.activity_show_my_listing);
+        btnedit = findViewById(R.id.btnedit);
+        switchAdoptado = findViewById(R.id.switchadop);
+        btndel = findViewById(R.id.btndel);
         Intent intent = getIntent();
         if (intent != null) {
             animalListing = (AnimalListing) intent.getSerializableExtra("listing");
-            String mode = intent.getStringExtra("mode");
+            if (animalListing != null) {
+                Log.d(TAG, "Listing pasado por intent: "+animalListing.getListingId());
+                Log.d(TAG, "Animal del listing: "+animalListing.getAnimal().getAnimalName());
+            }else{
+                Log.d(TAG, "Listing pasado por intent: ES NULO");
+            }
+            mode = intent.getStringExtra("mode");
 
             if (animalListing != null) {
                 animal = animalListing.getAnimal();
                 location = animalListing.getLocation();
             }
             if(mode!=null && mode.equals("adoptive")){
+                switchAdoptado.setVisibility(View.GONE);
                 btndel.setVisibility(View.GONE);
                 btnedit.setVisibility(View.GONE);
-                switchAdoptado.setVisibility(View.GONE);
             }
         }
+        initViews();
 
         // Verificar que tenemos los datos necesarios
         if (animalListing == null) {
@@ -97,15 +114,16 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Obtener URL de la foto de portada
         List<Photo> photoList = animal.getAnimalPhotoList();
+        Log.d(TAG, "tamaño lista de fotos: "+photoList.size());
         if (photoList != null) {
             for (Photo a : photoList) {
-                if (a.getIsCoverPhoto()) {
+                Log.d(TAG, "¿La foto es cover?: "+a.getIsCoverPhoto());
+                //if (a.getIsCoverPhoto()) {
                     photoUrl = a.getPhotoUrl();
                     break;
-                }
+                //}
             }
         }
-
         setupListeners();
         loadAnimalData();
         loadListingData();
@@ -131,11 +149,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
         tvCity = findViewById(R.id.tvCity);
         tvProvince = findViewById(R.id.tvProvince);
         tvCountry = findViewById(R.id.tvCountry);
-        switchAdoptado = findViewById(R.id.switchadop);
-
-        // Inicializar botones
-        btnedit = findViewById(R.id.btnedit);
-        btndel = findViewById(R.id.btndel);
     }
 
     private void loadAnimalData() {
@@ -144,6 +157,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
                 .error(R.drawable.gatoinicio)
+                .fit()
                 .into(imgAnimal);
 
         // Cargar datos básicos del animal
@@ -157,7 +171,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
             String fechaFormateada = animal.getBirthDate().format(formatoSalida);
             textViewAnimalBirthdate.setText(fechaFormateada);
         }
-
         // Mostrar si la fecha es estimada
         if (animal.getIsBirthDateEstimated()) {
             textViewEstimatedBirthdate.setVisibility(View.VISIBLE);
@@ -169,6 +182,7 @@ public class ShowMyListingActivity extends AppCompatActivity {
         textViewAnimalSize.setText(animal.getSize() != null ? animal.getSize() : "Sin especificar");
         textViewAnimalDescription.setText(animal.getAnimalDescription() != null ?
                 animal.getAnimalDescription() : "Sin descripción");
+        Log.d(TAG, "Adoptado: "+animal.isAdopted());
 
         // Cargar número de microchip si existe
         if (animal.getMicrochipNumber() != null && !animal.getMicrochipNumber().isEmpty()) {
@@ -256,7 +270,6 @@ public class ShowMyListingActivity extends AppCompatActivity {
 
         // Listener para eliminar listing
         btndel.setOnClickListener(v -> {
-            ApiRequests api = new ApiRequests();
             MyApplication.executor.execute(() -> {
                 // Llamada para eliminar el listing
                 boolean success = api.deleteListing(animalListing.getListingId());
@@ -277,13 +290,64 @@ public class ShowMyListingActivity extends AppCompatActivity {
             });
         });
 
-        // Listener para el switch de adoptado
-         switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
-             animal.setIsAdopted(true);
+        switchAdoptado.setChecked(animal.isAdopted());
+        switchAdoptado.setOnCheckedChangeListener((buttonView, isChecked) -> {
+             animal.setIsAdopted(isChecked);
+             AnimalRequest animalRequest = new AnimalRequest();
+             animalRequest.setAnimalId(animal.getAnimalId());
+             animalRequest.setSpeciesId(animal.getSpeciesId());
+             animalRequest.setAnimalName(animal.getAnimalName());
+             animalRequest.setBirthDate(animal.getBirthDate());
+             animalRequest.setBirthDateEstimated(animal.getIsBirthDateEstimated());
+             animalRequest.setSex(animal.getSex());
+             animalRequest.setSize(animal.getSize());
+             animalRequest.setAnimalDescription(animal.getAnimalDescription());
+             animalRequest.setNeutered(animal.getIsNeutered());
+             animalRequest.setMicrochipNumber(animal.getMicrochipNumber());
+             animalRequest.setAdopted(animal.isAdopted());
+             List<PhotoRequest> photoRequests = getPhotoRequests();
+             List<TagRequest>tagRequestList=new ArrayList<>();
+             for(Tag t: animal.getTagList()){
+                 TagRequest tr = new TagRequest();
+                 tr.setTagId(t.getTagId());
+                 tr.setTagName(t.getTagName());
+                 tagRequestList.add(tr);
+             }
+             animalRequest.setPhotoList(photoRequests);
+             animalRequest.setTagList(tagRequestList);
+             MyApplication.executor.execute(()-> {
+                 boolean success= api.editAnimal(animalRequest);
+                 if(success){
+                     Log.d(TAG, "ANIMAL ACTUALIZADO: ADOPTADO");
+                     //Intent intent = new Intent(ShowMyListingActivity.this, ShowActivity.class);
+                    // startActivity(intent);
+                 }else{
+                     runOnUiThread(()->{
+                         animal.setIsAdopted(!isChecked);
+                         switchAdoptado.setChecked(!isChecked);
+
+                     });
+                 }
+             });
          });
     }
 
-    //  crear el Intent desde otras activities
+    @NonNull
+    private List<PhotoRequest> getPhotoRequests() {
+        List<Photo>photoList = animal.getPhotoList();
+        List<PhotoRequest>photoRequests= new ArrayList<>();
+        for(Photo p: photoList){
+            PhotoRequest pr=new PhotoRequest();
+            pr.setPhotoId(p.getPhotoId());
+            pr.setPhotoUrl(p.getPhotoUrl());
+            pr.setFilePath(p.getFilePath());
+            pr.setCoverPhoto(p.getIsCoverPhoto());
+            pr.setDisplayOrder(p.getDisplayOrder());
+            photoRequests.add(pr);
+        }
+        return photoRequests;
+    }
+
     public static Intent createIntent(android.content.Context context, Animal animal,
                                       AnimalListing animalListing, Location location) {
         Intent intent = new Intent(context, ShowMyListingActivity.class);
@@ -291,5 +355,12 @@ public class ShowMyListingActivity extends AppCompatActivity {
         intent.putExtra("animalListing", animalListing);
         intent.putExtra("location", location);
         return intent;
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DEBUG", "onResume() - Refrescando lista de animales");
+        loadAnimalData();
+        loadListingData();
     }
 }

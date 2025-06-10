@@ -3,6 +3,8 @@ package com.example.animor.Model.request;
 import java.io.Serializable;
 
 public class TagRequest implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int tagId;
     private String tagName;
 

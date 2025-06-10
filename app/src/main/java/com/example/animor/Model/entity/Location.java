@@ -5,6 +5,8 @@ import com.example.animor.Model.dto.LocationDTO;
 import java.io.Serializable;
 
 public class Location implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     String country;
     String province;
     String city;

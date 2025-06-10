@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,7 +31,8 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
     // Enum para definir el tipo de vista
     public enum ViewType {
-        INICIO_ACTIVITY,        // Con favoritos y distancia
+        INICIO_ACTIVITY, // Con favoritos y distancia
+        FAVORITES_ACTIVITY,
         SHOW_MY_LISTINGS       // Sin favoritos ni distancia
     }
 
@@ -82,9 +82,19 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         loadAnimalPhoto(animal, holder);
 
         // Configurar sexo
-        holder.txtSex.setText(animal.getSex().toString());
 
-        // Establecer la ciudad del listing
+        switch(animal.getSex()){
+            case Male:
+                holder.txtSex.setText("Macho");
+                break;
+            case Female:
+                holder.txtSex.setText("Hembra");
+                break;
+            case Unknown:
+                holder.txtSex.setText("Desconocido");
+                break;
+        }
+
         if (holder.txtCity != null && animalListing.getLocation() != null) {
             holder.txtCity.setText(animalListing.getLocation().getCity());
         }
@@ -133,6 +143,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
             Picasso.get()
                     .load(photoUrl)
                     .placeholder(R.drawable.gatoinicio)
+                    .fit()
                     .error(R.drawable.gatoinicio)
                     .into(holder.imgAnimal);
         } else {
@@ -142,18 +153,71 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
     }
 
     private void configureViewByType(AnimalListing animalListing, ListingViewHolder holder) {
+
+
         switch (this.viewType) {
             case INICIO_ACTIVITY:
                 setupForInicioActivity(animalListing, holder);
                 break;
+            case FAVORITES_ACTIVITY:
+                setupForFavActivity(animalListing, holder);
+                holder.btnFavorite.setImageResource(R.drawable.heart);
+                holder.btnFavorite.setVisibility(View.VISIBLE);
+                holder.tvNearMe.setVisibility(View.GONE);
+                break;
+
             case SHOW_MY_LISTINGS:
-                setupForShowMyListings(holder);
+                setupForShowMyListings(animalListing, holder);
                 break;
         }
     }
 
-    private void setupForInicioActivity(AnimalListing animalListing, ListingViewHolder holder) {
+    private void setupForFavActivity(AnimalListing animalListing, ListingViewHolder holder) {
+        holder.txtCity.setVisibility(View.VISIBLE);
         // Mostrar y configurar tvNearMe (distancia)
+        if (holder.tvNearMe != null) {
+            int distance = animalListing.getDistance();
+            if (distance > 0) {
+                String distanceText;
+
+                if (distance < 1000) {
+                    distanceText = "a " + distance + "m de ti";
+                } else {
+                    // Convertir a kilómetros y mostrar
+                    double distanceKm = distance / 1000.0;
+                    distanceText = String.format(Locale.getDefault(), "a %.1f km de ti", distanceKm);
+                }
+
+                holder.tvNearMe.setText(distanceText);
+                holder.tvNearMe.setVisibility(View.VISIBLE);
+
+                Log.d(TAG, "Distance display: " + distanceText + " (raw: " + distance + "m)");
+            } else {
+                holder.tvNearMe.setText("Ubicación disponible");
+                holder.tvNearMe.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (holder.btnFavorite != null) {
+            holder.btnFavorite.setVisibility(View.VISIBLE);
+
+            holder.btnFavorite.setImageResource(R.drawable.heart);
+
+            holder.btnFavorite.setOnClickListener(v -> {
+
+                holder.btnFavorite.setImageResource(R.drawable.heartvacio);
+
+                listener.onFavoriteClick(animalListing);
+
+                Log.d(TAG, "Favorite clicked for: " + animalListing.getAnimal().getAnimalName());
+            });
+        }
+
+        Log.d(TAG, "Configurado para InicioActivity: " + animalListing.getAnimal().getAnimalName());
+    }
+
+    private void setupForInicioActivity(AnimalListing animalListing, ListingViewHolder holder) {
+        holder.txtCity.setVisibility(View.VISIBLE);
         if (holder.tvNearMe != null) {
             // Usar el campo distance (int) de AnimalListing
             int distance = animalListing.getDistance();
@@ -174,13 +238,11 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
 
                 Log.d(TAG, "Distance display: " + distanceText + " (raw: " + distance + "m)");
             } else {
-                // Si no hay información de distancia, mostrar texto genérico
                 holder.tvNearMe.setText("Ubicación disponible");
                 holder.tvNearMe.setVisibility(View.VISIBLE);
             }
         }
 
-        // Mostrar y configurar botón de favoritos
         if (holder.btnFavorite != null) {
             holder.btnFavorite.setVisibility(View.VISIBLE);
 
@@ -204,7 +266,7 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingV
         Log.d(TAG, "Configurado para InicioActivity: " + animalListing.getAnimal().getAnimalName());
     }
 
-    private void setupForShowMyListings(ListingViewHolder holder) {
+    private void setupForShowMyListings(AnimalListing animalListing, ListingViewHolder holder) {
         // Ocultar tvNearMe (distancia)
         if (holder.tvNearMe != null) {
             holder.tvNearMe.setVisibility(View.GONE);

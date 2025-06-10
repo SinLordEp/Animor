@@ -6,18 +6,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PhotoDTO {
     private long photoId;
     private String photoUrl;
-    @JsonProperty("isCoverPhoto")
-    private boolean isCoverPhoto;
+    @JsonProperty("coverPhoto")
+    private boolean coverPhoto;
     private int displayOrder;
+    private String filePath;
 
     public PhotoDTO() {
     }
 
-    public PhotoDTO(long photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) {
+    public PhotoDTO(long photoId, String photoUrl, boolean coverPhoto, int displayOrder, String filePath) {
         this.photoId = photoId;
         this.photoUrl = photoUrl;
-        this.isCoverPhoto = isCoverPhoto;
+        this.coverPhoto = coverPhoto;
         this.displayOrder = displayOrder;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public long getPhotoId() {
@@ -37,11 +46,11 @@ public class PhotoDTO {
     }
 
     public boolean isCoverPhoto() {
-        return isCoverPhoto;
+        return coverPhoto;
     }
 
     public void setCoverPhoto(boolean coverPhoto) {
-        isCoverPhoto = coverPhoto;
+        this.coverPhoto = coverPhoto;
     }
 
     public int getDisplayOrder() {
@@ -53,7 +62,7 @@ public class PhotoDTO {
     }
 
     public static PhotoDTO fromEntity(Photo photo){
-        return new PhotoDTO(photo.getPhotoId(), photo.getPhotoUrl(), photo.getIsCoverPhoto(), photo.getDisplayOrder());
+        return new PhotoDTO(photo.getPhotoId(), photo.getPhotoUrl(), photo.getIsCoverPhoto(), photo.getDisplayOrder(), photo.getFilePath());
     }
 
 }

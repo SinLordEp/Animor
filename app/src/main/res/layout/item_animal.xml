@@ -9,8 +9,8 @@
 
     <!-- Contenedor CardView para imagen redonda -->
     <androidx.cardview.widget.CardView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginEnd="16dp"
         app:cardCornerRadius="50dp"
         app:cardElevation="0dp">
@@ -30,33 +30,36 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="0dp">
 
         <TextView
             android:id="@+id/txtName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/nombre_animal"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtSex"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:text="@string/sexo" />
 
         <TextView
             android:id="@+id/txtCity"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:text="@string/ciudad"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/txtSpecies"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:text="@string/especie" />
 
     </LinearLayout>
@@ -67,7 +70,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="10dp">
+        android:padding="0dp">
 
         <ImageView
             android:id="@+id/btnFavorite"
@@ -75,6 +78,7 @@
             android:layout_height="48dp"
             android:src="@drawable/heartvacio"
             android:clickable="true"
+            android:layout_gravity="end"
             android:layout_marginBottom="10dp"
             android:contentDescription="@string/marcar_como_favorito"
             android:visibility="visible" />
@@ -85,6 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:layout_marginBottom="0dp"
+            android:textSize="10sp"
+            android:gravity="end"
             android:text="a 0km de ti" />
 
 

@@ -21,8 +21,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.animor.R;
+import com.example.animor.UI.CreateActivity;
 import com.example.animor.UI.LoginActivity;
 import com.example.animor.UI.CreateListingActivity;
+import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Model.entity.AnimalListing;
 import com.example.animor.Utils.ListingAdapter;
@@ -95,7 +97,6 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         }).start();
     }
 
-    // Manejo centralizado de resultados
     private void handleListingsResult(List<AnimalListing> newListingList) {
         // Verificar si el fragment aún está adjunto antes de proceder
         if (!isAdded() || getView() == null) {
@@ -144,7 +145,7 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         Log.d(TAG, "Usuario autenticado pero sin listings");
 
         // Mostrar RecyclerView vacío
-        rvListings.setVisibility(View.VISIBLE);
+        rvListings.setVisibility(View.GONE);
 
         // Ocultar layout de no login
         LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
@@ -156,19 +157,25 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         LinearLayout layoutNoListings = getView().findViewById(R.id.linnolisting);
         if (layoutNoListings != null) {
             layoutNoListings.setVisibility(View.VISIBLE);
+            Button btnCrear = getView().findViewById(R.id.btncrear);
+            btnCrear.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(requireContext(), CreateActivity.class);
+                    intent.putExtra("currentTab", 1);
+                    startActivity(intent);
+                }
+            });
         }
 
         // Limpiar lista y notificar adapter
         listingList.clear();
         adapter.notifyDataSetChanged();
-
-        // Mostrar mensaje informativo
-        Toast.makeText(getContext(), "No tienes anuncios registrados", Toast.LENGTH_LONG).show();
     }
 
     // Mostrar listings
     private void showListingsLayout(List<AnimalListing> newListingList) {
-        Log.d("DEBUG", "Mostrando " + newListingList.size() + " listings");
+        Log.d(TAG, "Mostrando " + newListingList.size() + " listings");
 
         // Mostrar RecyclerView
         rvListings.setVisibility(View.VISIBLE);
@@ -214,7 +221,9 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         intent.putExtra("animal", listing.getAnimal());
         intent.putExtra("location", listing.getLocationRequest());
         intent.putExtra("animalListing", listing);
+        loadListings();
         startActivity(intent);
+
     }
 
     // establecer el listener desde la Activity
@@ -227,31 +236,24 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         // Usar prioritariamente el interface para comunicarse con la Activity
         if (listingSelectedListener != null) {
             listingSelectedListener.onListingSelected(listing);
+            loadListings();
+
         } else {
             // Fallback: Si no hay listener, intentar navegar directamente
             Log.w("ShowMyListingsFragment", "No listener found, attempting direct navigation");
             navigateToDetailFallback(listing);
         }
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DEBUG", "onResume() - Refrescando lista de animales");
+        listingList.clear();
+        loadListings();
+    }
 
     @Override
     public void onFavoriteClick(AnimalListing animalListing) {
-        // Implementar lógica para favoritos con llamada al servidor
-        ApiRequests api = new ApiRequests();
-        new Thread(() -> {
-            // Descomenta cuando tengas el método en ApiRequests
-            // boolean success = api.updateListingFavoriteStatus(animalListing);
-
-            if (getActivity() != null) {
-                requireActivity().runOnUiThread(() -> {
-                    Toast.makeText(getContext(),
-                            "Favorito actualizado: " + animalListing.getAnimal().getAnimalName(),
-                            Toast.LENGTH_SHORT).show();
-                    // Actualizar el adapter si es necesario
-                    adapter.notifyDataSetChanged();
-                });
-            }
-        }).start();
     }
 
     @Override
@@ -264,7 +266,6 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         }
     }
 
-    // MÉTODO MEJORADO: Actualizar lista de listings
     public void updateListingList(ArrayList<AnimalListing> newListingList) {
         if (listingList != null && adapter != null) {
             listingList.clear();

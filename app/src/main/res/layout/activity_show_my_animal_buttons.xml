@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/subtle_gradient_background"
+    android:fitsSystemWindows="true">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,312 +21,371 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/linearLayoutCard"
+            <!-- Card principal del animal -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/animalMainCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
-                <!-- Contenedor CardView para imagen redonda -->
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/card"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    app:cardCornerRadius="50dp"
-                    app:cardElevation="0dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_margin="10dp"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">  <!-- Margen para separar del texto -->
-
-                    <ImageView
-                        android:id="@+id/imgUser"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/imagen_del_animal_que_se_da_en_adopci_n"
-                        android:scaleType="centerCrop"
-                        android:src="@color/primarytwo" />  <!-- imagen -->
-
-                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
-                    android:id="@+id/NameCard"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/linearLayoutCard"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="20dp"
-                    android:orientation="vertical"
-                    android:padding="10dp"
-                    app:layout_constraintStart_toEndOf="@+id/card"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
+                    android:background="@drawable/animal_card_background"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
 
+                    <!-- Avatar del animal con sombra -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/card"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginEnd="16dp"
+                        app:cardCornerRadius="50dp"
+                        app:cardElevation="6dp">
+
+                        <ImageView
+                            android:id="@+id/imgUser"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/imagen_del_animal_que_se_da_en_adopci_n"
+                            android:scaleType="centerCrop"
+                            android:src="@color/primarytwo" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Información básica del animal -->
+                    <LinearLayout
+                        android:id="@+id/NameCard"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="@string/nombre_animal"
+                            android:textColor="@color/text_primary"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/txtSex"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/sexo"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/txtCity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ciudad"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <!-- Badge de especie -->
                     <TextView
-                        android:id="@+id/txtName"
+                        android:id="@+id/tvSpecies"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/nombre_animal"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/species_badge_background"
+                        android:elevation="2dp"
+                        android:paddingStart="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="6dp"
+                        android:text="@string/especie"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Card de información detallada -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/detailsCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/animalMainCard">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/details_card_background"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <!-- Título de la sección -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Información detallada"
+                        android:textColor="@color/text_primary"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/txtCity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:text="@string/ciudad" />
-
-                    <TextView
-                        android:id="@+id/txtSex"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/sexo" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linearLayoutSpecies"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/NameCard"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayoutTop">
-
-                    <TextView
-                        android:id="@+id/tvSpecies"
-                        android:layout_margin="20dp"
-                        android:paddingEnd="0dp"
-                        android:paddingStart="0dp"
-                        android:gravity="end"
+                    <!-- Información en formato moderno -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/especie" />
-                </LinearLayout>
-            </LinearLayout>
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal">
 
-            <TableLayout
-                android:id="@+id/tableanimal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="35dp"
-                android:shrinkColumns="*"
-                android:stretchColumns="*"
-                android:layout_marginBottom="70dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayoutCard">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:text="@string/a_o_de_nacimiento"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/textViewBirthdate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="top"
-                        android:paddingStart="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="@string/a_o_de_nacimiento"
-                        android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/textViewAnimalBirthdate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="01-02-2020"
+                                android:textColor="@color/text_primary"
+                                android:textSize="14sp" />
 
+                            <TextView
+                                android:id="@+id/textViewEstimatedBirthdate"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/aproximadamente"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/glass_black_10" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/textViewAnimalBirthdate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="0dp"
-                        android:gravity="start"
-                        android:text="01-02-2020" />
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:text="@string/tama_o"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/textViewEstimatedBirthdate"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:visibility="gone"
-                        android:gravity="start"
-                        android:text="@string/aproximadamente" />
+                        <TextView
+                            android:id="@+id/textViewAnimalSize"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:text="@string/cm"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
-                </TableRow>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/glass_black_10" />
 
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:text="@string/esterilizado"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewAnimalNeutered"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:text="@string/s_no"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <!-- Microchip (condicional) -->
+                    <LinearLayout
+                        android:id="@+id/microchipLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="@color/glass_black_10" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:text="Número de microchip"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewAnimalMicroNumber"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.6"
+                            android:text="000000000"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="8dp"
+                        android:background="@color/glass_black_10" />
 
                     <TextView
-                        android:id="@+id/textViewSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="@string/tama_o"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewAnimalSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/cm" />
-                </TableRow>
-
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/textViewDescription"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
+                        android:layout_marginBottom="8dp"
                         android:text="@string/descripci_n"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/textViewAnimalDescription"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingTop="30dp"
-                        android:layout_marginStart="20dp"
-                        android:singleLine="false"
-                        android:maxLines="10"
-                        android:gravity="start"
-                        android:paddingBottom="20dp"
-                        android:text="@string/es_un_animal_muy_bueno" />
-                </TableRow>
-                <TableRow
-                    android:id="@+id/tableRowAnimalMicroNumber"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone">
+                        android:text="@string/es_un_animal_muy_bueno"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/textViewMicroNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="Número de microchip"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewAnimalMicroNumber"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="000000000" />
-                </TableRow>
-                <TableRow
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/textViewNeutered"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:paddingStart="30dp"
-                        android:paddingTop="30dp"
-                        android:paddingEnd="0dp"
-                        android:text="@string/esterilizado"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/textViewAnimalNeutered"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_weight="1"
-                        android:gravity="start"
-                        android:text="@string/s_no" />
-                </TableRow>
-
-            </TableLayout>
-
-            <LinearLayout
-                android:id="@+id/layTags"
-                android:layout_width="wrap_content"
+            <!-- Card de etiquetas -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/tagsCard"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tableanimal"
-                android:layout_marginTop="20dp">
+                app:layout_constraintTop_toBottomOf="@+id/detailsCard">
 
-                <TextView
-                    android:id="@+id/tvTags"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layTags"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="start"
-                    android:text="Etiquetas"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@id/listTags"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textViewNeutered" />
+                    android:background="@drawable/details_card_background"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-                <com.example.animor.Utils.NonScrollListView
-                    android:id="@+id/listTags"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    tools:layout_editor_absoluteY="60dp"
-                    android:background="@drawable/border"
-                    app:layout_constraintTop_toBottomOf="@id/tvTags"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="8dp"/>
+                    <TextView
+                        android:id="@+id/tvTags"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:text="Etiquetas"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-            </LinearLayout>
+                    <com.example.animor.Utils.NonScrollListView
+                        android:id="@+id/listTags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/tags_list_background"
+                        android:elevation="2dp"
+                        android:padding="8dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Botones de acción modernos -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@+id/layTags"
-                app:layout_constraintStart_toStartOf="parent">
+                android:weightSum="2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tagsCard">
 
                 <Button
                     android:id="@+id/btnedit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ModernSecondaryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/black"
-                    android:text="Editar" />
+                    android:background="@drawable/secondary_button_background"
+                    android:elevation="4dp"
+                    android:text="Editar"
+                    android:textColor="@color/primarytwo"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/btndel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    style="@style/ModernDangerButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:backgroundTint="@color/black"
-                    android:text="Borrar" />
+                    android:background="@drawable/danger_button_background"
+                    android:elevation="4dp"
+                    android:text="Borrar"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

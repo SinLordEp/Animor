@@ -4,73 +4,105 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/subtle_gradient_background"
+    android:fitsSystemWindows="true">
 
-    <!-- AppBarLayout que contiene tanto el header como las pestañas -->
+    <!-- AppBarLayout con efectos mejorados -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+        android:background="@drawable/header_glass_effect"
+        android:fitsSystemWindows="true"
+        app:elevation="8dp">
 
-        <!-- Header en la parte superior -->
+        <!-- Header con sombra suave -->
         <LinearLayout
             android:id="@+id/linearLayoutTop"
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:background="@null"
-            android:elevation="10dp"
+            android:elevation="4dp"
             android:orientation="horizontal"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="70dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/app_logo"
+                android:scaleType="centerInside"
+                android:elevation="2dp"
                 app:srcCompat="@drawable/logoanimor" />
         </LinearLayout>
 
-        <!-- TabLayout pegado al header -->
+        <!-- TabLayout con elevación y bordes redondeados -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:layout_height="56dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/tabs_modern_background"
             android:contentDescription="@string/tabs_navigation"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:tabIndicatorColor="@color/primarytwo"
-            app:tabSelectedTextColor="@color/primarytwo"
-            app:tabTextColor="@color/black" />
+            android:elevation="6dp"
+            app:tabBackground="@drawable/tab_ripple_effect"
+            app:tabGravity="fill"
+            app:tabIndicatorHeight="0dp"
+            app:tabMaxWidth="0dp"
+            app:tabMode="fixed"
+            app:tabPaddingEnd="16dp"
+            app:tabPaddingStart="16dp"
+            app:tabSelectedTextColor="@android:color/white"
+            app:tabTextAppearance="@style/ModernTabText"
+            app:tabTextColor="@color/tab_text_unselected" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- ViewPager2 para los fragments -->
+    <!-- ViewPager2 con altura corregida -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="130dp"
+        android:layout_height="500dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="96dp"
+        android:background="@drawable/content_card_background"
+        android:elevation="4dp"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!-- Contenedor para fragments de detalle (inicialmente oculto) -->
+    <!-- Contenedor para fragments de detalle con altura corregida -->
     <FrameLayout
         android:id="@+id/detail_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="130dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="96dp"
+        android:background="@drawable/content_card_background"
+        android:elevation="4dp"
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation con profundidad moderna -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        android:background="@color/primarytwo"
+        android:background="@drawable/bottom_nav_elevated_background"
+        android:elevation="12dp"
+        app:itemIconTint="@color/bottom_nav_item_color"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:labelVisibilityMode="labeled"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:menu="@menu/bottom_nav_menu" />
 

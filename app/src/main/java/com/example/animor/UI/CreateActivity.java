@@ -1,6 +1,5 @@
 package com.example.animor.UI;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.animor.Model.entity.Animal;
-import com.example.animor.Model.entity.Photo;
 import com.example.animor.R;
 import com.example.animor.UI.ViewsFrames.CreateAnimalFragment;
 import com.example.animor.Utils.NavigationHelper;
@@ -24,12 +22,8 @@ public class CreateActivity extends AppCompatActivity {
     private static final String TAG = "CreateActivity";
     private ViewPager2 viewPager;
     private static final int IMAGE_PICK_REQUEST = 100;
-    private Uri imageUri;
-    private int currentMode = 0;
+    private int currentTab = 0;
     private NavigationHelper navigationHelper;
-
-    // Eliminar esta línea problemática:
-    // Button subirImagenBtn = findViewById(R.id.btnSeleccionarImagen);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +35,10 @@ public class CreateActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         Animal animal = (Animal) getIntent().getSerializableExtra("animal");
-
+        currentTab = getIntent().getIntExtra("currentTab", 1);
+        if (currentTab==1){
+            goToTab(1);
+        }
         String mode = getIntent().getStringExtra("mode");
         if (mode != null && mode.equals("edit")) {
             CreateAnimalFragment fragment = new CreateAnimalFragment();
@@ -93,6 +90,8 @@ public class CreateActivity extends AppCompatActivity {
     }
 
     public void goToTab(int index) {
-        viewPager.setCurrentItem(index, true);
+        if (viewPager != null) {
+            viewPager.setCurrentItem(index, true);
+        }
     }
 }

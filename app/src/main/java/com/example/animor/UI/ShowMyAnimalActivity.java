@@ -70,7 +70,7 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
                 // Usar las tags si las necesitas
                 if (tags != null) {
-                    Log.d(TAG, "Tags recibidas: " + tags.size());
+                    Log.d(TAG, "Tags recibidos: " + tags.size());
                     // Aquí puedes usar las tags como necesites
                 }
                 initializeData();
@@ -100,10 +100,11 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
         List<Photo> photoList = animal.getAnimalPhotoList();
         for (Photo a : photoList) {
-            if (a.getIsCoverPhoto()) {
+            //if (a.getIsCoverPhoto()) {
+                Log.d(TAG, "¿La foto es cover?: "+a.getIsCoverPhoto());
                 photoUrl = a.getPhotoUrl();
                 break;
-            }
+            //}
         }
         Log.d(TAG, "se ha conseguido la foto: " + photoUrl);
         tags = animal.getTagList();
@@ -121,13 +122,14 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
                 .load(photoUrl)
                 .placeholder(R.drawable.gatoinicio)
                 .error(R.drawable.gatoinicio)
+                .fit()
                 .into(imgAnimal);
 
         txtName = findViewById(R.id.txtName);
         txtName.setText(animal.getAnimalName());
 
         txtSex = findViewById(R.id.txtSex);
-        Log.d(TAG, "Tags: "+animal.getSex().toString());
+        Log.d(TAG, "Sexo: "+animal.getSex().toString());
         switch(animal.getSex()){
             case Male:
                 txtSex.setText("Macho");
@@ -159,22 +161,19 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
         textViewAnimalDescription = findViewById(R.id.textViewAnimalDescription);
         textViewAnimalDescription.setText(animal.getAnimalDescription());
+        textViewNeutered = findViewById(R.id.textViewNeutered);
+
 
         if (animal.getMicrochipNumber() != null) {
             textViewMicroNumber = findViewById(R.id.textViewAnimalMicroNumber);
             textViewMicroNumber.setText(animal.getMicrochipNumber());
         }
 
-        if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
-            if (animal.getIsNeutered()) {
-                textViewAnimalNeutered.setText("sí");
-            } else {
-                textViewAnimalNeutered.setText("no");
-            }
-        }else{
-            textViewNeutered = findViewById(R.id.textViewNeutered);
-            textViewNeutered.setVisibility(View.GONE);
-            textViewAnimalNeutered.setVisibility(View.GONE);
+        if (animal.getIsNeutered()) {
+            textViewAnimalNeutered.setText("sí");
+        } else {
+            textViewAnimalNeutered.setText("no");
+
         }
 
         listTags = findViewById(R.id.listTags);
@@ -194,12 +193,11 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     private void setupListeners() {
         btndel.setOnClickListener(v -> {
             ApiRequests api = new ApiRequests();
-            MyApplication.executor.execute(()->{
-             api.deleteAnimal(animal.getAnimalId());
-            });
+            MyApplication.executor.execute(()-> api.deleteAnimal(animal.getAnimalId()));
             Toast.makeText(this, "Animal eliminado", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, CreateActivity.class));
             finish(); // Cierra la actividad actual
+            Intent intent = new Intent(ShowMyAnimalActivity.this, InicioActivity.class);
+            startActivity(intent);
         });
 
         btnedit.setOnClickListener(v -> {

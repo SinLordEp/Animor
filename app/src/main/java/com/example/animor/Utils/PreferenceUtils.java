@@ -2,6 +2,7 @@ package com.example.animor.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.animor.Model.dto.SpeciesDTO;
 import com.example.animor.Model.dto.TagDTO;
@@ -31,6 +32,7 @@ public class PreferenceUtils {
         context = appContext.getApplicationContext();
     }
     public static void saveData(String key, String value) {
+        Log.d("SP Util","Saving data Key: " + key + " Value: " + value);
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         prefs.edit()
                 .putString(key, value)
@@ -43,8 +45,11 @@ public class PreferenceUtils {
     }
 
     private static String getString(String key){
+        Log.d("SP Util","Getting value Key: " + key);
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString(key, "");
+        String value = sharedPreferences.getString(key, "");
+        Log.d("SP Util", "Value: " + value);
+        return value;
     }
     private static <T> T getEntity(String key, TypeReference<T> typeReference){
         String json = getString(key);

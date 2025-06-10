@@ -30,7 +30,6 @@ public class MyApplication extends Application {
 
     //private static String appCheckToken;
     private static String firebaseInstallationId;
-    private static String deviceToken;
     private static String notificationToken;
     @Override
     public void onCreate() {
@@ -103,15 +102,15 @@ public class MyApplication extends Application {
                 //species = PreferenceUtils.getSpeciesList();
                // tags = PreferenceUtils.getTagList();
                 // Guardar datos recibidos
-                deviceToken = startupResource.getDeviceToken();
-                Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + deviceToken);
+
+                Log.d(TAG, "Autenticación de dispositivo exitosa. Token: " + startupResource.getDeviceToken());
                 // Guardar en SharedPreferences
-                String tagListJson = JacksonUtils.entityToJson(startupResource.getTags());
-                String speciesListJson = JacksonUtils.entityToJson(startupResource.getSpecies());
+                String tagListJson = JacksonUtils.entityToJson(startupResource.getTagDTOList());
+                String speciesListJson = JacksonUtils.entityToJson(startupResource.getSpeciesDTOList());
 
                 PreferenceUtils.saveData(KEY_TAG_LIST, tagListJson);
                 PreferenceUtils.saveData(KEY_SPECIES_LIST, speciesListJson);
-                PreferenceUtils.saveData(KEY_DEVICE_TOKEN, deviceToken);
+                PreferenceUtils.saveData(KEY_DEVICE_TOKEN, startupResource.getDeviceToken());
             } catch (Exception e) {
                 Log.e(TAG, "Error en autenticación de dispositivo", e);
             }
@@ -132,7 +131,6 @@ public class MyApplication extends Application {
         // Limpiar SharedPreferences
         PreferenceUtils.removeUser();
         // Resetear variables
-        deviceToken = null;
         Log.d(TAG, "Logout completo realizado");
     }
 

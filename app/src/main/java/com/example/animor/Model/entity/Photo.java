@@ -8,19 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Photo implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private long photoId;
     private String photoUrl;
-    @JsonProperty("isCoverPhoto")
-    private boolean isCoverPhoto;
+    @JsonProperty("coverPhoto")
+    private boolean coverPhoto;
     private int displayOrder;
     private String filePath;
 
     public Photo() {}
 
-    public Photo(int photoId, String photoUrl, boolean isCoverPhoto, int displayOrder) { /*, String filePath*/
+    public Photo(int photoId, String photoUrl, boolean coverPhoto, int displayOrder, String filePath) {
         this.photoId = photoId;
         this.photoUrl = photoUrl;
-        this.isCoverPhoto = isCoverPhoto;
+        this.coverPhoto = coverPhoto;
         this.displayOrder = displayOrder;
         this.filePath = filePath;
 
@@ -39,8 +41,9 @@ public class Photo implements Serializable {
     public void setPhotoId(long photoId) { this.photoId = photoId; }
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
-    public boolean getIsCoverPhoto() {return isCoverPhoto;}
-    public void setIsCoverPhoto(boolean coverPhoto) {isCoverPhoto = coverPhoto;}
+    public boolean getIsCoverPhoto() {return coverPhoto;}
+    public void setIsCoverPhoto(boolean coverPhoto) {
+        this.coverPhoto = coverPhoto;}
 
     public int getDisplayOrder() { return displayOrder; }
     public void setDisplayOrder(int displayOrder) { this.displayOrder = displayOrder; }
@@ -52,6 +55,7 @@ public class Photo implements Serializable {
         photo.setPhotoUrl(photoDTO.getPhotoUrl());
         photo.setIsCoverPhoto(photoDTO.isCoverPhoto());
         photo.setDisplayOrder(photoDTO.getDisplayOrder());
+        photo.setFilePath(photoDTO.getFilePath());
         return photo;
     }
     public static List<Photo> fromDTOList(List<PhotoDTO> photoDTOList) {

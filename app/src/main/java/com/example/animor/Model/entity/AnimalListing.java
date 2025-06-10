@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AnimalListing implements Serializable {
+    private static final long serialVersionUID = 1L;
     private long listingId;
     private Animal animal;
     private UserSimple user;
@@ -74,6 +75,7 @@ public class AnimalListing implements Serializable {
         animalListing.setUser(listingDTO.getUser());
         animalListing.setLocation(Location.fromDTOLocation(listingDTO.getLocation()));
         animalListing.setAnimal(Animal.fromDTO(listingDTO.getAnimal()));
+        animalListing.setDistance(listingDTO.getDistance());
         return animalListing;
     }
     @JsonIgnore

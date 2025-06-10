@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +38,7 @@ public class UserActivity extends AppCompatActivity {
     TextView nombreUsuario;
     TextView emailUsuario;
     LinearLayout layoutNoLogin;
-    TableRow dataRow;
+    LinearLayout userInfo;
     Button btnIniciarSesion;
     ImageView imgUsuario;
     BottomNavigationView bottomNavigationView;
@@ -78,7 +77,7 @@ public class UserActivity extends AppCompatActivity {
         emailUsuario = findViewById(R.id.textViewEmailUsuario);
         imgUsuario = findViewById(R.id.imgUser);
         layoutNoLogin = findViewById(R.id.layoutNoLogin);
-        dataRow = findViewById(R.id.tableanimal);
+        userInfo = findViewById(R.id.userProfileCard);
         btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
         bottomNavigationView = findViewById(R.id.bottomNavigation);
     }
@@ -138,7 +137,7 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void showLoginLayout() {
-        dataRow.setVisibility(View.GONE);
+        userInfo.setVisibility(View.GONE);
         layoutNoLogin.setVisibility(View.VISIBLE);
 
         // Limpiar los campos de texto para evitar mostrar datos antiguos
@@ -150,7 +149,7 @@ public class UserActivity extends AppCompatActivity {
 
     private void showProfileLayout() {
         layoutNoLogin.setVisibility(View.GONE);
-        dataRow.setVisibility(View.VISIBLE);
+        userInfo.setVisibility(View.VISIBLE);
 
         // CORREGIR: Verificar valores antes de usarlos
         nombreUsuario.setText(nombre != null ? nombre : "Usuario");
@@ -162,6 +161,7 @@ public class UserActivity extends AppCompatActivity {
                     .load(photo)
                     .placeholder(R.drawable.gatoinicio)
                     .error(R.drawable.gatoinicio)
+                    .fit()
                     .into(imgUsuario);
         } else {
             imgUsuario.setImageResource(R.drawable.gatoinicio);

@@ -60,4 +60,11 @@
     <string name="app_logo">logo de la aplicación: un gato tumbado sobre la palabra \"Animor\"</string>
     <string name="tabs_navigation">Navegación por pestañas</string>
     <string name="selecciona_opcion">elige la especie</string>
+    <string name="mensaje">Mensaje</string>
+    <string name="enviar">Enviar</string>
+    <string name="volver">Volver</string>
+    <string name="ususario">Ususario</string>
+    <string name="mensajes">Mensajes</string>
+    <string name="usuario">Usuario</string>
+    <string name="ultimo_mensaje">Ultimo mensaje</string>
 </resources>
