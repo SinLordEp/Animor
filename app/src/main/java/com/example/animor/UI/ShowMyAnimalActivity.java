@@ -193,12 +193,11 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
     private void setupListeners() {
         btndel.setOnClickListener(v -> {
             ApiRequests api = new ApiRequests();
-            MyApplication.executor.execute(()->{
-             api.deleteAnimal(animal.getAnimalId());
-            });
+            MyApplication.executor.execute(()-> api.deleteAnimal(animal.getAnimalId()));
             Toast.makeText(this, "Animal eliminado", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, CreateActivity.class));
             finish(); // Cierra la actividad actual
+            Intent intent = new Intent(ShowMyAnimalActivity.this, InicioActivity.class);
+            startActivity(intent);
         });
 
         btnedit.setOnClickListener(v -> {

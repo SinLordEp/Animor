@@ -116,7 +116,6 @@ public class ShowActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onAnimalSelected(Animal animal) {
         Intent intent = new Intent(ShowActivity.this, ShowMyAnimalActivity.class);
@@ -125,7 +124,6 @@ public class ShowActivity extends AppCompatActivity
         intent.putExtra("tags", (Serializable) animal.getTagList());
         intent.putExtra("photos", (Serializable) animal.getPhotoList());
         startActivity(intent);
-        finish();
     }
 
 

@@ -80,20 +80,10 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="32dp"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerViewFavorites"
         app:layout_constraintEnd_toEndOf="@+id/recyclerViewFavorites"
         app:layout_constraintStart_toStartOf="@+id/recyclerViewFavorites"
         app:layout_constraintTop_toTopOf="@+id/recyclerViewFavorites">
-
-        <!-- Ícono de estado vacío -->
-        <TextView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@drawable/empty_state_icon_background"
-            android:gravity="center"
-            android:text="💝"
-            android:textSize="36sp" />
 
         <TextView
             android:id="@+id/tvEmptyState"
@@ -105,6 +95,7 @@
             android:textAlignment="center"
             android:textColor="@color/text_secondary"
             android:textSize="16sp"
+            android:visibility="gone"
             android:textStyle="normal" />
     </LinearLayout>
 

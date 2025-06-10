@@ -62,6 +62,7 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
 
         initializeViews(view);
         setupRecyclerView();
+        animalList.clear();
         loadAnimals();
     }
 
@@ -161,25 +162,32 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     private void showEmptyAnimalsLayout() {
         Log.d("DEBUG", "Usuario autenticado pero sin animales");
 
-        // Mostrar RecyclerView vacío
-        rvAnimals.setVisibility(View.VISIBLE);
+        rvAnimals.setVisibility(View.GONE);
+
 
         // Ocultar layout de no login
         LinearLayout layoutNoLogin = getView().findViewById(R.id.layoutNoLogin);
         if (layoutNoLogin != null) {
             layoutNoLogin.setVisibility(View.GONE);
         }
+        LinearLayout linnoanimals = getView().findViewById(R.id.linnoanimals);
+        linnoanimals.setVisibility(View.VISIBLE);
+        Button btnCrear = getView().findViewById(R.id.btncrear);
+        btnCrear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(requireContext(), CreateActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Limpiar lista y notificar adapter
         animalList.clear();
         adapter.notifyDataSetChanged();
 
-        // Mostrar mensaje informativo
-        Toast.makeText(getContext(), "No tienes animales registrados", Toast.LENGTH_LONG).show();
-
     }
 
-    // NUEVO MÉTODO: Mostrar animales normalmente
+    // Mostrar animales normalmente
     private void showAnimalsLayout(List<Animal> newAnimalList) {
         Log.d("DEBUG", "Mostrando " + newAnimalList.size() + " animales");
 
@@ -232,10 +240,12 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
         // Usar únicamente el interface para comunicarse con ShowActivity
         if (animalSelectedListener != null) {
             animalSelectedListener.onAnimalSelected(animal);
+            onDestroy();
         } else {
             // Fallback: Si no hay listener, intentar navegar directamente
             Log.w("ShowMyAnimalsFragment", "No listener found, attempting direct navigation");
             navigateToDetailFallback(animal);
+            onDestroy();
         }
     }
 
@@ -251,7 +261,14 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
             throw new RuntimeException(context.toString() + " must implement OnAnimalSelectedListener");
         }
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        Toast.makeText(getContext(), "Actualizando datos...", Toast.LENGTH_SHORT).show();
+        Log.d("DEBUG", "onResume() - Refrescando lista de animales");
+        animalList.clear();
+        loadAnimals();
+    }
 
     public void updateAnimalList(ArrayList<Animal> newAnimalList) {
         if (animalList != null && adapter != null) {
