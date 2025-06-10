@@ -264,7 +264,6 @@ public class InicioActivity extends AppCompatActivity implements
     private void requestLocation() {
         if (checkLocationPermissions()) {
             Log.d(TAG, "Solicitando ubicación para cargar listings...");
-            Toast.makeText(this, "Obteniendo ubicación para mostrar animales cercanos...", Toast.LENGTH_SHORT).show();
             geolocalization.requestLocation();
         } else {
             requestLocationPermissions();
@@ -297,7 +296,7 @@ public class InicioActivity extends AppCompatActivity implements
                 requestLocation();
             } else {
                 Log.d(TAG, "Permisos de ubicación denegados");
-                Toast.makeText(this, "Sin permisos de ubicación. Mostrando todos los animales.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Sin permisos de ubicación. Mostrando sin distancia.", Toast.LENGTH_LONG).show();
                 loadNearMeListings();
             }
         }
@@ -311,7 +310,7 @@ public class InicioActivity extends AppCompatActivity implements
         locationObtained = true;
 
         Log.d(TAG, "Ubicación obtenida - Lat: " + latitude + ", Lng: " + longitude);
-        Toast.makeText(this, "Ubicación obtenida. Cargando animales cercanos...", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Ubicación obtenida. Cargando animales cercanos...");
 
         // Con la ubicación, cargar los listings
         loadNearMeListings();
@@ -421,7 +420,7 @@ public class InicioActivity extends AppCompatActivity implements
             } catch (Exception e) {
                 Log.e(TAG, "Error al obtener listings: " + e.getMessage());
                 runOnUiThread(() -> {
-                    Toast.makeText(InicioActivity.this, "Error al cargar animales", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Error al cargar animales");
                     updateSubtitle(0);
                 });
             }
@@ -494,29 +493,18 @@ public class InicioActivity extends AppCompatActivity implements
         MyApplication.executor.execute(() -> {
             try {
                 boolean success = api.addFav(animalListing.getListingId());
-
-                runOnUiThread(() -> {
-                    if (success) {
-                        Toast.makeText(this, "Añadido a favoritos: " +
-                                        animalListing.getAnimal().getAnimalName(),
-                                Toast.LENGTH_SHORT).show();
+                 if (success) {
 
                         Log.d(TAG, "Favorito añadido exitosamente: " + animalListing.getListingId());
                     } else {
-                        Toast.makeText(this, "Error al añadir a favoritos",
-                                Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "Error al añadir a favoritos");
 
                         // Opcional: revertir el icono a corazón vacío si falló
                         // Tendrías que encontrar el ViewHolder y cambiar el icono
                         Log.e(TAG, "Error al añadir favorito para listing: " + animalListing.getListingId());
                     }
-                });
             } catch (Exception e) {
                 Log.e(TAG, "Error al añadir favorito: " + e.getMessage());
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Error al añadir a favoritos",
-                            Toast.LENGTH_SHORT).show();
-                });
             }
         });
     }

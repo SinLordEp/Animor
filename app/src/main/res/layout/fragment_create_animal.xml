@@ -70,7 +70,7 @@
                     <Button
                         android:id="@+id/btnSeleccionarImagen"
                         style="@style/ModernSecondaryButton"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:background="@drawable/secondary_button_background"
                         android:elevation="4dp"
@@ -78,7 +78,7 @@
                         android:paddingEnd="24dp"
                         android:text="Seleccionar imagen"
                         android:textColor="@color/primarytwo"
-                        android:textSize="14sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
@@ -380,27 +380,48 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Botón guardar -->
-        <Button
-            android:id="@+id/buttonSave"
-            style="@style/ModernPrimaryButton"
+        <LinearLayout
+            android:id="@+id/buttonsSave"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/primary_button_background"
-            android:elevation="6dp"
-            android:text="Guardar animal"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:layout_editor_absoluteY="422dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tagsCard" />
+            app:layout_constraintTop_toBottomOf="@+id/tagsCard">
+
+            <Button
+                android:id="@+id/buttonSave"
+                style="@style/ModernPrimaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/primary_button_background"
+                android:elevation="6dp"
+                android:text="Guardar animal"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/buttonListing"
+                style="@style/ModernPrimaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_marginBottom="32dp"
+                android:background="@drawable/primary_button_background"
+                android:elevation="6dp"
+                android:text="Registrar animal"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:visibility="gone"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/buttonSave"
+            app:layout_constraintTop_toBottomOf="@+id/buttonsSave"
             app:layout_constraintStart_toStartOf="parent"
             tools:layout_editor_absoluteY="392dp"/>
 

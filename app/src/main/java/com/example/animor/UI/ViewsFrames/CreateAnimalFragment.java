@@ -43,6 +43,8 @@ import com.example.animor.Model.request.AnimalRequest;
 import com.example.animor.Model.request.PhotoRequest;
 import com.example.animor.Model.request.TagRequest;
 import com.example.animor.R;
+import com.example.animor.UI.CreateActivity;
+import com.example.animor.UI.CreateListingActivity;
 import com.example.animor.UI.ShowActivity;
 import com.example.animor.Utils.ApiRequests;
 import com.example.animor.Utils.PreferenceUtils;
@@ -83,6 +85,7 @@ public class CreateAnimalFragment extends Fragment {
     private ImageView imgAnimal;
     private Button btnSeleccionarImagen;
     private Button btnGuardar;
+    private Button btnListing;
     private ListView listTagsView;
     static LocalDate birthDate;
     Spinner spSpecies;
@@ -225,6 +228,8 @@ public class CreateAnimalFragment extends Fragment {
         btnSeleccionarImagen = view.findViewById(R.id.btnSeleccionarImagen);
         btnGuardar = view.findViewById(R.id.buttonSave);
         btnGuardar.setVisibility(View.VISIBLE);
+        btnListing=view.findViewById(R.id.buttonListing);
+        //btnListing.setVisibility(View.VISIBLE);
         spSpecies = view.findViewById(R.id.spinnerSpecies);
         MyApplication.executor.execute(()->{
             List<SpeciesDTO> receivedSpecies = PreferenceUtils.getSpeciesList();
@@ -274,6 +279,12 @@ public class CreateAnimalFragment extends Fragment {
 
         // Listener para guardar
         btnGuardar.setOnClickListener(v -> saveAnimal());
+        btnListing.setOnClickListener((v)->{
+                saveAnimal();
+                Intent intent = new Intent(requireContext(), CreateListingActivity.class);
+                intent.putExtra("animal", animal);
+                startActivity(intent);
+        });
 
         spSpecies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

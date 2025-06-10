@@ -144,7 +144,7 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
 
     private void removeFavorite(AnimalListing animalListing) {
         // Mostrar feedback inmediato
-        Toast.makeText(this, "Eliminando de favoritos...", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Eliminando de favoritos...");
 
         MyApplication.executor.execute(() -> {
             try {
@@ -163,10 +163,6 @@ public class FavActivity extends AppCompatActivity implements ListingAdapter.OnL
                                 showEmptyState(true);
                             }
                         }
-
-                        Toast.makeText(FavActivity.this,
-                                "Eliminado de favoritos",
-                                Toast.LENGTH_SHORT).show();
 
                         Log.d(TAG, "Favorito eliminado exitosamente");
                     } else {
