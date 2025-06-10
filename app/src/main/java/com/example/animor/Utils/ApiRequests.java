@@ -10,8 +10,6 @@ import com.example.animor.Model.StartupResource;
 import com.example.animor.Model.dto.AnimalDTO;
 import com.example.animor.Model.dto.ListingDTO;
 import com.example.animor.Model.dto.PhotoDTO;
-import com.example.animor.Model.dto.SpeciesDTO;
-import com.example.animor.Model.dto.TagDTO;
 import com.example.animor.Model.dto.UserDTO;
 import com.example.animor.Model.entity.Animal;
 import com.example.animor.Model.entity.AnimalListing;
@@ -118,16 +116,16 @@ public class ApiRequests {
             String responseBody = getResponseBody(response);
             if (response.isSuccessful()) {
                 JSONObject dataObject = getJsonObjectFromBody(responseBody);
-                // Procesar tags
+                /*// Procesar tags
                 JSONArray tagsArray = dataObject.getJSONArray("tagDTOList");
                 List<TagDTO> tagList = JacksonUtils.readEntities(tagsArray.toString(), new TypeReference<>() {});
 
                 // Procesar species
                 JSONArray speciesArray = dataObject.getJSONArray("speciesDTOList");
-                List<SpeciesDTO> speciesDTOList = JacksonUtils.readEntities(speciesArray.toString(), new TypeReference<>() {});
+                List<SpeciesDTO> speciesDTOList = JacksonUtils.readEntities(speciesArray.toString(), new TypeReference<>() {});*/
 
                 // Preparar respuesta
-                return new StartupResource(speciesDTOList, tagList, deviceToken);
+                return JacksonUtils.readEntity(dataObject.toString(), new TypeReference<>() {});
             } else {
                 Log.e(TAG, "Respuesta no exitosa recibiendo device-token, tags y species: " + getStatusFromResponseBody(responseBody)
                         + " | Respuesta: " + getJsonObjectFromBody(responseBody));
