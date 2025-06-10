@@ -220,8 +220,8 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
                     api.addListingIntoDatabase(listingRequest, animal.getAnimalId());
             }
         });
-
-        Toast.makeText(this, "Registro guardado correctamente", Toast.LENGTH_SHORT).show();
+        Intent intent= new Intent(CreateListingActivity.this, ShowActivity.class);
+        startActivity(intent);
     }
 
     private void initializeGeolocation() {

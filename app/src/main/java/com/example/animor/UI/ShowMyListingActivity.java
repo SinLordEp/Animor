@@ -356,4 +356,11 @@ public class ShowMyListingActivity extends AppCompatActivity {
         intent.putExtra("location", location);
         return intent;
     }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DEBUG", "onResume() - Refrescando lista de animales");
+        loadAnimalData();
+        loadListingData();
+    }
 }
