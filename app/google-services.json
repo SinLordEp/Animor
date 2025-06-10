@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "804843988448",
+    "project_id": "named-icon-460311-e4",
+    "storage_bucket": "named-icon-460311-e4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804843988448:android:f57a0735e85eb8e039f785",
+        "android_client_info": {
+          "package_name": "com.example.animor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804843988448-9j8119b15c0jisrpt4q4notn0a65f6v0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.animor",
+            "certificate_hash": "310c69748139a93f7a56a8c3bd3e8f437ec34442"
+          }
+        },
+        {
+          "client_id": "804843988448-he2n7q2i1041fmq8s493v89nh1rl90sn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrRabQDzayyFSVzc6X8PzXIN_0ZmHntqA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804843988448-he2n7q2i1041fmq8s493v89nh1rl90sn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
