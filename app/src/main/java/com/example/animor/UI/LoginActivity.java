@@ -167,6 +167,8 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             Log.d(TAG, "Usuario ya autenticado: " + currentUser.getEmail());
+            Intent intent = new Intent(LoginActivity.this, InicioActivity.class);
+            startActivity(intent);
         }
     }
 }
