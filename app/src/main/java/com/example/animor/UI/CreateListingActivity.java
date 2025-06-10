@@ -158,7 +158,7 @@ public class CreateListingActivity extends AppCompatActivity implements Geolocal
         buttonSave.setOnClickListener(v -> {
             saveListing();
             MyApplication.executor.execute(()->{
-                Intent intent =new Intent(CreateListingActivity.this, ShowMyListingActivity.class);
+                Intent intent =new Intent(CreateListingActivity.this, ShowActivity.class);
                 Log.d(TAG, "Animal en listing: "+animal.toString());
                 intent.putExtra("animal", animal);
                 intent.putExtra("listing", listing);
