@@ -264,7 +264,6 @@ public class ShowMyAnimalsFragment extends Fragment implements AnimalAdapter.OnA
     @Override
     public void onResume() {
         super.onResume();
-        Toast.makeText(getContext(), "Actualizando datos...", Toast.LENGTH_SHORT).show();
         Log.d("DEBUG", "onResume() - Refrescando lista de animales");
         animalList.clear();
         loadAnimals();

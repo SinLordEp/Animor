@@ -221,7 +221,9 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         intent.putExtra("animal", listing.getAnimal());
         intent.putExtra("location", listing.getLocationRequest());
         intent.putExtra("animalListing", listing);
+        loadListings();
         startActivity(intent);
+
     }
 
     // establecer el listener desde la Activity
@@ -234,11 +236,20 @@ public class ShowMyListingsFragment extends Fragment implements ListingAdapter.O
         // Usar prioritariamente el interface para comunicarse con la Activity
         if (listingSelectedListener != null) {
             listingSelectedListener.onListingSelected(listing);
+            loadListings();
+
         } else {
             // Fallback: Si no hay listener, intentar navegar directamente
             Log.w("ShowMyListingsFragment", "No listener found, attempting direct navigation");
             navigateToDetailFallback(listing);
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("DEBUG", "onResume() - Refrescando lista de animales");
+        listingList.clear();
+        loadListings();
     }
 
     @Override

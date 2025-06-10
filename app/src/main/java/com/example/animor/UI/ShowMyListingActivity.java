@@ -319,10 +319,13 @@ public class ShowMyListingActivity extends AppCompatActivity {
                  boolean success= api.editAnimal(animalRequest);
                  if(success){
                      Log.d(TAG, "ANIMAL ACTUALIZADO: ADOPTADO");
+                     //Intent intent = new Intent(ShowMyListingActivity.this, ShowActivity.class);
+                    // startActivity(intent);
                  }else{
                      runOnUiThread(()->{
                          animal.setIsAdopted(!isChecked);
                          switchAdoptado.setChecked(!isChecked);
+
                      });
                  }
              });
