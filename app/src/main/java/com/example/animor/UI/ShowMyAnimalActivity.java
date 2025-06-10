@@ -161,22 +161,19 @@ public class ShowMyAnimalActivity extends AppCompatActivity {
 
         textViewAnimalDescription = findViewById(R.id.textViewAnimalDescription);
         textViewAnimalDescription.setText(animal.getAnimalDescription());
+        textViewNeutered = findViewById(R.id.textViewNeutered);
+
 
         if (animal.getMicrochipNumber() != null) {
             textViewMicroNumber = findViewById(R.id.textViewAnimalMicroNumber);
             textViewMicroNumber.setText(animal.getMicrochipNumber());
         }
 
-        if (animal.getSpeciesId() == 1 || animal.getSpeciesId() == 2) {
-            if (animal.getIsNeutered()) {
-                textViewAnimalNeutered.setText("sí");
-            } else {
-                textViewAnimalNeutered.setText("no");
-            }
-        }else{
-            textViewNeutered = findViewById(R.id.textViewNeutered);
-            textViewNeutered.setVisibility(View.GONE);
-            textViewAnimalNeutered.setVisibility(View.GONE);
+        if (animal.getIsNeutered()) {
+            textViewAnimalNeutered.setText("sí");
+        } else {
+            textViewAnimalNeutered.setText("no");
+
         }
 
         listTags = findViewById(R.id.listTags);
