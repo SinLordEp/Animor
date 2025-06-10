@@ -123,6 +123,7 @@ public class InicioActivity extends AppCompatActivity implements
 
         btnFiltros.setOnClickListener(v -> showFilterDialog());
         btnRefresh.setOnClickListener(v -> {
+            Log.d(TAG, "botón para recargar animales pulsado");
             AtomicInteger cont = new AtomicInteger(1);
             MyApplication.executor.execute(()-> {
                 List<AnimalListing> refreshingListing = api.getListing(null, null, null, cont.get());
