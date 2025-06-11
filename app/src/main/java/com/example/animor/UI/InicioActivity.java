@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class InicioActivity extends AppCompatActivity implements
         ListingAdapter.OnListingInteractionListener,
@@ -58,6 +60,7 @@ public class InicioActivity extends AppCompatActivity implements
     private EditText searchEditText;
     private Button btnLupa;
     private Button btnFiltros;
+    private ImageButton btnRefresh;
 
     // Variables para almacenar filtros actuales
     private String currentCity = null;
@@ -94,6 +97,7 @@ public class InicioActivity extends AppCompatActivity implements
         searchEditText = findViewById(R.id.searchEditText);
         btnLupa = findViewById(R.id.btnLupa);
         btnFiltros = findViewById(R.id.btnFiltros);
+        btnRefresh = findViewById(R.id.btnRefresh);
 
         // Configurar listeners
         setupSearchListeners();
@@ -118,6 +122,21 @@ public class InicioActivity extends AppCompatActivity implements
         });
 
         btnFiltros.setOnClickListener(v -> showFilterDialog());
+        btnRefresh.setOnClickListener(v -> {
+            Log.d(TAG, "botón para recargar animales pulsado");
+            AtomicInteger cont = new AtomicInteger(1);
+            MyApplication.executor.execute(()-> {
+                List<AnimalListing> refreshingListing = api.getListing(null, null, null, cont.get());
+                if (!refreshingListing.isEmpty()){
+                    Log.d(TAG, "Refrescando lista");
+                    runOnUiThread(()->{
+                        actualizarListaAnimales(refreshingListing);
+                    });
+                }
+
+                cont.getAndIncrement();
+            });
+        });
 
         searchEditText.setOnEditorActionListener((v, actionId, event) -> {
             btnLupa.performClick();
@@ -388,6 +407,7 @@ public class InicioActivity extends AppCompatActivity implements
                     Log.d(TAG, "Llamando a API sin filtros de ubicación");
                     // Si no hay ubicación o no se está usando filtro de ubicación, cargar todos
                     loadedListings = api.getListing(null, null, null, 0);
+
                 }
 
                 runOnUiThread(() -> {
